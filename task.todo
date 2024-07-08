@@ -1,0 +1,91 @@
+☐ Social Network App @started(24-07-08 10:00)
+Social Network App:
+    Project Structure:
+        ☐ Organize backend file structure (packages, migrations, etc.)
+        ☐ Set up well-organized frontend file structure
+
+    Backend:
+        Server:
+            ☐ Set up server (e.g., Caddy or custom)
+            ☐ Implement request handling and routing
+        App:
+            ☐ Develop core application logic
+            ☐ Create necessary middlewares:
+                ☐ Authentication middleware
+                ☐ Image handling middleware (JPEG, PNG, GIF)
+                ☐ WebSocket middleware for real-time connections
+        Database:
+            ☐ Set up SQLite database
+            ☐ Design database schema
+            ☐ Implement migration system
+            ☐ Create and organize migration files
+
+    Frontend:
+        ☐ Choose and set up a JS framework (Next.js, Vue.js, Svelte, or Mithril)
+        ☐ Implement responsive user interface
+        ☐ Integrate with backend via API requests
+
+    Docker:
+        ☐ Create Docker image for backend
+        ☐ Create Docker image for frontend
+        ☐ Ensure proper communication between containers
+        ☐ Set up appropriate port exposure
+
+    Authentication: 
+        ☐ Create registration form with all required fields
+        ☐ Implement login functionality (email/username and password)
+        ☐ Set up session management and cookies
+        ☐ Add logout functionality accessible from all pages
+        ☐ Implement duplicate user check during registration
+
+    User Profile:
+        ☐ Display user information (excluding password)
+        ☐ Show user activity and posts
+        ☐ Implement public/private profile toggle
+        ☐ Display followers and following users
+        ☐ Implement profile visibility based on privacy settings
+
+    Followers System:
+        ☐ Allow users to follow/unfollow others
+        ☐ Implement follow requests for private profiles
+        ☐ Create accept/decline functionality for follow requests
+
+    Posts:
+        ☐ Enable post creation (text, image, GIF)
+        ☐ Implement commenting on posts
+        ☐ Set up post privacy options (public, private, almost private)
+        ☐ Allow selection of specific followers for "almost private" posts
+
+    Groups:
+        ☐ Enable group creation (title, description)
+        ☐ Implement group invitations and requests
+        ☐ Create group-specific posts and comments
+        ☐ Add event creation functionality for group members
+        ☐ Implement event RSVP system
+
+    Chat: 
+        ☐ Develop real-time private messaging using WebSockets
+        ☐ Implement emoji support in chats
+        ☐ Create group chat rooms
+        ☐ Ensure chat works without crashing the server
+
+    Notifications: 
+        ☐ Implement notification system visible on all pages
+        ☐ Create notifications for follow requests, group invitations, and events
+        ☐ Differentiate between notifications and private messages
+
+    Testing:
+        ☐ Test user registration and login process
+        ☐ Verify follower system functionality
+        ☐ Test post creation and privacy settings
+        ☐ Check group creation and management
+        ☐ Ensure real-time chat functionality
+        ☐ Verify notification system
+
+    Bonus: 
+        ☐ Implement external OAuth (e.g., GitHub)
+        ☐ Create database seeding migration
+        ☐ Add confirmation popups for unfollowing and profile privacy changes
+        ☐ Develop additional notification types
+        ☐ Create a script to build Docker images and containers
+        ☐ Optimize overall project performance and user experience

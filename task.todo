@@ -89,3 +89,13 @@ Social Network App:
         ☐ Develop additional notification types
         ☐ Create a script to build Docker images and containers
         ☐ Optimize overall project performance and user experience
+
+
+
+-------------------------------------------------------------------------------------------
+
+//command task todo
+    ☐ : ctrl + Enter (add task)
+    ☐ @started(24-05-23 13:55) ctrl + Enter /  alt + S (when starting a task)
+    ✔ @done(24-05-23 13:53) alt+D (after finishing a task)
+    ✘ @cancelled(24-05-23 13:53) alt+C (when there's a big bug)

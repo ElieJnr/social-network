@@ -1,0 +1,76 @@
+USER:
+attributes: 
+- id : integer
+- email : string
+- password : string
+- firstname : string
+- lastname : string
+- username : string
+- bio : string
+- avatar:  string
+- isPrivate: bool
+
+POST:
+attributes:
+- id : integer
+- userId : integer 
+- content : string
+- category :  string
+- creatdate : datetime
+- isPrivate : bool
+
+COMMENT:
+attributes:
+-  id : integer
+- postid : integer
+- userid : integer
+- content : string
+- creatdate : datetime
+
+CHAT:
+attributes:
+id : integer
+senderId : integer
+receverId : integer
+content :  string
+sendAt : dateTime
+
+GROUP:
+attributes:
+- id : integer
+- name : string
+- description : string
+- members:  []user
+
+EVENTS:
+attributes:
+- id : integer
+- title : string
+- description : string
+- dateTime : dateTime
+- response : string
+
+FOLLOWER:
+attributes:
+id : integer
+followerid : integer
+followingid : integer
+status : string
+requestTime : dateTime
+
+
+PROFIL:
+attributes:
+id : integer
+userActivity : string
+followingUser : []user
+followerUser: []user
+isPrivate :  bool
+
+
+NOTIFICATION:
+attributes:
+senderId : integer
+receverId : integer
+content : string
+sendAt : dateTime

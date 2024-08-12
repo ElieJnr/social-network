@@ -1,16 +1,23 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"socialNetwork/pkg/db/sqlite"
 
 	"github.com/joho/godotenv"
 )
 
 func main() {
+	db, err := sqlite.NewDatabase()
+	if err != nil {
+		fmt.Println("ok")
+		log.Println(err)
+	}
 	// Charger les variables d'environnement depuis le fichier .env
-	err := godotenv.Load()
+	err = godotenv.Load()
 	if err != nil {
 		log.Fatalf("Error loading .env file: %v", err)
 	}
@@ -25,4 +32,5 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error starting server: %v", err)
 	}
+	db.Close()
 }

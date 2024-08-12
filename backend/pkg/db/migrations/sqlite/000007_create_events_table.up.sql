@@ -3,6 +3,6 @@ CREATE TABLE IF NOT EXISTS Events (
     memberId INTEGER NOT NULL,
     title TEXT NOT NULL,
     creatdate DATETIME DEFAULT CURRENT_TIMESTAMP,
-    optionEvent BOOLEAN NOT NULL
-    FOREIGN KEY (memberId) REFERENCES Member(id)
+    optionEvent BOOLEAN NOT NULL,
+    FOREIGN KEY (memberId) REFERENCES Members(id)
 );

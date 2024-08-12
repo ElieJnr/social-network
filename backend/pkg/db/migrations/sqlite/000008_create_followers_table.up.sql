@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS Followers (
+    id INTEGER PRIMARY KEY,
+    userid INTEGER NOT NULL,
+    FOREIGN KEY (userid) REFERENCES Users(id)
+);

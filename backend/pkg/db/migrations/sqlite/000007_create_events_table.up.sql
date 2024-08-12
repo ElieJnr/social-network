@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS Events (
+    id INTEGER PRIMARY KEY,
+    memberId INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    creatdate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    optionEvent BOOLEAN NOT NULL
+    FOREIGN KEY (memberId) REFERENCES Member(id)
+);

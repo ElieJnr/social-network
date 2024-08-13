@@ -1,88 +1,98 @@
 ☐ Social Network App @started(24-07-08 10:00)
 Social Network App:
-    Project Structure:
-        ☐ Organize backend file structure (packages, migrations, etc.)
-        ☐ Set up well-organized frontend file structure
+    Serveur et Base de données :
+        Backend :
+            ☐ Mettre en place le serveur
+            ☐ Implémenter la gestion des requêtes et le routage
+            ☐ Configurer la base de données SQLite
+            ☐ Concevoir le schéma de la base de données
+            ☐ Implémenter le système de migration
+            ☐ Créer et organiser les fichiers de migration
+        Frontend :
+            ☐ Mettre en place l'infrastructure frontend pour communiquer avec le backend
+    Authentification et Profil Utilisateur :
+        Backend :
+            ☐ Créer le middleware d'authentification
+            ☐ Implémenter l'inscription
+            ☐ Implémenter la connexion
+            ☐ Implémenter la déconnexion
+            ☐ Gérer les sessions et les cookies
+            ☐ Développer la logique des profils utilisateurs
+            ☐ Implémenter l'option profil public/privé
+            ☐ Implémenter le système de followers
+            ☐ Gérer les demandes de suivi pour les profils privés
+        Frontend :
+            ☐ Créer le formulaire d'inscription
+            ☐ Créer le formulaire de connexion
+            ☐ Développer l'interface du profil utilisateur
+            ☐ Implémenter l'affichage des followers et des utilisateurs suivis
+    Posts et Commentaires :
+        Backend :
+            ☐ Développer la logique de création de posts
+            ☐ Gérer les posts 
+            ☐ Gérer les posts image
+            ☐ Implémenter le système de commentaires
+            ☐ Gérer les likes pour les posts et commentaires
+            ☐ Gérer les options de confidentialité des posts
+            ☐ Implémenter l'option public
+            ☐ Implémenter l'option privé
+            ☐ Implémenter l'option presque privé (almost private)
+        Frontend :
+            ☐ Créer l'interface de création de posts
+            ☐ Développer l'affichage des posts
+            ☐ Créer l'interface pour les commentaires
+            ☐ Implémenter l'affichage des likes et la possibilité de liker
+    ✘ Groupes et Événements :
+        Backend :
+            ☐ Implémenter la création de groupes
+            ☐ Développer la gestion des groupes
+            ☐ Créer le système d'invitations pour les groupes
+            ☐ Gérer les requêtes pour rejoindre un groupe
+            ☐ Développer la logique des posts spécifiques aux groupes
+            ☐ Implémenter les commentaires spécifiques aux groupes
+            ☐ Créer la fonctionnalité de création d'événements
+            ☐ Gérer le système de RSVP pour les événements
+        Frontend :
+            ☐ Créer l'interface utilisateur pour les groupes
+            ☐ Développer l'affichage des événements
+            ☐ Implémenter l'interface de gestion des événements
+    Chat et Notifications :
+        Backend :
+            ☐ Développer le middleware WebSocket pour les connexions en temps réel
+            ☐ Implémenter le système de messagerie privée
+            ☐ Créer les salons de discussion pour les groupes
+            ☐ Développer le système de notifications
+            ☐ Notifications pour les demandes de suivi
+            ☐ Notifications pour les invitations de groupe
+            ☐ Notifications pour les demandes de rejoindre un groupe
+            ☐ Notifications pour la création d'événements
+        Frontend :
+            ☐ Créer l'interface de chat en temps réel
+            ☐ Implémenter l'affichage des notifications
+    ✘ Docker et Tests :
+        Backend :
+            ☐ Créer l'image Docker pour le backend
+            ☐ Assurer la communication appropriée entre les conteneurs
+            ☐ Tester le processus d'inscription et de connexion
+            ☐ Vérifier la fonctionnalité du système de followers
+            ☐ Tester la création de posts et les paramètres de confidentialité
+            ☐ Vérifier la création et la gestion des groupes
+            ☐ Tester la fonctionnalité de chat en temps réel
+            ☐ Vérifier le système de notifications
+        Frontend :
+            ☐ Créer l'image Docker pour le frontend
+            ☐ Tester l'ensemble de l'interface utilisateur
+            ☐ Vérifier l'interaction entre le frontend et le backend   
 
-    Backend:
-        Server:
-            ☐ Set up server (e.g., Caddy or custom)
-            ☐ Implement request handling and routing
-        App:
-            ☐ Develop core application logic
-            ☐ Create necessary middlewares:
-                ☐ Authentication middleware
-                ☐ Image handling middleware (JPEG, PNG, GIF)
-                ☐ WebSocket middleware for real-time connections
-        Database:
-            ☐ Set up SQLite database
-            ☐ Design database schema
-            ☐ Implement migration system
-            ☐ Create and organize migration files
+    ✘ Testing:
+            ☐ Test user registration and login process
+            ☐ Verify follower system functionality
+            ☐ Test post creation and privacy settings
+            ☐ Check group creation and management
+            ☐ Ensure real-time chat functionality
+            ☐ Verify notification system
 
-    Frontend:
-        ☐ Choose and set up a JS framework (Next.js, Vue.js, Svelte, or Mithril)
-        ☐ Implement responsive user interface
-        ☐ Integrate with backend via API requests
-
-    Docker:
-        ☐ Create Docker image for backend
-        ☐ Create Docker image for frontend
-        ☐ Ensure proper communication between containers
-        ☐ Set up appropriate port exposure
-
-    Authentication: 
-        ☐ Create registration form with all required fields
-        ☐ Implement login functionality (email/username and password)
-        ☐ Set up session management and cookies
-        ☐ Add logout functionality accessible from all pages
-        ☐ Implement duplicate user check during registration
-
-    User Profile:
-        ☐ Display user information (excluding password)
-        ☐ Show user activity and posts
-        ☐ Implement public/private profile toggle
-        ☐ Display followers and following users
-        ☐ Implement profile visibility based on privacy settings
-
-    Followers System:
-        ☐ Allow users to follow/unfollow others
-        ☐ Implement follow requests for private profiles
-        ☐ Create accept/decline functionality for follow requests
-
-    Posts:
-        ☐ Enable post creation (text, image, GIF)
-        ☐ Implement commenting on posts
-        ☐ Set up post privacy options (public, private, almost private)
-        ☐ Allow selection of specific followers for "almost private" posts
-
-    Groups:
-        ☐ Enable group creation (title, description)
-        ☐ Implement group invitations and requests
-        ☐ Create group-specific posts and comments
-        ☐ Add event creation functionality for group members
-        ☐ Implement event RSVP system
-
-    Chat: 
-        ☐ Develop real-time private messaging using WebSockets
-        ☐ Implement emoji support in chats
-        ☐ Create group chat rooms
-        ☐ Ensure chat works without crashing the server
-
-    Notifications: 
-        ☐ Implement notification system visible on all pages
-        ☐ Create notifications for follow requests, group invitations, and events
-        ☐ Differentiate between notifications and private messages
-
-    Testing:
-        ☐ Test user registration and login process
-        ☐ Verify follower system functionality
-        ☐ Test post creation and privacy settings
-        ☐ Check group creation and management
-        ☐ Ensure real-time chat functionality
-        ☐ Verify notification system
-
-    Bonus: 
+    ✘ Bonus: 
         ☐ Implement external OAuth (e.g., GitHub)
         ☐ Create database seeding migration
         ☐ Add confirmation popups for unfollowing and profile privacy changes
@@ -90,9 +100,7 @@ Social Network App:
         ☐ Create a script to build Docker images and containers
         ☐ Optimize overall project performance and user experience
 
-
-
--------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 
 //command task todo
     ☐ : ctrl + Enter (add task)

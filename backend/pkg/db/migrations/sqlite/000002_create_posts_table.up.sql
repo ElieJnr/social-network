@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS Posts (
     userId INTEGER NOT NULL,
     title TEXT NOT NULL,
     content TEXT NOT NULL,
+    imageP TEXT NOT NULL,
     creatdate DATETIME DEFAULT CURRENT_TIMESTAMP,
     statut TEXT NOT NULL,
     FOREIGN KEY (userId) REFERENCES Users(id)

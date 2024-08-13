@@ -7,7 +7,7 @@ import (
 )
 
 type Post struct {
-	Id          uint
+	Id          int
 	UserId      uuid.UUID
 	Title       string
 	Content     string
@@ -16,5 +16,6 @@ type Post struct {
 	Comments    []Comment
 	Like        uint
 	Dislike     uint
+	Statut		string
 	LikeDislike []LikesDislikes
 }

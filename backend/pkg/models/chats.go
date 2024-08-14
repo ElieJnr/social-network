@@ -103,6 +103,7 @@ func Reader(conn *websocket.Conn, sender, receiver uuid.UUID) {
 	}
 }
 
+// ici devra etre implemente la logique de recuperation de l'uuid de l'expediteur
 func GetSender(cookie string) uuid.UUID {
 	// Exemple d'UUID que vous souhaitez retourner
 	id := "550e8400-e29b-41d4-a716-446655440000"
@@ -117,6 +118,7 @@ func GetSender(cookie string) uuid.UUID {
 	return senderID
 }
 
+// ici devra etre implemente la logique de recuperation de l'uuid du destinataire
 func GetReceiver() uuid.UUID {
 	// Exemple d'UUID que vous souhaitez retourner
 	id := "550e8400-e29b-41d4-a716-446655440000"
@@ -132,9 +134,10 @@ func GetReceiver() uuid.UUID {
 }
 
 func SendStockedMessage(conn *websocket.Conn) {
-
+	
 }
 
+// ici devra etre implemente la logique d'enregistrement des messages
 func RegisterData(data Chat) {
 
 }

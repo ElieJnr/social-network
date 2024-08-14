@@ -11,6 +11,7 @@ import (
 )
 
 func main() {
+	// fmt.Println("test")
 	// Initialisation de la base de données
 	db, err := sqlite.NewDatabase()
 	if err != nil {

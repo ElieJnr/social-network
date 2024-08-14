@@ -12,11 +12,11 @@ import (
 )
 
 type Chat struct {
-	Id         uint
-	UserID     uuid.UUID
-	ReceiverId uuid.UUID
-	Msg        string
-	CreatedAt  time.Time
+	Id         uint      `json:"id"`
+	UserID     uuid.UUID `json:"user_id"`
+	ReceiverId uuid.UUID `json:"receiver_id"`
+	Msg        string    `json:"msg"`
+	CreatedAt  time.Time `json:"created_at"`
 }
 
 type ChatMessage struct {
@@ -87,6 +87,19 @@ func Reader(conn *websocket.Conn, sender, receiver uuid.UUID) {
 		MessageType := handleMessage(data, newMessage)
 		fmt.Println("message type", MessageType)
 		RegisterData(newMessage)
+		receiverConn, ok := clientWebSocketConnections[receiver]
+		if !ok {
+			fmt.Println("Receiver not connected")
+			continue
+		}
+		if receiverConn != nil {
+			messageJSON, err := json.Marshal(newMessage)
+			if err != nil {
+				return
+			}
+			receiverConn.WriteMessage(websocket.TextMessage, messageJSON)
+			conn.WriteMessage(websocket.TextMessage, messageJSON)
+		}
 	}
 }
 

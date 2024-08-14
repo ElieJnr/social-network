@@ -11,9 +11,11 @@ type User struct {
 	Email        string
 	Password     string
 	Genre        string
+	DateOfBirth string
 	Bio          string
 	Avatar       string
 	IsPrivate	 bool
+	Session string
 	Followers	 []Follower
 	Notification []Notification `json:"notifications"`
 }

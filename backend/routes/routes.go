@@ -16,6 +16,8 @@ func InitializeRoutes(db *sqlite.DB) *mux.Router {
 	// Définir les routes et les associer aux handlers
 	router.HandleFunc("/", handlers.HomeHandler(db)).Methods("GET")
 	router.HandleFunc("/users", handlers.UsersHandler(db)).Methods("GET")
+	router.HandleFunc("/signin",handlers.RegistrationHandler())
+	router.HandleFunc("/login",handlers.LoginHandler())
 
 	// Retourner le routeur configuré
 	return router

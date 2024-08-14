@@ -34,7 +34,7 @@ func main() {
 	router := routes.InitializeRoutes(db)
 
 	// Log avant le démarrage du serveur
-	log.Printf("Starting server on port %s", serverPort)
+	log.Printf("Starting server on http://localhost%s", serverPort)
 
 	// Démarrer le serveur HTTP
 	err = http.ListenAndServe(serverPort, router)

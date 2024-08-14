@@ -8,5 +8,6 @@ CREATE TABLE IF NOT EXISTS Users (
     date_of_birth TEXT NOT NULL,
     bio TEXT,
     avatar TEXT,
+    session TEXT,
     isPrivate BOOLEAN NOT NULL
 );

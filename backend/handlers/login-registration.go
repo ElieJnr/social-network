@@ -31,15 +31,15 @@ func RegistrationHandler() http.HandlerFunc {
 			http.Error(w, "Failed to hash password", http.StatusInternalServerError)
 			return
 		}
-		newUser.Password = string(hashedPassword)
 
+		newUser.Password = string(hashedPassword)
 		userService := services.NewUserService()
 		err = userService.CreateUser(newUser.Email, newUser.Password, newUser.Firstname, newUser.Lastname, newUser.DateOfBirth, newUser.Avatar, newUser.Username, newUser.Bio, newUser.Session)
 		if err != nil {
 			http.Error(w, "Failed to create user", http.StatusInternalServerError)
 			return
 		}
-
+		
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode("User created successfully")
 	}

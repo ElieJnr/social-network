@@ -112,6 +112,8 @@ func WebsocketService(w http.ResponseWriter, r *http.Request) {
 func Reader(conn *websocket.Conn) {
 	for {
 		var msg message
+		//lorsque l'utilisateur envoi le message via le websocket il envoit un objet lobjet est directement lu a partir de ReadJSON
+		//ainsi tous les information du message sont dedans et on peut gerer la fonctionalite selon le type de msg
 		err := conn.ReadJSON(&msg)
 		if err != nil {
 			return

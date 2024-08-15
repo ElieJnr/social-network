@@ -78,7 +78,7 @@ func WebsocketService(w http.ResponseWriter, r *http.Request) {
 	//a la palce mettre go Reader(conn)
 }
 
-// reader du websockets de gestion des chats simples
+// reader du websockets de gestion des chats simple
 // func Reader(conn *websocket.Conn, sender, receiver uuid.UUID) {
 // 	for {
 // 		_, data, err := conn.ReadMessage()

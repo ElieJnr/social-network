@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -20,23 +21,24 @@ type CheckResult struct {
 	PhotoURL     string
 	Content      string
 	Status       string
-	AllowedUsers []string 
+	AllowedUsers []string
 }
 
 type CheckPostDetail struct {
-    Success    bool
-    Error      string
-    Author     string
-    // Comments   []Comment // supposons que c'est le type retourné par GetComments
-    NbrComment int
-    NbrLike    int
-    LikeStatus   bool 
+	Success bool
+	Error   string
+	Author  models.Author
+	// Comments   []Comment // supposons que c'est le type retourné par GetComments
+	NbrComment    int
+	NbrLike       int
+	LikeStatus    bool
 	DisLikeStatus bool
-
 }
-// __________________ Handler
+
+//______________________Handler
 func PostHandler(db *sqlite.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		GetAllPosts(w, r, db)
 		// Logique pour gérer les utilisateurs
 		// users := []string{"user1", "user2", "user3"}
 		// json.NewEncoder(w).Encode(users)
@@ -49,7 +51,7 @@ func PostCreateHandler(db *sqlite.DB) http.HandlerFunc {
 	}
 }
 
-// ________________fonction de traitement
+//______________________fonction de traitement
 func CreatePost(w http.ResponseWriter, r *http.Request, db *sqlite.DB) {
 	postValue := CheckPost(w, r)
 
@@ -108,41 +110,55 @@ func UploadImage(w http.ResponseWriter, r *http.Request) string {
 	return photoURL
 }
 
-func GetAllPosts() ([]models.Posts, error) {
-    query := `SELECT post_id, user_id, PhotoURL, content, status, creation_date FROM Posts ORDER BY creation_date DESC`
-    rows, err := db.Query(query)
-    if err != nil {
-        return nil, err
-    }
-    defer rows.Close()
+func postDetails(db *sql.DB, post *models.Posts) error {
+	currentUserId, err := GetCurrentUser()
+	if err != nil {
+		return fmt.Errorf("failed to get current user: %w", err)
+	}
 
-    var allPosts []models.Posts
-    for rows.Next() {
-        var post models.Posts
-        err := rows.Scan(&post.PostID, &post.UserID, &post.Image_url, &post.Content, &post.Post_status, &post.Creation_date)
-        if err != nil {
-            fmt.Println("err: rowsScan", err)
-            continue
-        }
+	author, err := GetPostAuthor(db, post.UserID)
+	if err != nil {
+		return fmt.Errorf("failed to get post author: %w", err)
+	}
+	
+	nbrComment, err := GetNbrComment(db, post.PostID)
+	if err != nil {
+		return fmt.Errorf("failed to get number of comments: %w", err)
+	}
+	
+	nbrLike, err := GetNbrLike(db, post.PostID)
+	if err != nil {
+		return fmt.Errorf("failed to get number of likes: %w", err)
+	}
 
-        postDetail := CheckPostInformation(post.PostID, post.UserID)
-        if !postDetail.Success {
-            fmt.Println(postDetail.Error)
-            continue
-        }
+	nbrDislike, err := GetNbrDislike(db, post.PostID)
+	if err != nil {
+		return fmt.Errorf("failed to get number of likes: %w", err)
+	}
+	
+	likeStatus, dislikeStatus, err := GetLikeDislikeStatus(db, post.PostID, post.UserID)
+	if err != nil {
+		return fmt.Errorf("failed to get like/dislike status: %w", err)
+	}
 
-        // Ajoutez les informations du postDetail à votre structure post
+	isVisible, err := CheckVisibility(db, post.UserID, post.PostID,currentUserId, post.Post_status)
+	if err != nil {
+		return fmt.Errorf("failed to get like/dislike status: %w", err)
+	}
+	
+	post.Author = author
+	post.Formated_date = FormatTimeAgo(post.Creation_date)
+	post.Can_see = isVisible
+	post.Like_nbr = nbrLike
+	post.Comments_nbr = nbrComment
+	post.Like_status = likeStatus
+	post.Dislike_nbr = nbrDislike
+	post.Dislike_status = dislikeStatus
 
-        post.Formated_date = FormatTimeAgo(post.Creation_date)
-        allPosts = append(allPosts, post)
-    }
-    return allPosts, nil
+	return nil
 }
 
-func GetComments() {
-}
-
-// _________________fonction de verification
+//______________________fonction de verification
 func CheckPost(w http.ResponseWriter, r *http.Request) CheckResult {
 	content := strings.TrimSpace(r.FormValue("thread"))
 	privacy := r.FormValue("privacy")
@@ -162,10 +178,10 @@ func CheckPost(w http.ResponseWriter, r *http.Request) CheckResult {
 	}
 
 	return CheckResult{
-		Success:  true,
-		PhotoURL: photoURL,
-		Content:  content,
-		Status:   privacy,
+		Success:      true,
+		PhotoURL:     photoURL,
+		Content:      content,
+		Status:       privacy,
 		AllowedUsers: allowedUsers,
 	}
 }
@@ -218,81 +234,158 @@ func IsValidImage(file multipart.File, handler *multipart.FileHeader) bool {
 	return true
 }
 
-func CheckPostInformation(postID, userID int) CheckPostDetail {
-    author, err := GetPostAuthor(userID)
-    if err != nil {
-        return CheckPostDetail{
-            Success: false,
-            Error:   fmt.Sprintf("Err: GetPostAuthor: %v", err),
-        }
-    }
+func CheckVisibility(db *sql.DB, userId int, postId int, currentUserId int, postPrivacy string) (bool, error) {
+	// Si le post est public, il est visible pour tout le monde
+	if postPrivacy == "public" {
+		return true, nil
+	}
 
-    comments, err := GetComments(postID)
-    if err != nil {
-        return CheckPostDetail{
-            Success: false,
-            Error:   fmt.Sprintf("Err: GetComments: %v", err),
-        }
-    }
+	// Si le post est privé, vérifier si l'utilisateur est l'auteur du post ou un follower
+	if postPrivacy == "private" {
+		if currentUserId == userId {
+			return true, nil
+		}
 
-    nbrComment, err := GetNbrComment(postID)
-    if err != nil {
-        return CheckPostDetail{
-            Success: false,
-            Error:   fmt.Sprintf("Err: GetNbrComment: %v", err),
-        }
-    }
+		// Vérifier si le currentUserId est un follower de l'auteur du post
+		query := `SELECT COUNT(*) FROM Followers WHERE user_id = ? AND followerId = ?`
+		var count int
+		err := db.QueryRow(query, userId, currentUserId).Scan(&count)
+		if err != nil {
+			return false, fmt.Errorf("error checking follower status: %v", err)
+		}
 
-    nbrLike, err := GetNbrLike(postID)
-    if err != nil {
-        return CheckPostDetail{
-            Success: false,
-            Error:   fmt.Sprintf("Err: GetNbrLike: %v", err),
-        }
-    }
+		// Si currentUserId est un follower, retourner true
+		if count > 0 {
+			return true, nil
+		}
 
-    LikeStatus, err := GetLikeDislikeStatus(postID, userID)
-    if err != nil {
-        return CheckPostDetail{
-            Success: false,
-            Error:   fmt.Sprintf("Err: GetStatusLike: %v", err),
-        }
-    }
+		// Sinon, retourner false car l'utilisateur n'est ni l'auteur ni un follower
+		return false, nil
+	}
 
-    return CheckPostDetail{
-        Success:    true,
-        Author:     author,
-        // Comments:   comments,
-        NbrComment: nbrComment,
-        NbrLike:    nbrLike,
-        LikeStatus:   LikeStatus,
-    }
+	// Si le post est "almost_private", vérifier si l'utilisateur est autorisé à voir le post
+	if postPrivacy == "almost_private" {
+		query := `SELECT COUNT(*) FROM UserPost WHERE post_id = ? AND user_id = ?`
+		var count int
+		err := db.QueryRow(query, postId, currentUserId).Scan(&count)
+		if err != nil {
+			return false, fmt.Errorf("error checking almost_private access: %v", err)
+		}
+
+		// Si l'utilisateur est autorisé, retourner true
+		if count > 0 {
+			return true, nil
+		}
+
+		// Sinon, retourner false car l'utilisateur n'est pas autorisé
+		return false, nil
+	}
+
+	// Par défaut, retourner false (post non visible)
+	return false, nil
 }
 
 
+// ______________________fonction de recuperation
+func GetAllPosts(w http.ResponseWriter, r *http.Request, sqlDB *sqlite.DB) ([]models.Posts, error) {
+	db := sqlDB.GetDB()
 
-// _________________fonction DB
-// recuperer l'id de l'utilisateur courant
+	query := `SELECT post_id, user_id, content, image_url, statut, creatdate FROM Posts ORDER BY creatdate DESC`
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query posts: %w", err)
+	}
+	defer rows.Close()
+
+	var allPosts []models.Posts
+	for rows.Next() {
+		var post models.Posts
+		if err := rows.Scan(&post.PostID, &post.UserID, &post.Content, &post.Image_url, &post.Post_status, &post.Creation_date); err != nil {
+			fmt.Println("err: rowsScan", err)
+			continue
+		}
+
+		if err := postDetails(db, &post); err != nil {
+			fmt.Println("err: postDetails", err)
+			continue
+		}
+
+		allPosts = append(allPosts, post)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating over posts: %w", err)
+	}
+
+	return allPosts, nil
+}
+
+func GetComments() {
+}
+
 func GetCurrentUser() (int, error) {
 	return 1, nil
 }
 
-func GetNbrComment(postId int) {
+func GetNbrComment(db *sql.DB, postId int) (int, error) {
+    return getCountForPost(db, "Comments", "AND postid = ?", postId)
 }
 
-func GetNbrLike(postId int) {
+func GetNbrLike(db *sql.DB, postId int) (int, error) {
+    return getCountForPost(db, "LikesDislikes", "AND liked = TRUE", postId)
 }
 
-func GetNbrDislike(postId int) {
+func GetNbrDislike(db *sql.DB, postId int) (int, error) {
+    return getCountForPost(db, "LikesDislikes", "AND disliked = TRUE", postId)
 }
 
-func GetLikeDislikeStatus(postId, userId int) {
+func GetLikeDislikeStatus(db *sql.DB, postId int, userId int) (bool, bool, error) {
+    query := `
+        SELECT liked, disliked 
+        FROM LikesDislikes 
+        WHERE post_id = ? AND user_id = ?
+    `
+
+    var liked, disliked bool
+    err := db.QueryRow(query, postId, userId).Scan(&liked, &disliked)
+    if err != nil {
+        if err == sql.ErrNoRows {
+            // If no row is found, the user hasn't liked or disliked the post
+            return false, false, nil
+        }
+        return false, false, fmt.Errorf("error querying database: %v", err)
+    }
+
+    return liked, disliked, nil
 }
 
-func GetPostAuthor(userId int) {
+func GetPostAuthor(db *sql.DB, userId int) (models.Author, error) {
+
+	var author models.Author
+	query := `
+        SELECT firstname, lastname, username, avatar
+        FROM Users
+        WHERE id = ?
+    `
+
+	err := db.QueryRow(query, userId).Scan(
+		&author.Firstname,
+		&author.Lastname,
+		&author.Username,
+		&author.Avatar,
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return author, fmt.Errorf("no user found with ID %d", userId)
+		}
+		return author, fmt.Errorf("error querying database: %v", err)
+	}
+
+	return author, nil
 }
 
-// _________________fonction d'inserstion
+//______________________fonction d'inserstion
 func InsertPost(postValue CheckResult, db *sqlite.DB) error {
 	userId, err := GetCurrentUser()
 	if err != nil {
@@ -307,7 +400,7 @@ func InsertPost(postValue CheckResult, db *sqlite.DB) error {
 	defer tx.Rollback()
 
 	// Insérer le post principal
-	result, err := tx.Exec("INSERT INTO Posts (user_id, content, image_url, statut) VALUES (?, ?, ?, ?)", 
+	result, err := tx.Exec("INSERT INTO Posts (user_id, content, image_url, statut) VALUES (?, ?, ?, ?)",
 		userId, postValue.Content, postValue.PhotoURL, postValue.Status)
 	if err != nil {
 		return err
@@ -354,7 +447,7 @@ func InsertPost(postValue CheckResult, db *sqlite.DB) error {
 	return tx.Commit()
 }
 
-//__________________fonction utilitaire
+//______________________fonction utilitaire
 func FormatTimeAgo(creationDate time.Time) string {
 	now := time.Now()
 	diff := now.Sub(creationDate)
@@ -415,3 +508,15 @@ func FormatTimeAgo(creationDate time.Time) string {
 
 	return res
 }
+
+func getCountForPost(db *sql.DB, tableName string, condition string, postId int) (int, error) {
+    query := fmt.Sprintf(`SELECT COUNT(*) FROM %s WHERE post_id = ? %s`, tableName, condition)
+
+    var count int
+    err := db.QueryRow(query, postId).Scan(&count)
+    if err != nil {
+        return 0, fmt.Errorf("error querying database: %v", err)
+    }
+    return count, nil
+}
+

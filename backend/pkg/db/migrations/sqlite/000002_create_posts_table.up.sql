@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS Posts (
-    id INTEGER PRIMARY KEY,
+    post_id INTEGER PRIMARY KEY,
     user_id INTEGER NOT NULL,
     content TEXT NOT NULL,
     image_url TEXT NOT NULL,

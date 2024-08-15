@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"socialNetwork/pkg/models"
@@ -39,7 +40,7 @@ func RegistrationHandler() http.HandlerFunc {
 			http.Error(w, "Failed to create user", http.StatusInternalServerError)
 			return
 		}
-		
+
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode("User created successfully")
 	}
@@ -76,7 +77,7 @@ func LoginHandler() http.HandlerFunc {
 			http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 			return
 		}
-
+		fmt.Println("connexion reussit")
 		// Générez un token JWT ou une autre méthode pour maintenir la session
 		session := uuid.New()
 

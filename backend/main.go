@@ -19,6 +19,8 @@ func main() {
 		log.Fatalf("Error initializing the database: %v", err)
 	}
 	defer db.Close()
+	// On passe le db ouvert a global qui sera utiliser dans les service
+	sqlite.GlobalDB = db
 
 	// Charger les variables d'environnement depuis le fichier .env
 	err = godotenv.Load()

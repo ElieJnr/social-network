@@ -12,10 +12,9 @@ type UserService struct {
 }
 
 func NewUserService() *UserService {
-	dbs, err := sqlite.NewDatabase()
-	if err != nil {
-		fmt.Println(err)
-	}
+	
+	dbs := sqlite.GlobalDB
+
 	return &UserService{
 		db: dbs.GetDB(),
 	}
@@ -130,21 +129,21 @@ func (u *UserService) EmailExists(email string) (bool, error) {
 }
 
 func (u *UserService) UpdateSessionByID(id int, session string) error {
-    // Préparation de la requête SQL pour mettre à jour la session
-    query := "UPDATE Users SET session = ? WHERE id = ?"
+	// Préparation de la requête SQL pour mettre à jour la session
+	query := "UPDATE Users SET session = ? WHERE id = ?"
 
-    // Exécution de la requête préparée
-    stmt, err := u.GetDB().Prepare(query)
-    if err != nil {
-        return fmt.Errorf("failed to prepare statement: %w", err)
-    }
-    defer stmt.Close()
+	// Exécution de la requête préparée
+	stmt, err := u.GetDB().Prepare(query)
+	if err != nil {
+		return fmt.Errorf("failed to prepare statement: %w", err)
+	}
+	defer stmt.Close()
 
-    // Lier les valeurs à la requête et l'exécuter
-    _, err = stmt.Exec(session, id)
-    if err != nil {
-        return fmt.Errorf("failed to execute statement: %w", err)
-    }
+	// Lier les valeurs à la requête et l'exécuter
+	_, err = stmt.Exec(session, id)
+	if err != nil {
+		return fmt.Errorf("failed to execute statement: %w", err)
+	}
 
-    return nil
+	return nil
 }

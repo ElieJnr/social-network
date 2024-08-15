@@ -9,8 +9,8 @@ import (
 
 type message struct {
 	Type     string
-	Sender   int
-	Receiver int
+	SenderId   int
+	ReceiverId int
 	Content  string
 }
 
@@ -53,7 +53,7 @@ func WebsocketService(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	senderId := GetSender(cookie.Name)
+	senderId := GetSender(cookie.Name)// le front peut gerer ca de maniere securiser
 	// ------------------------------------------
 	// ajout de l'utilisateur dans le tableau des connexions
 	conn, err := upgrader.Upgrade(w, r, nil)

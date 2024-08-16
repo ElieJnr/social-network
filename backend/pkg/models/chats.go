@@ -1,17 +1,18 @@
 package models
+
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
-	"github.com/google/uuid"
+
 	"github.com/gorilla/websocket"
 )
+
 type Chat struct {
 	Id         uint      `json:"id"`
-	UserID     uuid.UUID `json:"user_id"`
-	ReceiverId uuid.UUID `json:"receiver_id"`
+	UserID     int       `json:"user_id"`
+	ReceiverId int       `json:"receiver_id"`
 	Msg        string    `json:"msg"`
 	CreatedAt  time.Time `json:"created_at"`
 }
@@ -20,6 +21,7 @@ type ChatMessage struct {
 	Message   string    `json:"message"`
 	CreatedAt time.Time `json:"createdAt"`
 }
+
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
@@ -27,13 +29,16 @@ var upgrader = websocket.Upgrader{
 		return true
 	},
 }
-var clientWebSocketConnections = make(map[uuid.UUID]*websocket.Conn)
-//step
+var clientWebSocketConnections = make(map[int]*websocket.Conn)
+
+// step
 // une fois que le client a clique sur l'utilisateur auxquelles ils souhaitent envoyees le message :
-// 		on l'ajoute au tableau des connexions
-//		on va dans la base de donnees on fetche tout les messages dejas creer entre les deux utilisateurs
-// 		chaque message envoyees a est directement envoyees au destinataire via le websocket nouveau
-// 		et des que l'utilisateur quitte la discussion on le supprime direct du tableau des connexions
+//
+//	on l'ajoute au tableau des connexions
+//	on va dans la base de donnees on fetche tout les messages dejas creer entre les deux utilisateurs
+//	chaque message envoyees a est directement envoyees au destinataire via le websocket nouveau
+//	et des que l'utilisateur quitte la discussion on le supprime direct du tableau des connexions
+//
 // creation du websockets pour la gestion du chat simple
 func WebsocketService(w http.ResponseWriter, r *http.Request) {
 	// recuperation de l'userId de l'expediteur
@@ -61,8 +66,9 @@ func WebsocketService(w http.ResponseWriter, r *http.Request) {
 	// ------------------------------------------
 	go Reader(conn, senderId, receiverId)
 }
+
 // reader du websockets de gestion des chats simples
-func Reader(conn *websocket.Conn, sender, receiver uuid.UUID) {
+func Reader(conn *websocket.Conn, sender, receiver int) {
 	for {
 		_, data, err := conn.ReadMessage()
 		if err != nil || len(data) == 0 {
@@ -90,33 +96,20 @@ func Reader(conn *websocket.Conn, sender, receiver uuid.UUID) {
 		}
 	}
 }
+
 // ici devra etre implemente la logique de recuperation de l'uuid de l'expediteur
-func GetSender(cookie string) uuid.UUID {
-	// Exemple d'UUID que vous souhaitez retourner
-	id := "550e8400-e29b-41d4-a716-446655440000"
-	// Parser l'UUID à partir de la chaîne
-	senderID, err := uuid.Parse(id)
-	if err != nil {
-		log.Println("Erreur lors du parsing de l'UUID :", err)
-		return uuid.Nil // Retourner un UUID nul en cas d'erreur
-	}
-	return senderID
+func GetSender(cookie string) int {
+	return 0
 }
+
 // ici devra etre implemente la logique de recuperation de l'uuid du destinataire
-func GetReceiver() uuid.UUID {
-	// Exemple d'UUID que vous souhaitez retourner
-	id := "550e8400-e29b-41d4-a716-446655440000"
-	// Parser l'UUID à partir de la chaîne
-	receiverID, err := uuid.Parse(id)
-	if err != nil {
-		log.Println("Erreur lors du parsing de l'UUID :", err)
-		return uuid.Nil // Retourner un UUID nul en cas d'erreur
-	}
-	return receiverID
+func GetReceiver() int {
+	return 1
 }
 func SendStockedMessage(conn *websocket.Conn) {
-	
+
 }
+
 // ici devra etre implemente la logique d'enregistrement des messages
 func RegisterData(data Chat) {
 }

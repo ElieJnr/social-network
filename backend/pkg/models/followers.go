@@ -5,7 +5,7 @@ import (
 )
 
 type Follower struct {
-	Id           uint
+	Id           uuid.UUID
 	UserID       uuid.UUID
 	FollowedUser uuid.UUID
 }

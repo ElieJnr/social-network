@@ -46,11 +46,11 @@ func (p *PostService) GetAllPosts() ([]models.Post, error) {
 	for rows.Next() {
 		var post models.Post
 		var (
-			id        int
+			id        uuid.UUID
 			userId    uuid.UUID
 			title     string
 			content   string
-			image     []byte
+			image     string
 			creatdate time.Time
 			statut    string
 		)

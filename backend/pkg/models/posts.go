@@ -7,15 +7,15 @@ import (
 )
 
 type Post struct {
-	Id          int
+	Id          uuid.UUID
 	UserId      uuid.UUID
 	Title       string
 	Content     string
-	Image       []byte
+	Image       string
 	CreatedAt   time.Time
 	Comments    []Comment
-	Like        uint
-	Dislike     uint
+	Like        int
+	Dislike     int
 	Statut		string
 	LikeDislike []LikesDislikes
 }

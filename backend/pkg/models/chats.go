@@ -9,7 +9,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 type Chat struct {
-	Id         uint      `json:"id"`
+	Id         uuid.UUID      `json:"id"`
 	UserID     uuid.UUID `json:"user_id"`
 	ReceiverId uuid.UUID `json:"receiver_id"`
 	Msg        string    `json:"msg"`

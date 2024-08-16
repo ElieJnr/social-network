@@ -24,7 +24,6 @@ func (u *UserService) GetDB() *sql.DB {
 	return u.db
 }
  
- 
 func (u *UserService) SetDB(db *sql.DB) {
 	u.db = db
 }
@@ -52,7 +51,7 @@ func (u *UserService) CreateUser(email, password, firstname, lastname, dateOfBir
 
 	// Préparer la requête d'insertion
 	query := `
-		INSERT INTO Users (email, password, firstname, lastname, date_of_birth, avatar, username, bio, isPrivate, session) 
+		INSERT INTO Users (email, password, firstname, lastname, dateOfBirth, avatar, username, bio, isPrivate, session) 
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`
 	_, err = u.GetDB().Exec(query, email, password, firstname, lastname, dateOfBirth, avatar, username, bio, false, session)

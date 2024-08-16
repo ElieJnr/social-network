@@ -7,10 +7,10 @@ import (
 )
 
 type Event struct {
-	Id          uint
-	Title	    string
+	Id          uuid.UUID
 	MemberId    uuid.UUID
 	GroupId		uuid.UUID
+	Title	    string
 	Option      string
 	Content		string
 	CreatedAt   time.Time

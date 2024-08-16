@@ -7,8 +7,8 @@ import (
 )
 
 type Comment struct {
-	Id        uint
-	PostId    uint
+	Id        uuid.UUID
+	PostId    uuid.UUID
 	UserId    uuid.UUID
 	Content   string
 	CreatedAt time.Time

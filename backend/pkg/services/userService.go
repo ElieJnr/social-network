@@ -24,6 +24,8 @@ func (u *UserService) GetDB() *sql.DB {
 	return u.db
 }
  
+ 
+ 
 func (u *UserService) SetDB(db *sql.DB) {
 	u.db = db
 }

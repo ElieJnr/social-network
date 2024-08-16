@@ -23,7 +23,8 @@ func NewUserService() *UserService {
 func (u *UserService) GetDB() *sql.DB {
 	return u.db
 }
-
+ 
+ 
 func (u *UserService) SetDB(db *sql.DB) {
 	u.db = db
 }
@@ -62,43 +63,10 @@ func (u *UserService) CreateUser(email, password, firstname, lastname, dateOfBir
 	return nil
 }
 
-// func (u *UserService) CreateUser(username string, age, genre, firstname, lastname, email, password string) error {
-// }
-
-// func (u *UserService) GetAllUsers() ([]models.User, error) {
-// 	rows, err := u.GetDB().Query(`SELECT id, username, age, genre, firstname, lastname, email, password FROM users`)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	defer rows.Close()
-
-// }
-
-// func (u *UserService) GetUserById(id uuid.UUID) (models.User, error) {
-
-// 	err := u.db.QueryRow(`SELECT id, username, age, genre, firstname, lastname, email, password FROM users WHERE id = ?`, id.String()).Scan(&idStr, &username, &age, &genre, &firstname, &lastname, &email, &password)
-// 	if err != nil {
-// 		//fmt.Println(id)
-// 		fmt.Println(err)
-// 		return models.User{}, err
-
-// }
-// }
-
-// func (u *UserService) GetUserByUsernameOREmail(username string) (models.User, error) {
-
-// 	// err := u.db.QueryRow(`SELECT id, username, age, genre, firstname, lastname, email, password FROM users WHERE username = ? OR email = ?`, username, username).Scan(&id, &userName, &age, &genre, &firstname, &lastname, &email, &password)
-// 	// if err != nil {
-
-// 	// 	return models.User{}, err
-// 	// }
-
-// }
-
 func (u *UserService) UserExists(identifier string) (string, int, error) {
 	var password string
 	var id int
-	err := u.GetDB().QueryRow("SELECT password, id FROM users WHERE username = ? OR email = ?", identifier, identifier).Scan(&password, &id)
+	err := u.GetDB().QueryRow("SELECT passwords, id FROM users WHERE username = ? OR email = ?", identifier, identifier).Scan(&password, &id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return "", -1, errors.New("user not found")

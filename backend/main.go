@@ -32,7 +32,7 @@ func main() {
 	}
 
 	// Initialiser les routes
-	router := routes.InitializeRoutes(db)
+	router := routes.InitializeRoutes()
 
 	// Log avant le démarrage du serveur
 	log.Printf("Starting server on http://localhost%s", serverPort)

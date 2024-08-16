@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS Chats (
-    id INTEGER PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     senderId INTEGER NOT NULL,
     receverId INTEGER NOT NULL,
     content TEXT NOT NULL,

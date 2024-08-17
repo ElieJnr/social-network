@@ -1,10 +1,7 @@
 package models
 
 import (
-	"net/http"
 	"time"
-
-	"github.com/gorilla/websocket"
 )
 
 type Chat struct {
@@ -20,10 +17,10 @@ type ChatMessage struct {
 	CreatedAt time.Time `json:"createdAt"`
 }
 
-var Upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-	CheckOrigin: func(r *http.Request) bool {
-		return true
-	},
+// ce type sera utiliser pour tous les message envoyer sur le websocket, il peut etre optimiser selon les besoins
+type Message struct {
+	Type       string
+	Content    string
+	SenderId   string
+	ReceiverId string
 }

@@ -9,6 +9,7 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 )
+var GlobalDB *DB
 
 type DB struct {
 	db *sql.DB

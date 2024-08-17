@@ -3,7 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-
+	
 	"socialNetwork/pkg/models"
 	"socialNetwork/pkg/services"
 
@@ -39,7 +39,7 @@ func RegistrationHandler() http.HandlerFunc {
 			http.Error(w, "Failed to create user", http.StatusInternalServerError)
 			return
 		}
-		
+
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode("User created successfully")
 	}

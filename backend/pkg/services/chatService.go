@@ -2,116 +2,72 @@ package services
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
-	"net/http"
+	"socialNetwork/pkg/db/sqlite"
 	"socialNetwork/pkg/models"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
 
-var ClientWebSocketConnections = make(map[int]*websocket.Conn)
-
-// à remplacer par la vraie base de donnée
-var dataBase *sql.DB
-
-func WebsocketService(w http.ResponseWriter, r *http.Request) {
-	// récupération de l'userId de l'expéditeur
-	cookie, err := r.Cookie("cookieName")
-	if err != nil {
-		return
-	}
-	senderId := GetSender(cookie.Name)
-	// ------------------------------------------
-	// ajout de l'utilisateur dans le tableau des connexions
-	conn, err := models.Upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		fmt.Println("probleme lors de l'initialisation: ", err)
-		return
-	}
-	ClientWebSocketConnections[senderId] = conn
-	// ------------------------------------------
-	// passons a la recuperation de l'id du destinataire
-	// aucune strategie n'a encore ete defini pour la recuperation de cette derniere
-	receiverId := GetReceiver()
-	// ------------------------------------------
-	// envoyons les messages stockees dans la base de donnees a l'expediteur
-	SendStockedMessage(conn, senderId, receiverId)
-	// ------------------------------------------
-	go Reader(conn, senderId, receiverId)
+type ChatService struct {
+	db *sql.DB
 }
 
-// reader du websockets de gestion des chats simples de groupes et des notifications
-func Reader(conn *websocket.Conn, sender, receiver int) {
-	for {
-		_, data, err := conn.ReadMessage()
-		if err != nil || len(data) == 0 {
-			return
-		}
+func NewChatService() *ChatService {
+	dbs := sqlite.GlobalDB
 
-		var newMessage models.Chat
-		MessageType := handleMessage(data, newMessage)
-
-		if MessageType == "groupeChat" {
-
-		} else if MessageType == "userChat" {
-			Message(newMessage, sender, receiver, conn)
-		} else if MessageType == "notifications" {
-
-		}
+	return &ChatService{
+		db: dbs.GetDB(),
 	}
 }
 
-func Message(newMessage models.Chat, sender, receiver int, conn *websocket.Conn) {
-	newMessage.UserID = sender
-	newMessage.ReceiverId = receiver
-	RegisterError := RegisterData(newMessage, dataBase)
+func (c *ChatService) GetDB() *sql.DB {
+	return c.db
+}
+
+func (c *ChatService) SetDB(db *sql.DB) {
+	c.db = db
+}
+
+func (c *ChatService) SendMessage(msg models.Message, websocket map[string]*websocket.Conn) error {
+	receiverConn, ok := websocket[msg.ReceiverId]
+	if ok {
+		if err := receiverConn.WriteJSON(msg); err != nil {
+			return fmt.Errorf("writing error: %w", err)
+		}
+	}
+	RegisterError := c.RegisterMsg(msg)
 
 	if RegisterError != nil {
-		return
+		return RegisterError
 	}
 
-	receiverConn, ok := ClientWebSocketConnections[receiver]
-	if ok {
-		messageJSON, err := json.Marshal(newMessage)
-		if err != nil {
-			return
-		}
-		receiverConn.WriteMessage(websocket.TextMessage, messageJSON)
-		conn.WriteMessage(websocket.TextMessage, messageJSON)
-	}
+	return nil
 }
 
-// ici devra etre implemente la logique de recuperation de l'uuid de l'expediteur
-func GetSender(cookie string) int {
-	return 0
-}
-
-// ici devra etre implemente la logique de recuperation de l'uuid du destinataire
-func GetReceiver() int {
-	return 1
-}
-func SendStockedMessage(conn *websocket.Conn, sender, receiver int) {
-	messages := GetStoredMessages(sender, receiver)
-	for _, message := range messages {
-		messageJSON, err := json.Marshal(message)
-		if err != nil {
-			continue
-		}
-		conn.WriteMessage(websocket.TextMessage, messageJSON)
-	}
-}
-
-func GetStoredMessages(sender, receiver int) []models.Chat {
-	var messages []models.Chat
-	query := "SELECT * FROM Chats WHERE (user_id = ? AND receiver_id = ?) OR (user_id = ? AND receiver_id = ?)"
-	rows, err := dataBase.Query(query, sender, receiver)
+func (c *ChatService) SendStockedMessage(conn *websocket.Conn, senderId, receiverId string) error {
+	messages, err := c.GetStoredMessages(senderId, receiverId)
 	if err != nil {
-		fmt.Println("Failed to retrieve stored messages:", err)
-		return messages
+		return err
+	}
+
+	if er := conn.WriteJSON(messages); er != nil {
+		return fmt.Errorf("error writting: %w", er)
+	}
+	return nil
+}
+
+func (c *ChatService) GetStoredMessages(sender, receiver string) ([]models.Chat, error) {
+
+	query := "SELECT * FROM Chats WHERE (user_id = ? AND receiver_id = ?) OR (user_id = ? AND receiver_id = ?)"
+	rows, err := c.GetDB().Query(query, sender, receiver)
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve stored messages: %w", err)
 	}
 	defer rows.Close()
 
+	var messages []models.Chat
 	for rows.Next() {
 		var message models.Chat
 		err := rows.Scan(&message.UserID, &message.ReceiverId, &message.Msg, &message.CreatedAt)
@@ -122,27 +78,19 @@ func GetStoredMessages(sender, receiver int) []models.Chat {
 		messages = append(messages, message)
 	}
 
-	return messages
+	return messages, nil
 }
 
 // ici devra etre implemente la logique d'enregistrement des messages
-func RegisterData(data models.Chat, dataBase *sql.DB) error {
-	query := "INSERT INTO Chats (user_id, receiver_id, msg, created_at) VALUES (?, ?, ?, ?)"
-	_, err := dataBase.Exec(query, data.UserID, data.ReceiverId, data.Msg, data.CreatedAt)
+func (c *ChatService) RegisterMsg(msg models.Message) error {
+
+	idMsg := uuid.NewString()
+
+	query := "INSERT INTO Chats (id,senderId,receverId, content) VALUES (?, ?, ?, ?)"
+
+	_, err := c.GetDB().Exec(query, idMsg, msg.SenderId, msg.ReceiverId, msg.Content)
 	if err != nil {
-		fmt.Println("Failed to register data:", err)
-		return err
+		return fmt.Errorf("failed to register data: %w", err)
 	}
 	return nil
-}
-
-func handleMessage(message []byte, structure models.Chat) string {
-	var chatMsg models.ChatMessage
-	err := json.Unmarshal(message, &chatMsg)
-	if err != nil {
-		return ""
-	}
-	structure.Msg = chatMsg.Message
-	structure.CreatedAt = chatMsg.CreatedAt
-	return chatMsg.Type
 }

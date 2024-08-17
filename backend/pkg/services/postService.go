@@ -15,10 +15,8 @@ type PostService struct {
 }
 
 func NewPostservice() *PostService {
-	dbs, err := sqlite.NewDatabase()
-	if err != nil {
-		fmt.Println(err)
-	}
+	dbs := sqlite.GlobalDB
+	
 	return &PostService{
 		db: dbs.GetDB(),
 	}

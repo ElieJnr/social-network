@@ -12,10 +12,8 @@ type UserService struct {
 }
 
 func NewUserService() *UserService {
-	dbs, err := sqlite.NewDatabase()
-	if err != nil {
-		fmt.Println(err)
-	}
+	dbs := sqlite.GlobalDB
+	
 	return &UserService{
 		db: dbs.GetDB(),
 	}

@@ -20,6 +20,8 @@ func main() {
 	}
 	defer db.Close()
 
+	sqlite.GlobalDB = db
+
 	// Charger les variables d'environnement depuis le fichier .env
 	err = godotenv.Load()
 	if err != nil {

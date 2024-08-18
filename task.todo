@@ -62,10 +62,10 @@ Social Network App:
             ☐ Implémenter le système de messagerie privée
             ☐ Créer les salons de discussion pour les groupes
             ☐ Développer le système de notifications @started(24-08-16 19:58)
-            ☐ Notifications pour les demandes de suivi
-            ☐ Notifications pour les invitations de groupe
-            ☐ Notifications pour les demandes de rejoindre un groupe
-            ☐ Notifications pour la création d'événements
+            ✔ Notifications pour les demandes de suivi @done(24-08-18 15:54)
+            ✔ Notifications pour les invitations de groupe @done(24-08-18 15:54)
+            ✔ Notifications pour les demandes de rejoindre un groupe @done(24-08-18 15:54)
+            ✔ Notifications pour la création d'événements @done(24-08-18 15:54)
         Frontend :
             ☐ Créer l'interface de chat en temps réel
             ☐ Implémenter l'affichage des notifications

@@ -48,7 +48,6 @@ func (c *ChatService) SendMessage(msg models.Message, websocket map[string]*webs
 
 func (c *ChatService) SendStockedMessage(conn *websocket.Conn, senderId, receiverId string) error {
 	messages, err := c.GetStoredMessages(senderId, receiverId)
-	fmt.Println("entree")
 	if err != nil {
 		return err
 	}

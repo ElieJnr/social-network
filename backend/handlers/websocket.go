@@ -78,7 +78,7 @@ func Reader(conn *websocket.Conn) error {
 				}
 			}
 			if sendError != nil {
-				return fmt.Errorf("problem sending message to users:%s %s", sendError)
+				return fmt.Errorf("problem sending message to users:%s", sendError)
 			}
 		}
 	}

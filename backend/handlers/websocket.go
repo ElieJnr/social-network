@@ -23,8 +23,7 @@ var (
 
 // service passant a travers le websocket
 var (
-	// exemple service_Notif = services.NewNotifService() etc...
-	messageService = services.NewChatService()
+// exemple service_Notif = services.NewNotifService() etc...
 )
 
 func WebsocketHandler(w http.ResponseWriter, r *http.Request) {
@@ -58,13 +57,24 @@ func Reader(conn *websocket.Conn) error {
 		case "groupeChat":
 			//fonction qui gere groupChat:
 		case "clickOnUser":
-			//cas qui gere le clique sur un utilisateur
-			// fmt.Println("le client a clique sur l'utilisateur numero: ", msg.ReceiverId)
-			// messageService.SendStockedMessage(conn, msg.SenderId, msg.ReceiverId)
+			messageService := services.NewChatService()
+			err := messageService.SendStockedMessage(conn, msg.SenderId, msg.ReceiverId)
+			if err != nil {
+				return err
+			}
 		case "notifications":
 			//fonction qui gere notifications
 		case "sendMessage":
-
+			messageService := services.NewChatService()
+			err := messageService.RegisterMsg(msg)
+			if err != nil {
+				return err
+			}
+			sendError := conn.WriteMessage(websocket.TextMessage, []byte(msg.Content))
+			sendErrorReceiver := ClientWebSocketConnections[msg.ReceiverId].WriteMessage(websocket.TextMessage, []byte(msg.Content))
+			if sendError != nil || sendErrorReceiver != nil {
+				return fmt.Errorf("problem sending message to users:%s %s", sendError, sendErrorReceiver)
+			}
 		}
 	}
 }

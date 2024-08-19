@@ -48,6 +48,7 @@ func (c *ChatService) SendMessage(msg models.Message, websocket map[string]*webs
 
 func (c *ChatService) SendStockedMessage(conn *websocket.Conn, senderId, receiverId string) error {
 	messages, err := c.GetStoredMessages(senderId, receiverId)
+	fmt.Println("entree")
 	if err != nil {
 		return err
 	}
@@ -60,9 +61,10 @@ func (c *ChatService) SendStockedMessage(conn *websocket.Conn, senderId, receive
 
 func (c *ChatService) GetStoredMessages(sender, receiver string) ([]models.Chat, error) {
 
-	query := "SELECT * FROM Chats WHERE (user_id = ? AND receiver_id = ?) OR (user_id = ? AND receiver_id = ?)"
-	rows, err := c.GetDB().Query(query, sender, receiver)
+	query := "SELECT * FROM Chats WHERE (senderId = ? AND receverId = ?) OR (receverId = ? AND senderId = ?)"
+	rows, err := c.GetDB().Query(query, sender, receiver, sender, receiver)
 	if err != nil {
+
 		return nil, fmt.Errorf("failed to retrieve stored messages: %w", err)
 	}
 	defer rows.Close()
@@ -70,7 +72,7 @@ func (c *ChatService) GetStoredMessages(sender, receiver string) ([]models.Chat,
 	var messages []models.Chat
 	for rows.Next() {
 		var message models.Chat
-		err := rows.Scan(&message.UserID, &message.ReceiverId, &message.Msg, &message.CreatedAt)
+		err := rows.Scan(&message.Id, &message.UserID, &message.ReceiverId, &message.Msg, &message.CreatedAt)
 		if err != nil {
 			fmt.Println("Failed to scan stored message:", err)
 			continue

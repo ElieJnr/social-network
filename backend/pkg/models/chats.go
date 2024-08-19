@@ -5,9 +5,9 @@ import (
 )
 
 type Chat struct {
-	Id         uint      `json:"id"`
-	UserID     int       `json:"user_id"`
-	ReceiverId int       `json:"receiver_id"`
+	Id         string    `json:"id"`
+	UserID     string    `json:"user_id"`
+	ReceiverId string    `json:"receiver_id"`
 	Msg        string    `json:"msg"`
 	CreatedAt  time.Time `json:"created_at"`
 }

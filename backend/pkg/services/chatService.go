@@ -30,22 +30,25 @@ func (c *ChatService) SetDB(db *sql.DB) {
 	c.db = db
 }
 
-func (c *ChatService) SendMessage(msg models.Message, websocket map[string]*websocket.Conn) error {
-	receiverConn, ok := websocket[msg.ReceiverId]
-	if ok {
-		if err := receiverConn.WriteJSON(msg); err != nil {
-			return fmt.Errorf("writing error: %w", err)
-		}
-	}
-	RegisterError := c.RegisterMsg(msg)
 
-	if RegisterError != nil {
-		return RegisterError
-	}
+// func (c *ChatService) SendMessage(msg models.Message, websocket map[string]*websocket.Conn) error {
+// 	receiverConn, ok := websocket[msg.ReceiverId]
+// 	if ok {
+// 		if err := receiverConn.WriteJSON(msg); err != nil {
+// 			return fmt.Errorf("writing error: %w", err)
+// 		}
+// 	}
+// 	RegisterError := c.RegisterMsg(msg)
 
-	return nil
-}
+// 	if RegisterError != nil {
+// 		return RegisterError
+// 	}
 
+// 	return nil
+// }
+
+
+// les messages une fois recupere sont envoyes a l'utilisateur via sa connection websocket
 func (c *ChatService) SendStockedMessage(conn *websocket.Conn, senderId, receiverId string) error {
 	messages, err := c.GetStoredMessages(senderId, receiverId)
 	if err != nil {
@@ -58,6 +61,7 @@ func (c *ChatService) SendStockedMessage(conn *websocket.Conn, senderId, receive
 	return nil
 }
 
+// fonction de recuperation des messages enregistre dans la base de donnee
 func (c *ChatService) GetStoredMessages(sender, receiver string) ([]models.Chat, error) {
 
 	query := "SELECT * FROM Chats WHERE (senderId = ? AND receverId = ?) OR (receverId = ? AND senderId = ?)"
@@ -83,7 +87,7 @@ func (c *ChatService) GetStoredMessages(sender, receiver string) ([]models.Chat,
 	return messages, nil
 }
 
-// enregistrement des messages dans la base de
+// fonction d'enregistrement des messages dans la base de donnees
 func (c *ChatService) RegisterMsg(msg models.Message) error {
 
 	idMsg := uuid.NewString()

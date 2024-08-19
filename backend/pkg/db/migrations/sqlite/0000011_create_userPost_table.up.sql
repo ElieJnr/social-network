@@ -3,6 +3,6 @@ CREATE TABLE IF NOT EXISTS UserPost (
     postId TEXT NOT NULL,
     userId TEXT NOT NULL,
     statut TEXT NOT NULL,
-    FOREIGN KEY (postid) REFERENCES Posts(id),
-    FOREIGN KEY (userid) REFERENCES Users(id)
+    FOREIGN KEY (postId) REFERENCES Posts(id),
+    FOREIGN KEY (userId) REFERENCES Users(id)
 );

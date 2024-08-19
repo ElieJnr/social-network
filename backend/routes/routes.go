@@ -17,6 +17,8 @@ func InitializeRoutes() *mux.Router {
 	router.HandleFunc("/users", handlers.UsersHandler()).Methods("GET")
 	router.HandleFunc("/signin",handlers.RegistrationHandler())
 	router.HandleFunc("/login",handlers.LoginHandler())
+	router.HandleFunc("/post", handlers.PostHandler()).Methods("GET")
+	router.HandleFunc("/post/create", handlers.PostCreateHandler()).Methods("POST")
 
 	// Retourner le routeur configuré
 	return router

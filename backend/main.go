@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"socialNetwork/pkg/db/sqlite"
+	"socialNetwork/pkg/services"
 	"socialNetwork/routes"
 
 	"github.com/joho/godotenv"
@@ -32,6 +33,8 @@ func main() {
 		serverPort = ":8080" // Port par défaut si non spécifié
 	}
 
+	// Initialiser les services
+	services.InitService()
 	// Initialiser les routes
 	router := routes.InitializeRoutes()
 
@@ -43,5 +46,4 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error starting server: %v", err)
 	}
-
 }

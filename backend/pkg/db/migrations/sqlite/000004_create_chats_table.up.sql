@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS Chats (
     id TEXT PRIMARY KEY,
-    senderId INTEGER NOT NULL,
-    receverId INTEGER NOT NULL,
+    senderId TEXT NOT NULL,
+    receverId TEXT NOT NULL,
     content TEXT NOT NULL,
     sendAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (senderId) REFERENCES Users(id),

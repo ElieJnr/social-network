@@ -28,15 +28,15 @@ Social Network App:
             ☐ Implémenter l'affichage des followers et des utilisateurs suivis
     Posts et Commentaires :
         Backend :
-            ☐ Développer la logique de création de posts
-            ☐ Gérer les posts 
-            ☐ Gérer les posts image
+            ✔ Développer la logique de création de posts @done(24-08-19 14:50)
+            ✔ Gérer les posts @done(24-08-19 14:50)
+            ✔ Gérer les posts image @done(24-08-19 14:50)
             ☐ Implémenter le système de commentaires
             ☐ Gérer les likes pour les posts et commentaires
-            ☐ Gérer les options de confidentialité des posts
-            ☐ Implémenter l'option public
-            ☐ Implémenter l'option privé
-            ☐ Implémenter l'option presque privé (almost private)
+            ✔ Gérer les options de confidentialité des posts @done(24-08-19 14:50)
+            ✔ Implémenter l'option public @done(24-08-19 14:50)
+            ✔ Implémenter l'option privé @done(24-08-19 14:50)
+            ✔ Implémenter l'option presque privé (almost private) @done(24-08-19 14:50)
         Frontend :
             ☐ Créer l'interface de création de posts
             ☐ Développer l'affichage des posts

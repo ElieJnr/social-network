@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"io"
 	"net/http"
 	"os"
@@ -22,16 +23,39 @@ type CheckPostDetail struct {
 	DisLikeStatus bool
 }
 
-var postService *services.PostService
 
 // ______________________Handler
 func PostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		postService.GetAllPosts()
-		// Logique pour gérer les utilisateurs
-		// users := []string{"user1", "user2", "user3"}
-		// json.NewEncoder(w).Encode(users)
+		postService := services.NewPostService()
+		posts, err := postService.GetAllPosts()
+		if err != nil {
+
+		}
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(posts); err != nil {
+			http.Error(w, "Failed to encode posts as JSON", http.StatusInternalServerError)
+			return
+		}
 	}
+}
+
+func CreatePost(w http.ResponseWriter, r *http.Request) {
+	postValue := CheckPost(w, r)
+
+	if !postValue.Success {
+		http.Error(w, postValue.Error, http.StatusBadRequest)
+		return
+	}
+
+	postService := services.NewPostService()
+	err := postService.InsertPost(postValue)
+	if err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	// c'est une redirection temporaire
+	http.Redirect(w, r, "/post", http.StatusSeeOther)
 }
 
 func PostCreateHandler() http.HandlerFunc {
@@ -41,22 +65,7 @@ func PostCreateHandler() http.HandlerFunc {
 }
 
 // ______________________fonction de traitement
-func CreatePost(w http.ResponseWriter, r *http.Request) {
-	postValue := CheckPost(w, r)
 
-	if !postValue.Success {
-		http.Error(w, postValue.Error, http.StatusBadRequest)
-		return
-	}
-
-	err := postService.InsertPost(postValue)
-	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-	// c'est une redirection temporaire
-	http.Redirect(w, r, "/post", http.StatusSeeOther)
-}
 
 func UploadImage(w http.ResponseWriter, r *http.Request) string {
 	var photoURL string

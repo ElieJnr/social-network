@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"socialNetwork/pkg/models"
+	"socialNetwork/pkg/services"
 
 	"github.com/gorilla/websocket"
 )
@@ -22,14 +23,15 @@ var (
 
 // service passant a travers le websocket
 var (
-// exemple service_Notif = services.NewNotifService() etc...
+	// exemple service_Notif = services.NewNotifService() etc...
+	messageService = services.NewChatService()
 )
 
 func WebsocketHandler(w http.ResponseWriter, r *http.Request) {
 	//------------ Dés que l'utilisateur se connecte il est brancher au websocket via ws:localhost:port/?userId=10521@-fnc...
-	// on récupére du userId de l'expéditeur ------
+	// ------on récupére du userId de l'expéditeur ------
 	UserId := r.URL.Query().Get("userId")
-
+	fmt.Println("userID: ", UserId)
 	// ------------------------------------------
 	// ajout de l'utilisateur dans le tableau des connexions
 	conn, err := Upgrader.Upgrade(w, r, nil)
@@ -38,6 +40,7 @@ func WebsocketHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	ClientWebSocketConnections[UserId] = conn
+	fmt.Println("clients websocket:", ClientWebSocketConnections)
 
 	// ------------------------------------------
 	go Reader(conn)
@@ -48,19 +51,20 @@ func Reader(conn *websocket.Conn) error {
 		var msg models.Message
 		err := conn.ReadJSON(&msg)
 		if err != nil {
-			return fmt.Errorf("Json error %w", err)
+			return fmt.Errorf("json error %w", err)
 		}
 
 		switch msg.Type { // les fonction qui utiliseront la base de donnee doivent etre des services
 		case "groupeChat":
 			//fonction qui gere groupChat:
-		case "userChat":
-			//fonction qui gere userChat
+		case "clickOnUser":
+			//cas qui gere le clique sur un utilisateur
+			// fmt.Println("le client a clique sur l'utilisateur numero: ", msg.ReceiverId)
+			// messageService.SendStockedMessage(conn, msg.SenderId, msg.ReceiverId)
 		case "notifications":
 			//fonction qui gere notifications
+		case "sendMessage":
+
 		}
-
 	}
-
 }
-

@@ -78,10 +78,11 @@ func (c *ChatService) GetStoredMessages(sender, receiver string) ([]models.Chat,
 		messages = append(messages, message)
 	}
 
+	fmt.Println("messages: ", messages)
 	return messages, nil
 }
 
-// ici devra etre implemente la logique d'enregistrement des messages
+// enregistrement des messages dans la base de
 func (c *ChatService) RegisterMsg(msg models.Message) error {
 
 	idMsg := uuid.NewString()

@@ -26,6 +26,7 @@ var (
 // exemple service_Notif = services.NewNotifService() etc...
 )
 
+// handler du websocket
 func WebsocketHandler(w http.ResponseWriter, r *http.Request) {
 	//------------ Dés que l'utilisateur se connecte il est brancher au websocket via ws:localhost:port/?userId=10521@-fnc...
 	// ------on récupére du userId de l'expéditeur ------

@@ -7,12 +7,12 @@ import (
 	"socialNetwork/pkg/models"
 	"socialNetwork/utils"
 
-// 	"github.com/google/uuid"
-// )
+	"github.com/google/uuid"
+)
 
-// type PostService struct {
-// 	db *sql.DB
-// }
+type PostService struct {
+	db *sql.DB
+}
 
 func NewPostService() *PostService {
 	dbs := sqlite.GlobalDB
@@ -25,9 +25,9 @@ func (p *PostService) GetDB() *sql.DB {
 	return p.db
 }
 
-// func (p *PostService) SetDB(db *sql.DB) {
-// 	p.db = db
-// }
+func (p *PostService) SetDB(db *sql.DB) {
+	p.db = db
+}
 
 // _______________________foonction d'insertion
 func (p *PostService) InsertPost(postValue models.CheckResult) error {

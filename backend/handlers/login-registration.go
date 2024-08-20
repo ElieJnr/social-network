@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"socialNetwork/pkg/models"
@@ -31,8 +32,8 @@ func RegistrationHandler() http.HandlerFunc {
 			http.Error(w, "Failed to hash password", http.StatusInternalServerError)
 			return
 		}
-		newUser.Password = string(hashedPassword)
 
+		newUser.Password = string(hashedPassword)
 		userService := services.NewUserService()
 		err = userService.CreateUser(newUser.Email, newUser.Password, newUser.Firstname, newUser.Lastname, newUser.DateOfBirth, newUser.Avatar, newUser.Username, newUser.Bio, newUser.Session)
 		if err != nil {
@@ -76,7 +77,7 @@ func LoginHandler() http.HandlerFunc {
 			http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 			return
 		}
-
+		fmt.Println("connexion reussit")
 		// Générez un token JWT ou une autre méthode pour maintenir la session
 		session := uuid.New()
 

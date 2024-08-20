@@ -2,6 +2,8 @@ package models
 
 import (
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type Author struct {
@@ -12,14 +14,14 @@ type Author struct {
 }
 
 type Posts struct {
-	PostID        int
-	UserID        int
-	Author        Author
+	PostID        uuid.UUID
+	UserID        uuid.UUID
 	Content       string
 	Image_url     string
+	Post_status   string
 	Creation_date time.Time
 	Formated_date string
-	Post_status   string
+	Author        Author
 	Can_see       bool
 	Like_nbr      int
 	Dislike_nbr   int
@@ -29,3 +31,11 @@ type Posts struct {
 	Dislike_status bool
 }
 
+type CheckResult struct {
+	Success      bool
+	Error        string
+	Content      string
+	PhotoURL     string
+	Status       string
+	AllowedUsers []string
+}

@@ -1,14 +1,19 @@
 package models
 
-import "github.com/google/uuid"
-
-
-
-//\\ A revoir //\\
-
 type Notification struct {
-	ID         uint      `json:"id"`
-	ReceiverID uuid.UUID `json:"receiver_id"`
-	SenderID   uuid.UUID `json:"sender_id"`
-	Count      uint      `json:"count"`
+	Id         string
+	ReceiverID string
+	SenderID   string
+	Type       string
+	Message    string
+	IsRead     bool
+	CreateAt   string
+}
+
+type MessageNotif struct {
+	Type       string
+	Content    string
+	SenderId   string
+	ReceiverId string
+	TypeOf     string
 }

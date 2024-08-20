@@ -3,7 +3,9 @@ package models
 import "github.com/google/uuid"
 
 type Group struct {
-	Id          uint
+	Id          uuid.UUID
 	Title       uuid.UUID
 	Description uuid.UUID
 }
+
+

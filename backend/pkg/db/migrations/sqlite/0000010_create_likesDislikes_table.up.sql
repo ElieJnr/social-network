@@ -1,11 +1,9 @@
-CREATE TABLE IF NOT EXISTS LikesDislikes (
-    like_dislike_id INTEGER PRIMARY KEY,
-    post_id INTEGER,
-    comment_id INTEGER,
-    user_id INTEGER,
-    liked BOOLEAN NOT NULL DEFAULT FALSE,
-    disliked BOOLEAN NOT NULL DEFAULT FALSE,
-    FOREIGN KEY (post_id) REFERENCES Posts(post_id),
-    FOREIGN KEY (comment_id) REFERENCES Comments(comment_id),
-    FOREIGN KEY (user_id) REFERENCES Users(user_id)
+CREATE TABLE IF NOT EXISTS Comments (
+    id TEXT PRIMARY KEY,
+    postId TEXT NOT NULL,
+    userId TEXT NOT NULL,
+    content TEXT NOT NULL,
+    creatdate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (postid) REFERENCES Posts(id),
+    FOREIGN KEY (userid) REFERENCES Users(id)
 );

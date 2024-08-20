@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"socialNetwork/pkg/models"
 	"socialNetwork/pkg/services"
@@ -37,7 +38,7 @@ func RegistrationHandler() http.HandlerFunc {
 		userService := services.NewUserService()
 		err = userService.CreateUser(newUser.Email, newUser.Password, newUser.Firstname, newUser.Lastname, newUser.DateOfBirth, newUser.Avatar, newUser.Username, newUser.Bio, newUser.Session)
 		if err != nil {
-			http.Error(w, "Failed to create user", http.StatusInternalServerError)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
@@ -54,20 +55,22 @@ func LoginHandler() http.HandlerFunc {
 		}
 
 		var credentials struct {
-			EmailOrUsername string `json:"emailOrUsername"`
-			Password        string `json:"password"`
+			EmailOrUsername string 
+			Password        string 
 		}
 
 		err := json.NewDecoder(r.Body).Decode(&credentials)
 		if err != nil {
+			fmt.Println("bad")
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
 		userService := services.NewUserService()
-
+		fmt.Println(credentials.EmailOrUsername)
 		pass, id, err := userService.UserExists(credentials.EmailOrUsername)
 		if err != nil {
+			fmt.Println(err)
 			http.Error(w, "Invalid credentiale", http.StatusUnauthorized)
 			return
 		}
@@ -79,11 +82,27 @@ func LoginHandler() http.HandlerFunc {
 		}
 		fmt.Println("connexion reussit")
 		// Générez un token JWT ou une autre méthode pour maintenir la session
-		session := uuid.New()
+		sessionToken := uuid.NewString()
 
-		userService.UpdateSessionByID(id, session.String())
+		SessionStart(sessionToken, w)
+		// userService.UpdateSessionByID(id, sessionToken)
 
-		json.NewEncoder(w).Encode(map[string]string{"token": session.String()})
+		json.NewEncoder(w).Encode(map[string]string{"id": id})
 
 	}
+}
+
+func SessionStart(SessionToken string, w http.ResponseWriter) error {
+
+	ExpiresAT := time.Now().UTC().Add(time.Hour)
+	maxAge := 4400
+
+	cookie := http.Cookie{
+		Name:    "session_token",
+		Value:   SessionToken,
+		Expires: ExpiresAT,
+		MaxAge:  maxAge,
+	}
+	http.SetCookie(w, &cookie)
+	return nil
 }

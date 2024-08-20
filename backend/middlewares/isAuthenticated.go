@@ -11,8 +11,6 @@ type contextKey string
 
 const UserContextKey contextKey = "user"
 
-
-
 // AuthMiddleware est un middleware qui vérifie la validité du token et récupère l'utilisateur associé
 func AuthMiddleware(db *sql.DB) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {

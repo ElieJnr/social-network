@@ -6,6 +6,7 @@ import (
 	"socialNetwork/handlers"
 
 	"github.com/gorilla/mux"
+	"socialNetwork/middlewares"
 )
 
 func InitializeRoutes() *mux.Router {
@@ -18,9 +19,10 @@ func InitializeRoutes() *mux.Router {
 	router.HandleFunc("/signin", handlers.RegistrationHandler())
 	router.HandleFunc("/login", handlers.LoginHandler())
 	router.HandleFunc("/post", handlers.PostHandler()).Methods("GET")
-	router.HandleFunc("/post/create", handlers.PostCreateHandler()).Methods("POST")
+	router.Handle("/post/create", handlers.PostCreateHandler()).Methods("POST")
+	router.Handle("/", handlers.PostCreateHandler()).Methods("POST")
 	router.HandleFunc("/ws", handlers.WebsocketHandler)
-
+	router.Use(middlewares.CORSMiddleware)
 	// Retourner le routeur configuré
 	return router
 }

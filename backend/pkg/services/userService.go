@@ -12,7 +12,7 @@ type UserService struct {
 }
 
 func NewUserService() *UserService {
-	
+
 	dbs := sqlite.GlobalDB
 
 	return &UserService{
@@ -23,9 +23,7 @@ func NewUserService() *UserService {
 func (u *UserService) GetDB() *sql.DB {
 	return u.db
 }
- 
- 
- 
+
 func (u *UserService) SetDB(db *sql.DB) {
 	u.db = db
 }
@@ -53,10 +51,10 @@ func (u *UserService) CreateUser(email, password, firstname, lastname, dateOfBir
 
 	// Préparer la requête d'insertion
 	query := `
-		INSERT INTO Users (email, password, firstname, lastname, dateOfBirth, avatar, username, bio, isPrivate, session) 
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		INSERT INTO Users (id,email, passwords, firstname, lastname, dateOfBirth, avatar, username, bio, isPrivate) 
+		VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`
-	_, err = u.GetDB().Exec(query, email, password, firstname, lastname, dateOfBirth, avatar, username, bio, false, session)
+	_, err = u.GetDB().Exec(query, session, email, password, firstname, lastname, dateOfBirth, avatar, username, bio, false)
 	if err != nil {
 		return fmt.Errorf("could not insert user: %w", err)
 	}
@@ -64,15 +62,15 @@ func (u *UserService) CreateUser(email, password, firstname, lastname, dateOfBir
 	return nil
 }
 
-func (u *UserService) UserExists(identifier string) (string, int, error) {
+func (u *UserService) UserExists(identifier string) (string, string, error) {
 	var password string
-	var id int
-	err := u.GetDB().QueryRow("SELECT passwords, id FROM users WHERE username = ? OR email = ?", identifier, identifier).Scan(&password, &id)
+	var id string
+	err := u.GetDB().QueryRow("SELECT passwords, id FROM Users WHERE username = ? OR email = ?", identifier, identifier).Scan(&password, &id)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return "", -1, errors.New("user not found")
+			return "", "", errors.New("user not found")
 		}
-		return "", -1, err
+		return "", "", err
 	}
 	return password, id, nil
 }
@@ -97,7 +95,7 @@ func (u *UserService) EmailExists(email string) (bool, error) {
 	return exists, nil
 }
 
-func (u *UserService) UpdateSessionByID(id int, session string) error {
+func (u *UserService) UpdateSessionByID(session, id string) error {
 	// Préparation de la requête SQL pour mettre à jour la session
 	query := "UPDATE Users SET session = ? WHERE id = ?"
 

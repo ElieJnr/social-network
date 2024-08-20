@@ -3,10 +3,13 @@ package routes
 import (
 	// "database/sql"
 	// "net/http"
+
+	"net/http"
 	"socialNetwork/handlers"
 
-	"github.com/gorilla/mux"
 	"socialNetwork/middlewares"
+
+	"github.com/gorilla/mux"
 )
 
 func InitializeRoutes() *mux.Router {
@@ -15,7 +18,10 @@ func InitializeRoutes() *mux.Router {
 
 	// Définir les routes et les associer aux handlers
 	router.HandleFunc("/", handlers.HomeHandler()).Methods("GET")
-	router.HandleFunc("/users", handlers.UsersHandler()).Methods("GET")
+	// Supposons que UsersHandler() retourne un http.Handler
+	// router.Handle("/users", middlewares.AuthMiddleware()handlers.UsersHandler()).Methods("GET")
+	router.Handle("/users", middlewares.AuthMiddleware()(http.HandlerFunc(handlers.UsersHandler()))).Methods("GET")
+
 	router.HandleFunc("/signin", handlers.RegistrationHandler())
 	router.HandleFunc("/login", handlers.LoginHandler())
 	router.HandleFunc("/post", handlers.PostHandler()).Methods("GET")

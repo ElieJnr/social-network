@@ -2,8 +2,8 @@ package middlewares
 
 import (
 	"context"
-	"database/sql"
 	"net/http"
+	"socialNetwork/pkg/db/sqlite"
 	"socialNetwork/pkg/models"
 )
 
@@ -12,7 +12,7 @@ type contextKey string
 const UserContextKey contextKey = "user"
 
 // AuthMiddleware est un middleware qui vérifie la validité du token et récupère l'utilisateur associé
-func AuthMiddleware(db *sql.DB) func(http.Handler) http.Handler {
+func AuthMiddleware() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// Récupérer le cookie "session_token"
@@ -21,12 +21,13 @@ func AuthMiddleware(db *sql.DB) func(http.Handler) http.Handler {
 				http.Error(w, "Missing or invalid session token", http.StatusUnauthorized)
 				return
 			}
-
+			
 			// Vérifier le token dans la base de données
 			user := models.User{}
-			err = db.QueryRow("SELECT * FROM users WHERE id = ?", tokenCookie.Value).Scan(&user.Id, &user.Username, &user.Email)
+			db := sqlite.GlobalDB
+			err = db.GetDB().QueryRow("SELECT id, firstname, email FROM users WHERE id = ?", tokenCookie.Value).Scan(&user.Id, &user.Firstname, &user.Email)
 			if err != nil {
-				http.Error(w, "Invalid session token", http.StatusUnauthorized)
+				http.Error(w, err.Error() , http.StatusUnauthorized)
 				return
 			}
 

@@ -19,8 +19,7 @@ func InitializeRoutes() *mux.Router {
 	router.HandleFunc("/signin", handlers.RegistrationHandler())
 	router.HandleFunc("/login", handlers.LoginHandler())
 	router.HandleFunc("/post", handlers.PostHandler()).Methods("GET")
-	router.Handle("/post/create", handlers.PostCreateHandler()).Methods("POST")
-	router.Handle("/", handlers.PostCreateHandler()).Methods("POST")
+	router.HandleFunc("/post/create", handlers.PostCreateHandler()).Methods("POST")
 	router.HandleFunc("/ws", handlers.WebsocketHandler)
 	router.Use(middlewares.CORSMiddleware)
 	// Retourner le routeur configuré

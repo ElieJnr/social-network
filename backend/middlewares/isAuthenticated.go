@@ -4,13 +4,8 @@ import (
 	"context"
 	"net/http"
 	"socialNetwork/pkg/services"
+	"socialNetwork/utils"
 )
-
-type contextKey string
-
-
-
-const UserContextKey contextKey = "user"
 
 // AuthMiddleware est un middleware qui vérifie la validité du token et récupère l'utilisateur associé
 func AuthMiddleware() func(http.Handler) http.Handler {
@@ -38,7 +33,7 @@ func AuthMiddleware() func(http.Handler) http.Handler {
 			}
 
 			// Ajouter l'utilisateur au contexte de la requête
-			ctx := context.WithValue(r.Context(), UserContextKey, &user)
+			ctx := context.WithValue(r.Context(), utils.UserContextKey, &user)
 
 			// Créer une nouvelle requête avec le contexte modifié
 			r = r.WithContext(ctx)

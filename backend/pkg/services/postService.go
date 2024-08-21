@@ -30,7 +30,6 @@ func (p *PostService) SetDB(db *sql.DB) {
 
 // _______________________foonction d'insertion
 func (p *PostService) InsertPost(postValue models.CheckResult, w http.ResponseWriter, r *http.Request) error {
-	// récuperation fictif en attendant qu'on ai une veritable fonction pour connitre qui se connecte en ce moment
 	user, err := utils.CurrentUser(w, r)
 	if err != nil {
 		return err
@@ -113,10 +112,6 @@ func (p *PostService) GetAllPosts(w http.ResponseWriter, r *http.Request) ([]mod
 	return allPosts, nil
 }
 
-func GetComments() {
-	// TODO: Implement this function
-}
-
 // se charge de récuperer les informations d'un post ie author, nbr de like, qui peut voir le post, nbr de commentaires...
 func postDetails(db *sql.DB, post *models.Posts, w http.ResponseWriter, r *http.Request) error {
 	currentUser, err := utils.CurrentUser(w, r)
@@ -154,9 +149,16 @@ func postDetails(db *sql.DB, post *models.Posts, w http.ResponseWriter, r *http.
 		return fmt.Errorf("failed to get like/dislike status: %w", err)
 	}
 
+	allComments, err := GetComments(db, post.PostID)
+	if err != nil {
+		return fmt.Errorf("failed to get comments: %w", err)
+	}
+
+
 	post.Author = author
 	post.Formated_date = utils.FormatTimeAgo(post.Creation_date)
 	post.Can_see = isVisible
+	post.Comments = allComments
 	post.Like_nbr = nbrLike
 	post.Comments_nbr = nbrComment
 	post.Like_status = likeStatus
@@ -166,6 +168,7 @@ func postDetails(db *sql.DB, post *models.Posts, w http.ResponseWriter, r *http.
 	return nil
 }
 
+// se charge de vérifier si l'utiiateur peut voir le post
 func CheckVisibility(db *sql.DB, userId string, postId string, currentUserId string, postPrivacy string) (bool, error) {
 	// Si le post est public, il est visible pour tout le monde
 	if postPrivacy == "public" {
@@ -217,18 +220,22 @@ func CheckVisibility(db *sql.DB, userId string, postId string, currentUserId str
 	return false, nil
 }
 
+// se charge de récuperer le nombre de commentaires d'un post
 func GetNbrComment(db *sql.DB, postId string) (int, error) {
 	return getCountForPost(db, "Comments", "AND postid = ?", postId)
 }
 
+// se charge de récuperer le nombre de like d'un post
 func GetNbrLike(db *sql.DB, postId string) (int, error) {
 	return getCountForPost(db, "LikesDislikes", "AND liked = TRUE", postId)
 }
 
+// se charge de récuperer le nombre de dislike d'un post
 func GetNbrDislike(db *sql.DB, postId string) (int, error) {
 	return getCountForPost(db, "LikesDislikes", "AND disliked = TRUE", postId)
 }
 
+// se charge de récuperer le status de like et dislike d'un post
 func GetLikeDislikeStatus(db *sql.DB, postId string, userId string) (bool, bool, error) {
 	query := `
         SELECT liked, disliked 
@@ -249,6 +256,7 @@ func GetLikeDislikeStatus(db *sql.DB, postId string, userId string) (bool, bool,
 	return liked, disliked, nil
 }
 
+// se charge de récuperer l'auteur d'un post
 func GetPostAuthor(db *sql.DB, userId string) (models.Author, error) {
 
 	var author models.Author
@@ -275,6 +283,7 @@ func GetPostAuthor(db *sql.DB, userId string) (models.Author, error) {
 	return author, nil
 }
 
+// fonction creer pour eviter la redondance de code pour le nombre de like et dislike et peut etre utilisé pour tous ce qui nécessite un count
 func getCountForPost(db *sql.DB, tableName string, condition string, postId string) (int, error) {
 	query := fmt.Sprintf(`SELECT COUNT(*) FROM %s WHERE postId = ? %s`, tableName, condition)
 

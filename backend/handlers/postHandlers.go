@@ -25,6 +25,13 @@ func PostHandler() http.HandlerFunc {
 	}
 }
 
+// handler qui gère la création de post
+func CreatePostHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		CreatePost(w, r)
+	}
+}
+
 // se charge de récuperer les posts et de les inserer dans la base de données s'il sont correctes
 func CreatePost(w http.ResponseWriter, r *http.Request) {
 	postValue := CheckPost(w, r)
@@ -41,13 +48,6 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 	}
 	// c'est une redirection temporaire
 	http.Redirect(w, r, "/post", http.StatusSeeOther)
-}
-
-// handler qui gère la création de post
-func PostCreateHandler() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		CreatePost(w, r)
-	}
 }
 
 // se charge de vérifier si les données du post sont correctes

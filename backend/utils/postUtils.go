@@ -170,3 +170,19 @@ func UploadImage(w http.ResponseWriter, r *http.Request, origin string) string {
 func GenerateUuid() string {
 	return uuid.New().String()
 }
+
+func IsValidComment(content string, photoURL string) (bool, string) {
+	if len(content) == 0 || utf8.RuneCountInString(content) > 500 {
+		return false, "Bad Request: Invalid content length"
+	}
+
+	if photoURL != "" {
+		if photoURL == "err400" {
+			return false, "Bad Request: Invalid image upload"
+		} else if photoURL == "err500" {
+			return false, "Internal Server Error: Image upload failed"
+		}
+	}
+
+	return true, ""
+}

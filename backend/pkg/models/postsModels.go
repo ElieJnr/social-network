@@ -24,7 +24,7 @@ type Posts struct {
 	Like_nbr      int
 	Dislike_nbr   int
 	Comments_nbr  int
-	// Comments       []Comments
+	Comments       []Comment
 	Like_status    bool
 	Dislike_status bool
 }

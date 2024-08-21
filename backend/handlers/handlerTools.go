@@ -10,4 +10,5 @@ var (
 	ChatService    *services.ChatService
 	NotifService   *services.NotifService
 	SessionService *services.SessionService
+	CommentService *services.CommentService
 )

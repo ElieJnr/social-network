@@ -12,4 +12,5 @@ func InitServices() {
 	handlers.NotifService = services.NewNotifService()
 	handlers.UserService = services.NewUserService()
 	handlers.SessionService = services.NewSessionService()
+	handlers.CommentService = services.NewCommentService()
 }

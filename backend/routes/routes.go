@@ -4,7 +4,6 @@ import (
 	// "database/sql"
 	// "net/http"
 
-	"net/http"
 	"socialNetwork/handlers"
 
 	"socialNetwork/middlewares"
@@ -20,7 +19,7 @@ func InitializeRoutes() *mux.Router {
 	router.HandleFunc("/", handlers.HomeHandler()).Methods("GET")
 	// Supposons que UsersHandler() retourne un http.Handler
 	// router.Handle("/users", middlewares.AuthMiddleware()handlers.UsersHandler()).Methods("GET")
-	router.Handle("/users", middlewares.AuthMiddleware()(http.HandlerFunc(handlers.UsersHandler()))).Methods("GET")
+	router.Handle("/users", middlewares.AuthMiddleware(handlers.UsersHandler())).Methods("GET")
 
 	router.HandleFunc("/signin", handlers.RegistrationHandler())
 	router.HandleFunc("/login", handlers.LoginHandler()).Methods("POST")

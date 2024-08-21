@@ -1,0 +1,13 @@
+package handlers
+
+import (
+	"socialNetwork/pkg/services"
+)
+
+var (
+	UserService    *services.UserService
+	PostService    *services.PostService
+	ChatService    *services.ChatService
+	NotifService   *services.NotifService
+	SessionService *services.SessionService
+)

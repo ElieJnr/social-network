@@ -23,7 +23,7 @@ func InitializeRoutes() *mux.Router {
 	router.Handle("/users", middlewares.AuthMiddleware()(http.HandlerFunc(handlers.UsersHandler()))).Methods("GET")
 
 	router.HandleFunc("/signin", handlers.RegistrationHandler())
-	router.HandleFunc("/login", handlers.LoginHandler())
+	router.HandleFunc("/login", handlers.LoginHandler()).Methods("POST")
 	router.HandleFunc("/post", handlers.PostHandler()).Methods("GET")
 	router.HandleFunc("/post/create", handlers.PostCreateHandler()).Methods("POST")
 	router.HandleFunc("/ws", handlers.WebsocketHandler)

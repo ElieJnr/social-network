@@ -2,9 +2,11 @@ package services
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 	"socialNetwork/pkg/db/sqlite"
+	"socialNetwork/pkg/models"
+
+	"github.com/google/uuid"
 )
 
 type UserService struct {
@@ -28,33 +30,14 @@ func (u *UserService) SetDB(db *sql.DB) {
 	u.db = db
 }
 
-func (u *UserService) CreateUser(email, password, firstname, lastname, dateOfBirth, avatar, username, bio, session string) error {
-	// Vérifier si l'email existe déjà
-	emailExists, err := u.EmailExists(email)
-	if err != nil {
-		return err
-	}
-	if emailExists {
-		return errors.New("email already exists")
-	}
-
-	// Vérifier si le nom d'utilisateur existe déjà (s'il est fourni)
-	if username != "" {
-		usernameExists, err := u.UsernameExists(username)
-		if err != nil {
-			return err
-		}
-		if usernameExists {
-			return errors.New("username already exists")
-		}
-	}
-
+func (u *UserService) CreateUser(user models.User) error {
 	// Préparer la requête d'insertion
+	id := uuid.NewString()
 	query := `
-		INSERT INTO Users (id,email, passwords, firstname, lastname, dateOfBirth, avatar, username, bio, isPrivate) 
+		INSERT INTO Users (id,email, password, firstname, lastname, dateOfBirth, avatar, username, bio, isPrivate) 
 		VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`
-	_, err = u.GetDB().Exec(query, session, email, password, firstname, lastname, dateOfBirth, avatar, username, bio, false)
+	_, err := u.GetDB().Exec(query, id, user.Email, user.Password, user.Firstname, user.Lastname, user.DateOfBirth, user.Avatar, user.Username, user.Bio, false)
 	if err != nil {
 		return fmt.Errorf("could not insert user: %w", err)
 	}
@@ -62,17 +45,15 @@ func (u *UserService) CreateUser(email, password, firstname, lastname, dateOfBir
 	return nil
 }
 
-func (u *UserService) UserExists(identifier string) (string, string, error) {
-	var password string
-	var id string
-	err := u.GetDB().QueryRow("SELECT passwords, id FROM Users WHERE username = ? OR email = ?", identifier, identifier).Scan(&password, &id)
+
+func (u *UserService) UserExists(EmailOrName string) (*models.User, error) {
+	var user models.User
+
+	err := u.GetDB().QueryRow("SELECT id,username,password,email FROM Users WHERE username = ? OR email = ?", EmailOrName, EmailOrName).Scan(&user.Id, &user.Username, &user.Password, &user.Email)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return "", "", errors.New("user not found")
-		}
-		return "", "", err
+		return nil, err
 	}
-	return password, id, nil
+	return &user, nil
 }
 
 func (u *UserService) UsernameExists(username string) (bool, error) {
@@ -80,6 +61,9 @@ func (u *UserService) UsernameExists(username string) (bool, error) {
 	query := "SELECT EXISTS(SELECT 1 FROM users WHERE username = ? LIMIT 1)"
 	err := u.GetDB().QueryRow(query, username).Scan(&exists)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return false, nil
+		}
 		return false, err
 	}
 	return exists, nil
@@ -90,27 +74,10 @@ func (u *UserService) EmailExists(email string) (bool, error) {
 	query := "SELECT EXISTS(SELECT 1 FROM users WHERE email = ? LIMIT 1)"
 	err := u.GetDB().QueryRow(query, email).Scan(&exists)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return false, nil
+		}
 		return false, err
 	}
 	return exists, nil
-}
-
-func (u *UserService) UpdateSessionByID(session, id string) error {
-	// Préparation de la requête SQL pour mettre à jour la session
-	query := "UPDATE Users SET session = ? WHERE id = ?"
-
-	// Exécution de la requête préparée
-	stmt, err := u.GetDB().Prepare(query)
-	if err != nil {
-		return fmt.Errorf("failed to prepare statement: %w", err)
-	}
-	defer stmt.Close()
-
-	// Lier les valeurs à la requête et l'exécuter
-	_, err = stmt.Exec(session, id)
-	if err != nil {
-		return fmt.Errorf("failed to execute statement: %w", err)
-	}
-
-	return nil
 }

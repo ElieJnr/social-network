@@ -7,7 +7,6 @@ import (
 	"os"
 	"path/filepath"
 	"socialNetwork/pkg/models"
-	"socialNetwork/pkg/services"
 	"socialNetwork/utils"
 	"strings"
 )
@@ -23,12 +22,11 @@ type CheckPostDetail struct {
 	DisLikeStatus bool
 }
 
-
 // ______________________Handler
 func PostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		postService := services.NewPostService()
-		posts, err := postService.GetAllPosts()
+
+		posts, err := PostService.GetAllPosts()
 		if err != nil {
 
 		}
@@ -48,8 +46,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	postService := services.NewPostService()
-	err := postService.InsertPost(postValue)
+	err := PostService.InsertPost(postValue)
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
@@ -65,7 +62,6 @@ func PostCreateHandler() http.HandlerFunc {
 }
 
 // ______________________fonction de traitement
-
 
 func UploadImage(w http.ResponseWriter, r *http.Request) string {
 	var photoURL string

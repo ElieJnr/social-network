@@ -1,17 +1,17 @@
 package handlers
 
-import "net/http"
+// import "net/http"
 
 
 
 
-func FollowerHandler() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		Follow(w, r)
-	}
-}
+// func FollowerHandler() http.HandlerFunc {
+// 	return func(w http.ResponseWriter, r *http.Request) {
+// 		Follow(w, r)
+// 	}
+// }
 
 
-func Follow(w http.ResponseWriter, r *http.Request )(
+// func Follow(w http.ResponseWriter, r *http.Request )(
 	
-)
+// )

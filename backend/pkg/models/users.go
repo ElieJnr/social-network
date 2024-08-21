@@ -1,9 +1,7 @@
 package models
 
-import "github.com/google/uuid"
-
 type User struct {
-	Id           uuid.UUID      `json:"id"`
+	Id           string         `json:"id"`
 	Username     string         `json:"username"`
 	Age          int            `json:"age"`
 	Firstname    string         `json:"firstname"`
@@ -16,6 +14,6 @@ type User struct {
 	Avatar       string         `json:"avatar"`
 	IsPrivate    bool           `json:"isPrivate"`
 	Followers    []Follower     `json:"followers"`
-	Session      string         `json:"session"`
 	Notification []Notification `json:"notifications"`
 }
+

@@ -6,7 +6,7 @@ export default function Page() {
 
     useEffect(() => {
         const json = {
-            EmailOrUsername: "adiane@",
+            EmailOrUsername: "johndoe@aidna.com",
             Password: "securepassword123"
         };
         const fetchData = async () => {

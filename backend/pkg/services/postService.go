@@ -3,11 +3,10 @@ package services
 import (
 	"database/sql"
 	"fmt"
+	"net/http"
 	"socialNetwork/pkg/db/sqlite"
 	"socialNetwork/pkg/models"
 	"socialNetwork/utils"
-
-	"github.com/google/uuid"
 )
 
 type PostService struct {
@@ -30,49 +29,49 @@ func (p *PostService) SetDB(db *sql.DB) {
 }
 
 // _______________________foonction d'insertion
-func (p *PostService) InsertPost(postValue models.CheckResult) error {
+func (p *PostService) InsertPost(postValue models.CheckResult, w http.ResponseWriter, r *http.Request) error {
 	// récuperation fictif en attendant qu'on ai une veritable fonction pour connitre qui se connecte en ce moment
-	userId, err := GetCurrentUser()
+	user, err := utils.CurrentUser(w, r)
 	if err != nil {
 		return err
 	}
+
+	postID := utils.GenerateUuid()
 
 	tx, err := p.db.Begin()
 	if err != nil {
 		return err
 	}
+
 	defer tx.Rollback()
 
-	result, err := tx.Exec("INSERT INTO Posts (userId, content, imageUrl, statut) VALUES (?, ?, ?, ?)",
-		userId, postValue.Content, postValue.PhotoURL, postValue.Status)
-	if err != nil {
-		return err
-	}
-
-	lastInsertPostID, err := result.LastInsertId()
+	_, err = tx.Exec("INSERT INTO Posts (id, userId, content, imageUrl, statut) VALUES (?, ?, ?, ?, ?)",
+		postID, user.UserId, postValue.Content, postValue.PhotoURL, postValue.Status)
 	if err != nil {
 		return err
 	}
 
 	stmt, err := tx.Prepare("INSERT INTO UserPosts (postId, userId, statut) VALUES (?, ?, ?)")
+
 	if err != nil {
 		return err
 	}
+
 	defer stmt.Close()
 
 	if postValue.Status == "public" || postValue.Status == "private" {
-		_, err = stmt.Exec(lastInsertPostID, userId, postValue.Status)
+		_, err = stmt.Exec(postID, user.UserId, postValue.Status)
 		if err != nil {
 			return err
 		}
 	} else if postValue.Status == "almost_private" {
-		_, err = stmt.Exec(lastInsertPostID, userId, postValue.Status)
+		_, err = stmt.Exec(postID, user.UserId, postValue.Status)
 		if err != nil {
 			return err
 		}
 
 		for _, allowedUserID := range postValue.AllowedUsers {
-			_, err = stmt.Exec(lastInsertPostID, allowedUserID, postValue.Status)
+			_, err = stmt.Exec(postID, allowedUserID, postValue.Status)
 			if err != nil {
 				return err
 			}
@@ -82,8 +81,8 @@ func (p *PostService) InsertPost(postValue models.CheckResult) error {
 	return tx.Commit()
 }
 
-// ______________________fonction de recuperation
-func (p *PostService) GetAllPosts() ([]models.Posts, error) {
+// se charge de récuperer les posts et de le partager au service de post
+func (p *PostService) GetAllPosts(w http.ResponseWriter, r *http.Request) ([]models.Posts, error) {
 	query := `SELECT id, userId, content, imageUrl, statut, createDate FROM Posts ORDER BY createDate DESC`
 	rows, err := p.db.Query(query) // Utilisation de p.db au lieu de db
 	if err != nil {
@@ -99,7 +98,7 @@ func (p *PostService) GetAllPosts() ([]models.Posts, error) {
 			continue
 		}
 
-		if err := postDetails(p.db, &post); err != nil {
+		if err := postDetails(p.db, &post, w, r); err != nil {
 			fmt.Println("err: postDetails", err)
 			continue
 		}
@@ -118,8 +117,9 @@ func GetComments() {
 	// TODO: Implement this function
 }
 
-func postDetails(db *sql.DB, post *models.Posts) error {
-	currentUserId, err := GetCurrentUser()
+// se charge de récuperer les informations d'un post ie author, nbr de like, qui peut voir le post, nbr de commentaires...
+func postDetails(db *sql.DB, post *models.Posts, w http.ResponseWriter, r *http.Request) error {
+	currentUser, err := utils.CurrentUser(w, r)
 	if err != nil {
 		return fmt.Errorf("failed to get current user: %w", err)
 	}
@@ -149,7 +149,7 @@ func postDetails(db *sql.DB, post *models.Posts) error {
 		return fmt.Errorf("failed to get like/dislike status: %w", err)
 	}
 
-	isVisible, err := CheckVisibility(db, post.UserID, post.PostID, currentUserId, post.Post_status)
+	isVisible, err := CheckVisibility(db, post.UserID, post.PostID, currentUser.UserId, post.Post_status)
 	if err != nil {
 		return fmt.Errorf("failed to get like/dislike status: %w", err)
 	}
@@ -166,7 +166,7 @@ func postDetails(db *sql.DB, post *models.Posts) error {
 	return nil
 }
 
-func CheckVisibility(db *sql.DB, userId uuid.UUID, postId uuid.UUID, currentUserId uuid.UUID, postPrivacy string) (bool, error) {
+func CheckVisibility(db *sql.DB, userId string, postId string, currentUserId string, postPrivacy string) (bool, error) {
 	// Si le post est public, il est visible pour tout le monde
 	if postPrivacy == "public" {
 		return true, nil
@@ -217,24 +217,19 @@ func CheckVisibility(db *sql.DB, userId uuid.UUID, postId uuid.UUID, currentUser
 	return false, nil
 }
 
-// fictif
-func GetCurrentUser() (uuid.UUID, error) {
-	return uuid.MustParse("123e4567-e89b-12d3-a456-426614174000"), nil
-}
-
-func GetNbrComment(db *sql.DB, postId uuid.UUID) (int, error) {
+func GetNbrComment(db *sql.DB, postId string) (int, error) {
 	return getCountForPost(db, "Comments", "AND postid = ?", postId)
 }
 
-func GetNbrLike(db *sql.DB, postId uuid.UUID) (int, error) {
+func GetNbrLike(db *sql.DB, postId string) (int, error) {
 	return getCountForPost(db, "LikesDislikes", "AND liked = TRUE", postId)
 }
 
-func GetNbrDislike(db *sql.DB, postId uuid.UUID) (int, error) {
+func GetNbrDislike(db *sql.DB, postId string) (int, error) {
 	return getCountForPost(db, "LikesDislikes", "AND disliked = TRUE", postId)
 }
 
-func GetLikeDislikeStatus(db *sql.DB, postId uuid.UUID, userId uuid.UUID) (bool, bool, error) {
+func GetLikeDislikeStatus(db *sql.DB, postId string, userId string) (bool, bool, error) {
 	query := `
         SELECT liked, disliked 
         FROM LikesDislikes 
@@ -254,7 +249,7 @@ func GetLikeDislikeStatus(db *sql.DB, postId uuid.UUID, userId uuid.UUID) (bool,
 	return liked, disliked, nil
 }
 
-func GetPostAuthor(db *sql.DB, userId uuid.UUID) (models.Author, error) {
+func GetPostAuthor(db *sql.DB, userId string) (models.Author, error) {
 
 	var author models.Author
 	query := `
@@ -272,7 +267,7 @@ func GetPostAuthor(db *sql.DB, userId uuid.UUID) (models.Author, error) {
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return author, fmt.Errorf("no user found with ID %d", userId)
+			return author, fmt.Errorf("no user found with ID %s", userId)
 		}
 		return author, fmt.Errorf("error querying database: %v", err)
 	}
@@ -280,7 +275,7 @@ func GetPostAuthor(db *sql.DB, userId uuid.UUID) (models.Author, error) {
 	return author, nil
 }
 
-func getCountForPost(db *sql.DB, tableName string, condition string, postId uuid.UUID) (int, error) {
+func getCountForPost(db *sql.DB, tableName string, condition string, postId string) (int, error) {
 	query := fmt.Sprintf(`SELECT COUNT(*) FROM %s WHERE postId = ? %s`, tableName, condition)
 
 	var count int

@@ -2,8 +2,6 @@ package models
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type Author struct {
@@ -14,8 +12,8 @@ type Author struct {
 }
 
 type Posts struct {
-	PostID        uuid.UUID
-	UserID        uuid.UUID
+	PostID        string
+	UserID        string
 	Content       string
 	Image_url     string
 	Post_status   string

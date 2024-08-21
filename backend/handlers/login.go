@@ -51,12 +51,12 @@ func LoginHandler() http.HandlerFunc {
 
 		er := SessionService.SessionStart(user, w)
 		if er != nil {
-			http.Error(w, er.Error(), http.StatusInternalServerError)
+			services.SendFront(w,models.Errors["500"],500)
 			return
 		}
 		// userService.UpdateSessionByID(id, sessionToken)
 
-		json.NewEncoder(w).Encode(map[string]*models.User{"user": user})
+		services.SendFront(w,map[string]*models.User{"user": user},200)
 
 	}
 }

@@ -32,7 +32,6 @@ func main() {
 	if serverPort == "" {
 		serverPort = ":8080"
 	}
-
 	// Initialiser les services
 	config.InitServices()
 	// Initialiser les routes

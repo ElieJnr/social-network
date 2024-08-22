@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"socialNetwork/pkg/db/sqlite"
 	"socialNetwork/pkg/models"
+	"socialNetwork/utils"
 )
 
 type NotifService struct {
@@ -66,11 +67,17 @@ func (n *NotifService) GetNotifications(ReceiverId string) ([]models.Notificatio
 	defer rows.Close()
 
 	var notifications []models.Notification
+
 	for rows.Next() {
 		var notification models.Notification
 		if err = rows.Scan(&notification.Id, &notification.ReceiverID, &notification.SenderID, &notification.Type, &notification.Message, &notification.IsRead, &notification.CreateAt); err != nil {
 			return nil, fmt.Errorf("failed to scan notification: %w", err)
 		}
+		senderInfo,err := utils.GetAuthor(n.db,notification.SenderID)
+		if err != nil{
+			return nil, fmt.Errorf("failed to get senderInfo: %w", err)
+		}
+		notification.SenderInfo = senderInfo
 		notifications = append(notifications, notification)
 	}
 	return notifications, nil

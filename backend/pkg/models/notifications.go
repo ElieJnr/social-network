@@ -8,6 +8,7 @@ type Notification struct {
 	Message    string
 	IsRead     bool
 	CreateAt   string
+	SenderInfo Author
 }
 
 type MessageNotif struct {

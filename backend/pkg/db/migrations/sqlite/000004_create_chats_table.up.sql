@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS Chats (
     receverId TEXT NOT NULL,
     content TEXT NOT NULL,
     sendAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    type TEXT NOT NULL,
     FOREIGN KEY (senderId) REFERENCES Users(id),
     FOREIGN KEY (receverId) REFERENCES Users(id)
 );

@@ -35,7 +35,10 @@ func (p *PostService) InsertPost(postValue models.CheckResult, w http.ResponseWr
 		return err
 	}
 
-	postID := utils.GenerateUuid()
+	postID, err := utils.GenerateUuid()
+	if err != nil {
+		return err
+	}
 
 	tx, err := p.db.Begin()
 	if err != nil {
@@ -119,7 +122,7 @@ func postDetails(db *sql.DB, post *models.Posts, w http.ResponseWriter, r *http.
 		return fmt.Errorf("failed to get current user: %w", err)
 	}
 
-	author, err := GetPostAuthor(db, post.UserID)
+	author, err := utils.GetAuthor(db, post.UserID)
 	if err != nil {
 		return fmt.Errorf("failed to get post author: %w", err)
 	}
@@ -153,7 +156,6 @@ func postDetails(db *sql.DB, post *models.Posts, w http.ResponseWriter, r *http.
 	if err != nil {
 		return fmt.Errorf("failed to get comments: %w", err)
 	}
-
 
 	post.Author = author
 	post.Formated_date = utils.FormatTimeAgo(post.Creation_date)
@@ -254,33 +256,6 @@ func GetLikeDislikeStatus(db *sql.DB, postId string, userId string) (bool, bool,
 	}
 
 	return liked, disliked, nil
-}
-
-// se charge de récuperer l'auteur d'un post
-func GetPostAuthor(db *sql.DB, userId string) (models.Author, error) {
-
-	var author models.Author
-	query := `
-        SELECT firstname, lastname, username, avatar
-        FROM Users
-        WHERE id = ?
-    `
-
-	err := db.QueryRow(query, userId).Scan(
-		&author.Firstname,
-		&author.Lastname,
-		&author.Username,
-		&author.Avatar,
-	)
-
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return author, fmt.Errorf("no user found with ID %s", userId)
-		}
-		return author, fmt.Errorf("error querying database: %v", err)
-	}
-
-	return author, nil
 }
 
 // fonction creer pour eviter la redondance de code pour le nombre de like et dislike et peut etre utilisé pour tous ce qui nécessite un count

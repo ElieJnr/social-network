@@ -10,7 +10,7 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/google/uuid"
+	"github.com/gofrs/uuid/v5"
 )
 
 // ______________________fonction utilitaire
@@ -167,8 +167,12 @@ func UploadImage(w http.ResponseWriter, r *http.Request, origin string) string {
 	return photoURL
 }
 
-func GenerateUuid() string {
-	return uuid.New().String()
+func GenerateUuid() (string, error) {
+	id, err := uuid.NewV4()
+	if err != nil {
+		return "", fmt.Errorf("failed to generate UUID: %w", err)
+	}
+	return id.String(), nil
 }
 
 func IsValidComment(content string, photoURL string) (bool, string) {

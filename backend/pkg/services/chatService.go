@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"socialNetwork/pkg/db/sqlite"
 	"socialNetwork/pkg/models"
+	"socialNetwork/utils"
 
-	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
 
@@ -30,7 +30,6 @@ func (c *ChatService) SetDB(db *sql.DB) {
 	c.db = db
 }
 
-
 // func (c *ChatService) SendMessage(msg models.Message, websocket map[string]*websocket.Conn) error {
 // 	receiverConn, ok := websocket[msg.ReceiverId]
 // 	if ok {
@@ -46,7 +45,6 @@ func (c *ChatService) SetDB(db *sql.DB) {
 
 // 	return nil
 // }
-
 
 // les messages une fois recupere sont envoyes a l'utilisateur via sa connection websocket
 func (c *ChatService) SendStockedMessage(conn *websocket.Conn, senderId, receiverId string) error {
@@ -90,8 +88,10 @@ func (c *ChatService) GetStoredMessages(sender, receiver string) ([]models.Chat,
 // fonction d'enregistrement des messages dans la base de donnees
 func (c *ChatService) RegisterMsg(msg models.Message) error {
 
-	idMsg := uuid.NewString()
-
+	idMsg, er := utils.GenerateUuid()
+	if er != nil {
+		return er
+	}
 	query := "INSERT INTO Chats (id,senderId,receverId, content) VALUES (?, ?, ?, ?)"
 
 	_, err := c.GetDB().Exec(query, idMsg, msg.SenderId, msg.ReceiverId, msg.Content)

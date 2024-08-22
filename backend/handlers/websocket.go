@@ -21,7 +21,6 @@ var (
 	ClientWebSocketConnections = make(map[string]*websocket.Conn)
 )
 
-
 // handler du websocket
 func WebsocketHandler(w http.ResponseWriter, r *http.Request) {
 	//------------ Dés que l'utilisateur se connecte il est brancher au websocket via ws:localhost:port/?userId=10521@-fnc...
@@ -60,6 +59,20 @@ func Reader(conn *websocket.Conn) error {
 				return err
 			}
 		case "notifications":
+			// id ,e:= utils.GenerateUuid()
+			// if e != nil{
+			// 	return err
+			// }
+			// mem := models.Member{
+			// 	UserId: "d5525173-68d4-48f9-8786-2df3c625fcaa",
+			// 	GroupId: "16be658f-d612-4b8c-b5d5-065cf478ea03",
+			// 	Role: "admin",
+			// }
+			gr, e := GroupeService.GetGroups()
+			if e != nil{
+				fmt.Println(e)
+			}
+			fmt.Println(gr)
 			//fonction qui gere notifications
 		case "sendMessage":
 			messageService := services.NewChatService()

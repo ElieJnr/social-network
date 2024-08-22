@@ -1,7 +1,8 @@
-CREATE TABLE IF NOT EXISTS chatGroups (
+CREATE TABLE IF NOT EXISTS Groups (
     id TEXT PRIMARY KEY,
-    name TEXT NOT NULL,
-    userId TEXT NOT NULL,
+    title TEXT NOT NULL,
     description TEXT,
-    FOREIGN KEY (userid) REFERENCES Users(id)
+    userId TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (userId) REFERENCES Users(id)
 );

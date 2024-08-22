@@ -34,7 +34,10 @@ func (c *CommentService) InsertComment(commentValue models.CheckResult, w http.R
 		return err
 	}
 
-	commentID := utils.GenerateUuid()
+	commentID, err := utils.GenerateUuid()
+	if err != nil {
+		return err
+	}
 
 	_, err = c.db.Exec("INSERT INTO Comments (id, postId, userId, content, imageUrl) VALUES (?, ?, ?, ?, ?)",
 		commentID, postId, user.UserId, commentValue.Content, commentValue.PhotoURL)
@@ -60,7 +63,7 @@ func GetComments(db *sql.DB, postId string) ([]models.Comment, error) {
 			return nil, fmt.Errorf("failed to scan comment row: %w", err)
 		}
 
-		author, err := GetPostAuthor(db, comment.UserID)
+		author, err := utils.GetAuthor(db, comment.UserID)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get post author: %w", err)
 		}

@@ -13,4 +13,6 @@ func InitServices() {
 	handlers.UserService = services.NewUserService()
 	handlers.SessionService = services.NewSessionService()
 	handlers.CommentService = services.NewCommentService()
+	handlers.GroupeService = services.NewGroupeService()
+	handlers.MemberService = services.NewMemberService()
 }

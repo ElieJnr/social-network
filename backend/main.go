@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"socialNetwork/config"
 	"socialNetwork/pkg/db/sqlite"
 	"socialNetwork/routes"
 
@@ -32,6 +33,8 @@ func main() {
 		serverPort = ":8080"
 	}
 
+	// Initialiser les services
+	config.InitServices()
 	// Initialiser les routes
 	router := routes.InitializeRoutes()
 

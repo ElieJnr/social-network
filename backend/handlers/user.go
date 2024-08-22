@@ -1,15 +1,21 @@
 package handlers
 
 import (
-	"encoding/json"
+	"fmt"
 	"net/http"
+	"socialNetwork/utils"
 )
 
-// un exemple pour retouner du json
 func UsersHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Logique pour gérer les utilisateurs
-		users := []string{"user1", "user2", "user3"}
-		json.NewEncoder(w).Encode(users)
+		// Récupérer l'utilisateur depuis le contexte
+
+		user, err := utils.CurrentUser(w, r)
+		if err != nil {
+			http.Error(w, "User not found in context", http.StatusUnauthorized)
+			return
+		}
+		// Utiliser les informations de l'utilisateur
+		fmt.Fprintf(w, user.Token, user.Username, user.UserId)
 	}
 }

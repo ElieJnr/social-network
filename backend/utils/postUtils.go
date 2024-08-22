@@ -5,8 +5,12 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"os"
+	"path/filepath"
 	"time"
 	"unicode/utf8"
+
+	"github.com/google/uuid"
 )
 
 // ______________________fonction utilitaire
@@ -117,4 +121,68 @@ func IsValidImage(file multipart.File, handler *multipart.FileHeader) bool {
 		return false
 	}
 	return true
+}
+
+func UploadImage(w http.ResponseWriter, r *http.Request, origin string) string {
+	var photoURL string
+
+	err := r.ParseMultipartForm(10 << 10)
+	if err != nil {
+		return "err400"
+	}
+	file, handler, err := r.FormFile("file")
+	if file != nil {
+		if err != nil {
+			return "err400"
+		}
+		defer file.Close()
+		if IsValidImage(file, handler) {
+			return "err400"
+		}
+		if handler.Size > 20<<20 {
+			return "err408"
+		}
+		// path temporaire
+		dirPath := "../frontend/public/uploads/"
+		if _, err := os.Stat(dirPath); os.IsNotExist(err) {
+			err := os.MkdirAll(dirPath, 0755)
+			if err != nil {
+				return "err500"
+			}
+		}
+		tempFile, err := os.CreateTemp(dirPath, "upload-*"+filepath.Ext(handler.Filename))
+		if err != nil {
+			return "err500"
+		}
+		defer tempFile.Close()
+		_, err = io.Copy(tempFile, file)
+		if err != nil {
+			return "err500"
+		}
+		photoURL = tempFile.Name()
+	}
+	if origin == "login" && photoURL == "" {
+		return "lien_avatar_par_defaut_en_attendant_qu'on_trouve_image.jpg"
+	}
+	return photoURL
+}
+
+func GenerateUuid() string {
+	return uuid.New().String()
+}
+
+func IsValidComment(content string, photoURL string) (bool, string) {
+	if len(content) == 0 || utf8.RuneCountInString(content) > 500 {
+		return false, "Bad Request: Invalid content length"
+	}
+
+	if photoURL != "" {
+		if photoURL == "err400" {
+			return false, "Bad Request: Invalid image upload"
+		} else if photoURL == "err500" {
+			return false, "Internal Server Error: Image upload failed"
+		}
+	}
+
+	return true, ""
 }

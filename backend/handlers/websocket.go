@@ -21,10 +21,6 @@ var (
 	ClientWebSocketConnections = make(map[string]*websocket.Conn)
 )
 
-// service passant a travers le websocket
-var (
-// exemple service_Notif = services.NewNotifService() etc...
-)
 
 // handler du websocket
 func WebsocketHandler(w http.ResponseWriter, r *http.Request) {

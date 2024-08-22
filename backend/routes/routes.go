@@ -3,7 +3,10 @@ package routes
 import (
 	// "database/sql"
 	// "net/http"
+
 	"socialNetwork/handlers"
+
+	"socialNetwork/middlewares"
 
 	"github.com/gorilla/mux"
 )
@@ -14,13 +17,16 @@ func InitializeRoutes() *mux.Router {
 
 	// Définir les routes et les associer aux handlers
 	router.HandleFunc("/", handlers.HomeHandler()).Methods("GET")
-	router.HandleFunc("/users", handlers.UsersHandler()).Methods("GET")
+	// Supposons que UsersHandler() retourne un http.Handler
+	// router.Handle("/users", middlewares.AuthMiddleware()handlers.UsersHandler()).Methods("GET")
+	router.Handle("/users", middlewares.AuthMiddleware(handlers.UsersHandler())).Methods("GET")
+	router.Handle("/posts", middlewares.AuthMiddleware(handlers.PostHandler())).Methods("GET")
+	router.Handle("/post/create", middlewares.AuthMiddleware(handlers.CreatePostHandler())).Methods("POST")
+	router.Handle("/comment/create", middlewares.AuthMiddleware(handlers.CreateCommentHandler())).Methods("POST")
 	router.HandleFunc("/signin", handlers.RegistrationHandler())
-	router.HandleFunc("/login", handlers.LoginHandler())
-	router.HandleFunc("/post", handlers.PostHandler()).Methods("GET")
-	router.HandleFunc("/post/create", handlers.PostCreateHandler()).Methods("POST")
+	router.HandleFunc("/login", handlers.LoginHandler()).Methods("POST")
 	router.HandleFunc("/ws", handlers.WebsocketHandler)
-
+	router.Use(middlewares.CORSMiddleware)
 	// Retourner le routeur configuré
 	return router
 }

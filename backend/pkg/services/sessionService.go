@@ -92,7 +92,7 @@ func (s *SessionService) DeleteSession(tokenOrUserId string) error {
 
 func (s *SessionService) GetExpired_AT(SessionID string) (string, error) {
 	var expired string
-	row := s.GetDB().QueryRow("SELECT expired_at FROM sessions WHERE session_id = ?", SessionID)
+	row := s.GetDB().QueryRow("SELECT expired_at FROM sessions WHERE sessionId = ?", SessionID)
 	err := row.Scan(&expired)
 	if err != nil {
 		return "", err
@@ -102,7 +102,6 @@ func (s *SessionService) GetExpired_AT(SessionID string) (string, error) {
 
 func (s *SessionService) Authenticated(w http.ResponseWriter, r *http.Request) (*http.Cookie, *models.Session, error) {
 	c, err := r.Cookie("session_token")
-
 	if err != nil {
 		data := models.Data{
 			NoAuth: true,

@@ -9,7 +9,6 @@ import (
 func UsersHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Récupérer l'utilisateur depuis le contexte
-
 		user, err := utils.CurrentUser(w, r)
 		if err != nil {
 			http.Error(w, "User not found in context", http.StatusUnauthorized)

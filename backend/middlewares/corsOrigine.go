@@ -52,11 +52,13 @@ func CORSMiddleware(next http.Handler) http.Handler {
 		fmt.Println("Handling CORS for", r.Method, r.URL.Path)
 
 		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-		w.Header().Set("Access-Control-Allow-Credentials", "true") // bayil deugeur boppeu
-		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
+		// Répondre immédiatement aux requêtes OPTIONS
 		if r.Method == http.MethodOptions {
+			fmt.Println("here------------------------------------------")
 			w.WriteHeader(http.StatusOK)
 			return
 		}

@@ -32,16 +32,19 @@ func (p *PostService) SetDB(db *sql.DB) {
 func (p *PostService) InsertPost(postValue models.CheckResult, w http.ResponseWriter, r *http.Request) error {
 	user, err := utils.CurrentUser(w, r)
 	if err != nil {
+		fmt.Println("error getting current user")
 		return err
 	}
-
+	fmt.Println("user", user.UserId)
 	postID, err := utils.GenerateUuid()
 	if err != nil {
+		fmt.Println("error generating post ID")
 		return err
 	}
 
 	tx, err := p.db.Begin()
 	if err != nil {
+		fmt.Println("error in transaction")
 		return err
 	}
 
@@ -50,12 +53,14 @@ func (p *PostService) InsertPost(postValue models.CheckResult, w http.ResponseWr
 	_, err = tx.Exec("INSERT INTO Posts (id, userId, content, imageUrl, statut) VALUES (?, ?, ?, ?, ?)",
 		postID, user.UserId, postValue.Content, postValue.PhotoURL, postValue.Status)
 	if err != nil {
+		fmt.Println("error inserting post")
 		return err
 	}
 
-	stmt, err := tx.Prepare("INSERT INTO UserPosts (postId, userId, statut) VALUES (?, ?, ?)")
+	stmt, err := tx.Prepare("INSERT INTO UserPost (postId, userId, statut) VALUES (?, ?, ?)")
 
 	if err != nil {
+		fmt.Println("error preparing statement")
 		return err
 	}
 
@@ -64,22 +69,26 @@ func (p *PostService) InsertPost(postValue models.CheckResult, w http.ResponseWr
 	if postValue.Status == "public" || postValue.Status == "private" {
 		_, err = stmt.Exec(postID, user.UserId, postValue.Status)
 		if err != nil {
+			fmt.Println("error executing statement")
 			return err
 		}
 	} else if postValue.Status == "almost_private" {
 		_, err = stmt.Exec(postID, user.UserId, postValue.Status)
 		if err != nil {
+			fmt.Println("error executing statement")
 			return err
 		}
 
 		for _, allowedUserID := range postValue.AllowedUsers {
 			_, err = stmt.Exec(postID, allowedUserID, postValue.Status)
 			if err != nil {
+				fmt.Println("error executing statement")
 				return err
 			}
 		}
 	}
 
+	fmt.Println("post inserted successfully")
 	return tx.Commit()
 }
 

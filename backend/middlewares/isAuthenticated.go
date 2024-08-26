@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"socialNetwork/pkg/services"
 	"socialNetwork/utils"
@@ -9,22 +10,23 @@ import (
 
 // AuthMiddleware est un middleware qui vérifie la validité du token et récupère l'utilisateur associé
 func AuthMiddleware(next http.Handler) http.Handler {
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        var sessService = services.NewSessionService()
-        _, user, err := sessService.Authenticated(w, r)
-        if err != nil {
-            // Redirection vers la page d'authentification
-            return
-        }
-        
-        // Ajouter l'utilisateur au contexte de la requête
-        ctx := context.WithValue(r.Context(), utils.UserContextKey, &user)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var sessService = services.NewSessionService()
+		_, user, err := sessService.Authenticated(w, r)
+		if err != nil {
+			services.SendFront(w, http.StatusUnauthorized, 401)
+			fmt.Println("Error getting user:", err)
+			// Redirection vers la page d'authentification
+			return
+		}
 
-        // Créer une nouvelle requête avec le contexte modifié
-        r = r.WithContext(ctx)
+		// Ajouter l'utilisateur au contexte de la requête
+		ctx := context.WithValue(r.Context(), utils.UserContextKey, user)
 
-        // Passer à la suite (le prochain middleware ou le handler final)
-        next.ServeHTTP(w, r)
-    })
+		// Créer une nouvelle requête avec le contexte modifié
+		r = r.WithContext(ctx)
+
+		// Passer à la suite (le prochain middleware ou le handler final)
+		next.ServeHTTP(w, r)
+	})
 }
-

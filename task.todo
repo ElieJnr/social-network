@@ -2,28 +2,28 @@
 Social Network App:
     Serveur et Base de données :
         Backend :
-            ☐ Mettre en place le serveur
-            ☐ Implémenter la gestion des requêtes et le routage
-            ☐ Configurer la base de données SQLite
-            ☐ Concevoir le schéma de la base de données
-            ☐ Implémenter le système de migration
-            ☐ Créer et organiser les fichiers de migration
+            ✔ Mettre en place le serveur @done(24-08-26 21:21)
+            ✔ Implémenter la gestion des requêtes et le routage @done(24-08-26 21:21)
+            ✔ Configurer la base de données SQLite @done(24-08-26 21:21)
+            ✔ Concevoir le schéma de la base de données @done(24-08-26 21:21)
+            ✔ Implémenter le système de migration @done(24-08-26 21:21)
+            ✔ Créer et organiser les fichiers de migration @done(24-08-26 21:21)
         Frontend :
             ☐ Mettre en place l'infrastructure frontend pour communiquer avec le backend
     Authentification et Profil Utilisateur :
         Backend :
-            ☐ Créer le middleware d'authentification
-            ☐ Implémenter l'inscription
-            ☐ Implémenter la connexion
-            ☐ Implémenter la déconnexion
-            ☐ Gérer les sessions et les cookies
+            ✔ Créer le middleware d'authentification @done(24-08-26 21:21)
+            ✔ Implémenter l'inscription @done(24-08-26 21:21)
+            ✔ Implémenter la connexion @done(24-08-26 21:21)
+            ✔ Implémenter la déconnexion @done(24-08-26 21:23)
+            ✔ Gérer les sessions et les cookies @done(24-08-26 21:22)
             ☐ Développer la logique des profils utilisateurs
-            ☐ Implémenter l'option profil public/privé
+            ✔ Implémenter l'option profil public/privé @done(24-08-26 21:22)
             ☐ Implémenter le système de followers
             ☐ Gérer les demandes de suivi pour les profils privés
         Frontend :
-            ☐ Créer le formulaire d'inscription
-            ☐ Créer le formulaire de connexion
+            ✔ Créer le formulaire d'inscription @done(24-08-26 21:22)
+            ✔ Créer le formulaire de connexion @done(24-08-26 21:22)
             ☐ Développer l'interface du profil utilisateur
             ☐ Implémenter l'affichage des followers et des utilisateurs suivis
     Posts et Commentaires :
@@ -31,7 +31,7 @@ Social Network App:
             ✔ Développer la logique de création de posts @done(24-08-19 14:50)
             ✔ Gérer les posts @done(24-08-19 14:50)
             ✔ Gérer les posts image @done(24-08-19 14:50)
-            ☐ Implémenter le système de commentaires
+            ✔ Implémenter le système de commentaires @done(24-08-26 21:23)
             ☐ Gérer les likes pour les posts et commentaires
             ✔ Gérer les options de confidentialité des posts @done(24-08-19 14:50)
             ✔ Implémenter l'option public @done(24-08-19 14:50)

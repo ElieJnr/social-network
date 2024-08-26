@@ -46,7 +46,10 @@ func (s *SessionService) SessionStart(user *models.User, w http.ResponseWriter) 
 		Expires: ExpiresAT,
 		MaxAge:  maxAge,
 	}
+	fmt.Println("issa")
 	http.SetCookie(w, &cookie)
+	fmt.Println("cookie",cookie)
+	fmt.Println("faye")
 	return nil
 }
 
@@ -161,6 +164,7 @@ func ParseTime(timeStr string) (*time.Time, error) {
 
 	return &parsedTime, nil
 }
+
 func DelCookie(w http.ResponseWriter) {
 	cookie := http.Cookie{
 		Name:   "session_token",

@@ -4,39 +4,39 @@ import { useEffect } from "react";
 
 export default function Page() {
 
-    useEffect(() => {
-        const json = {
-            EmailOrName: "adiane@",
-            Password: "securepassword123"
-        };
-        const fetchData = async () => {
+    // useEffect(() => {
+    //     const json = {
+    //         EmailOrName: "adiane@",
+    //         Password: "securepassword123"
+    //     };
+    //     const fetchData = async () => {
             
-            const response = await fetch('http://localhost:8080/login', {
-                method: 'POST',
-                credentials: 'include', // Inclure les cookies dans la requête
-                body: JSON.stringify(json)
+    //         const response = await fetch('http://localhost:8080/login', {
+    //             method: 'POST',
+    //             credentials: 'include', // Inclure les cookies dans la requête
+    //             body: JSON.stringify(json)
 
-            });
+    //         });
             
-            const data = await response.json();
-            console.log(data);
-        }
-        // const fetchDatas = async () => {
-        //     const json = {
+    //         const data = await response.json();
+    //         console.log(data);
+    //     }
+    //     // const fetchDatas = async () => {
+    //     //     const json = {
 
-        //     }
-        //     const response = await fetch('http://localhost:8080/', {
-        //         method: 'GET',
-        //         credentials: 'include', // Inclure les cookies dans la requête
+    //     //     }
+    //     //     const response = await fetch('http://localhost:8080/', {
+    //     //         method: 'GET',
+    //     //         credentials: 'include', // Inclure les cookies dans la requête
 
-        //     });
+    //     //     });
 
-        //     const data = await response.json();
-        //     console.log(data);
-        // }
-        fetchData()
-        // fetchDatas()
-    }, [])
+    //     //     const data = await response.json();
+    //     //     console.log(data);
+    //     // }
+    //     // fetchData()
+    //     // fetchDatas()
+    // }, [])
     return <>
         <button>Post</button>
     </>

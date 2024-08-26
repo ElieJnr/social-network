@@ -80,14 +80,11 @@ func RegistrationHandler() http.HandlerFunc {
 
 		err = UserService.CreateUser(newUser)
 		if err != nil {
-			fmt.Println("here 10")
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		fmt.Println("11")
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode("User created successfully")
-		fmt.Println("12")
 	}
 }

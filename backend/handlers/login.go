@@ -11,9 +11,7 @@ import (
 )
 
 func LoginHandler() http.HandlerFunc {
-	fmt.Println("hello1")
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("hello2")
 		if r.Method != http.MethodPost {
 			fmt.Println("hello3")
 			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
@@ -55,6 +53,8 @@ func LoginHandler() http.HandlerFunc {
 		// userService.UpdateSessionByID(id, sessionToken)
 
 		services.SendFront(w, map[string]*models.User{"user": user}, 200)
+
+		
 
 	}
 }

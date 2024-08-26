@@ -14,10 +14,9 @@ func AuthMiddleware(next http.Handler) http.Handler {
         _, user, err := sessService.Authenticated(w, r)
         if err != nil {
             // Redirection vers la page d'authentification
-            http.Redirect(w, r, "/auth", http.StatusFound)
             return
         }
-
+        
         // Ajouter l'utilisateur au contexte de la requête
         ctx := context.WithValue(r.Context(), utils.UserContextKey, &user)
 

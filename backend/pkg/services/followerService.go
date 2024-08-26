@@ -62,11 +62,21 @@ func (f *FollowerService) GetUserFollow(userId string, ok bool) ([]models.User, 
         WHERE f.followedId = ?`
 	}
 
+<<<<<<< Updated upstream
 	rows, err := f.GetDB().Query(query, userId)
 	if err != nil {
 		return nil, fmt.Errorf("could not execute query: %w", err)
 	}
 	defer rows.Close()
+=======
+    for rows.Next() {
+        var user models.User
+        if err := rows.Scan(&user.Id, &user.Email, &user.Password, &user.Firstname, &user.Lastname, &user.Username, &user.DateOfBirth, &user.Bio, &user.IsPrivate); err != nil {
+            return nil, fmt.Errorf("could not scan row: %w", err)
+        }
+        users = append(users, user)
+    }
+>>>>>>> Stashed changes
 
 	for rows.Next() {
 		var user models.User

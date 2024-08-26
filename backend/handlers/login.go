@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -12,38 +11,37 @@ import (
 )
 
 func LoginHandler() http.HandlerFunc {
+	fmt.Println("hello1")
 	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("hello2")
 		if r.Method != http.MethodPost {
+			fmt.Println("hello3")
 			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 			return
 		}
 		var credentials struct {
-			EmailOrName string
-			Password    string
+			EmailOrUsername string
+			Password        string
 		}
+		credentials.EmailOrUsername = r.FormValue("emailOrUsername")
+		credentials.Password = r.FormValue("password")
 
-		err := json.NewDecoder(r.Body).Decode(&credentials)
-		if err != nil {
-			fmt.Println("bad")
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		fmt.Println(credentials.EmailOrName)
-		user, e := UserService.UserExists(credentials.EmailOrName)
+		fmt.Println(credentials.EmailOrUsername)
+		user, err := UserService.UserExists(credentials.EmailOrUsername)
 		// id := user.Id
 		// username := user.Username
 		//  := user.Password
 		// email := user.Email
-		fmt.Println(e)
-		if e != nil {
+		fmt.Println(err)
+		if err != nil {
 			fmt.Println(err)
-			services.SendFront(w,models.Errors["401"],401)
+			services.SendFront(w, models.Errors["401"], 401)
 			return
 		}
 		fmt.Println(user)
 		err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(credentials.Password))
 		if err != nil {
-			services.SendFront(w,models.Errors["401"],401)
+			services.SendFront(w, models.Errors["401"], 401)
 			return
 		}
 		fmt.Println("connexion reussit")
@@ -51,12 +49,12 @@ func LoginHandler() http.HandlerFunc {
 
 		er := SessionService.SessionStart(user, w)
 		if er != nil {
-			services.SendFront(w,models.Errors["500"],500)
+			services.SendFront(w, models.Errors["500"], 500)
 			return
 		}
 		// userService.UpdateSessionByID(id, sessionToken)
 
-		services.SendFront(w,map[string]*models.User{"user": user},200)
+		services.SendFront(w, map[string]*models.User{"user": user}, 200)
 
 	}
 }
@@ -64,5 +62,5 @@ func LoginHandler() http.HandlerFunc {
 func Empty(user models.User) bool {
 	return user.Email == "" || user.Password == "" || user.Firstname == "" ||
 		user.Lastname == "" || user.DateOfBirth == "" ||
-		user.Avatar == "" || user.Username == "" || user.Bio == ""
+		user.Username == "" || user.Bio == ""
 }

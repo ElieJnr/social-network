@@ -101,8 +101,10 @@ func (s *SessionService) Authenticated(w http.ResponseWriter, r *http.Request) (
 	c, err := r.Cookie("session_token")
 
 	if err != nil {
-		SendFront(w, "NoAuth", 200)
-		return nil, nil, err
+		data := models.Data{
+			NoAuth: true,
+		}
+		SendFront(w, data, 200)
 	}
 
 	sessionID := c.Value

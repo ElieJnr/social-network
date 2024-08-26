@@ -126,20 +126,32 @@ func IsValidImage(file multipart.File, handler *multipart.FileHeader) bool {
 func UploadImage(w http.ResponseWriter, r *http.Request, origin string) string {
 	var photoURL string
 
+	fileOrAvatar:="file"
+	if origin=="register"{
+		fileOrAvatar="avatar"
+	}
+
+
+	fmt.Println("a")
+
 	err := r.ParseMultipartForm(10 << 10)
 	if err != nil {
+		fmt.Println("b")
 		return "err400"
 	}
-	file, handler, err := r.FormFile("file")
+	file, handler, err := r.FormFile(fileOrAvatar)
 	if file != nil {
 		if err != nil {
+			fmt.Println("c")
 			return "err400"
 		}
 		defer file.Close()
-		if IsValidImage(file, handler) {
+		if !IsValidImage(file, handler) {
+			fmt.Println("d")
 			return "err400"
 		}
 		if handler.Size > 20<<20 {
+			fmt.Println("e")
 			return "err408"
 		}
 		// path temporaire
@@ -147,23 +159,28 @@ func UploadImage(w http.ResponseWriter, r *http.Request, origin string) string {
 		if _, err := os.Stat(dirPath); os.IsNotExist(err) {
 			err := os.MkdirAll(dirPath, 0755)
 			if err != nil {
+				fmt.Println("f")
 				return "err500"
 			}
 		}
 		tempFile, err := os.CreateTemp(dirPath, "upload-*"+filepath.Ext(handler.Filename))
 		if err != nil {
+			fmt.Println("g")
 			return "err500"
 		}
 		defer tempFile.Close()
 		_, err = io.Copy(tempFile, file)
 		if err != nil {
+			fmt.Println("h")
 			return "err500"
 		}
 		photoURL = tempFile.Name()
+		fmt.Println("photo",photoURL)
 	}
 	if origin == "login" && photoURL == "" {
 		return "lien_avatar_par_defaut_en_attendant_qu'on_trouve_image.jpg"
 	}
+	fmt.Println("i")
 	return photoURL
 }
 

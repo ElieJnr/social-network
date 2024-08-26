@@ -23,3 +23,45 @@ export async function POST(req) {
     );
   }
 }
+
+export async function fetchPosts() {
+  try {
+    const response = await fetch("http://localhost:8080/posts", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include", // Inclut les cookies automatiquement
+    });
+
+    console.log("Response from Go server:", response.status);
+    const data = await response.json();
+    console.log("Data from Go server:", data);
+
+    return data;
+  } catch (error) {
+    console.error("Error in /api/posts:", error);
+    return { error: "Une erreur est survenue" };
+  }
+}
+
+export async function fetchCreatePost() {
+  try {
+    const response = await fetch("http://localhost:8080/post", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include", // Inclut les cookies automatiquement
+    });
+
+    console.log("Response from Go server:", response.status);
+    const data = await response.json();
+    console.log("Data from Go server:", data);
+
+    return data;
+  } catch (error) {
+    console.error("Error in /api/post:", error);
+    return { error: "Une erreur est survenue" };
+  }
+}

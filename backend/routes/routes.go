@@ -17,8 +17,6 @@ func InitializeRoutes() *mux.Router {
 
 	// Définir les routes et les associer aux handlers
 	router.HandleFunc("/", handlers.HomeHandler()).Methods("GET")
-	// Supposons que UsersHandler() retourne un http.Handler
-	// router.Handle("/users", middlewares.AuthMiddleware()handlers.UsersHandler()).Methods("GET")
 	router.Handle("/users", middlewares.AuthMiddleware(handlers.UsersHandler())).Methods("GET")
 	router.Handle("/posts", middlewares.AuthMiddleware(handlers.PostHandler())).Methods("GET")
 	router.Handle("/post/create", middlewares.AuthMiddleware(handlers.CreatePostHandler())).Methods("POST")

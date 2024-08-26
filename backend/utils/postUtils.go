@@ -139,7 +139,7 @@ func UploadImage(w http.ResponseWriter, r *http.Request, origin string) string {
 		if IsValidImage(file, handler) {
 			return "err400"
 		}
-		if handler.Size > 20<<20 {
+		if handler.Size > 10<<10 {
 			return "err408"
 		}
 		// path temporaire

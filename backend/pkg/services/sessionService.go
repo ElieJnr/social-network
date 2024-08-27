@@ -84,7 +84,7 @@ func (s *SessionService) RefreshSession(token string) error {
 }
 
 func (s *SessionService) DeleteSession(tokenOrUserId string) error {
-	_, err := s.GetDB().Exec("DELETE  FROM sessions WHERE sessionId = ? OR userId = ?", tokenOrUserId)
+	_, err := s.GetDB().Exec("DELETE  FROM sessions WHERE sessionId = ? OR userId = ?", tokenOrUserId,tokenOrUserId)
 	if err != nil {
 		return fmt.Errorf("error deleting: %w", err)
 	}

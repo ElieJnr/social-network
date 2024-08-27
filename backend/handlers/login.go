@@ -42,6 +42,7 @@ func LoginHandler() http.HandlerFunc {
 		}
 		// userService.UpdateSessionByID(id, sessionToken)
 		services.SendFront(w, map[string]*models.User{"user": user}, 200)
+
 	}
 }
 func Empty(user models.User) bool {

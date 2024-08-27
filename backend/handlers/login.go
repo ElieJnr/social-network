@@ -13,7 +13,6 @@ import (
 func LoginHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
-			fmt.Println("hello3")
 			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 			return
 		}
@@ -24,19 +23,16 @@ func LoginHandler() http.HandlerFunc {
 		credentials.EmailOrUsername = r.FormValue("emailOrUsername")
 		credentials.Password = r.FormValue("password")
 
-		fmt.Println(credentials.EmailOrUsername)
 		user, err := UserService.UserExists(credentials.EmailOrUsername)
 		// id := user.Id
 		// username := user.Username
 		//  := user.Password
 		// email := user.Email
-		fmt.Println(err)
 		if err != nil {
 			fmt.Println(err)
 			services.SendFront(w, models.Errors["401"], 401)
 			return
 		}
-		fmt.Println(user)
 		err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(credentials.Password))
 		if err != nil {
 			services.SendFront(w, models.Errors["401"], 401)

@@ -12,6 +12,7 @@ import (
 // handler qui gère la récupération des posts avant de les encapsuler dans un objet JSON
 func PostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("here we go")
 		posts, err := PostService.GetAllPosts(w, r)
 		if err != nil {
 			fmt.Println("Error getting posts:", err)

@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"fmt"
 	"net/http"
 )
 
@@ -49,7 +48,7 @@ import (
 
 func CORSMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Handling CORS for", r.Method, r.URL.Path)
+		// fmt.Println("Handling CORS for", r.Method, r.URL.Path)
 
 		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -58,7 +57,6 @@ func CORSMiddleware(next http.Handler) http.Handler {
 
 		// Répondre immédiatement aux requêtes OPTIONS
 		if r.Method == http.MethodOptions {
-			fmt.Println("here------------------------------------------")
 			w.WriteHeader(http.StatusOK)
 			return
 		}

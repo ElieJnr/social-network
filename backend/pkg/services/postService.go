@@ -35,7 +35,6 @@ func (p *PostService) InsertPost(postValue models.CheckResult, w http.ResponseWr
 		fmt.Println("error getting current user")
 		return err
 	}
-	fmt.Println("user", user.UserId)
 	postID, err := utils.GenerateUuid()
 	if err != nil {
 		fmt.Println("error generating post ID")

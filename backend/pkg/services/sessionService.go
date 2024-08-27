@@ -46,10 +46,7 @@ func (s *SessionService) SessionStart(user *models.User, w http.ResponseWriter) 
 		Expires: ExpiresAT,
 		MaxAge:  maxAge,
 	}
-	fmt.Println("issa")
 	http.SetCookie(w, &cookie)
-	fmt.Println("cookie",cookie)
-	fmt.Println("faye")
 	return nil
 }
 
@@ -146,6 +143,7 @@ func (s *SessionService) Authenticated(w http.ResponseWriter, r *http.Request) (
 		data := models.Data{
 			NoAuth: true,
 		}
+		fmt.Println("expired")
 		SendFront(w, data, 200)
 		return nil, nil, nil
 	}

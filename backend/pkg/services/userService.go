@@ -45,7 +45,6 @@ func (u *UserService) CreateUser(user models.User) error {
 	return nil
 }
 
-
 func (u *UserService) UserExists(EmailOrName string) (*models.User, error) {
 	var user models.User
 
@@ -80,4 +79,25 @@ func (u *UserService) EmailExists(email string) (bool, error) {
 		return false, err
 	}
 	return exists, nil
+}
+
+func (u *UserService) DeleteColumnByID(tableName string, userID string) error {
+	// Préparer la requête SQL pour supprimer une ligne
+	query := fmt.Sprintf("DELETE FROM %s WHERE userId = ?", tableName)
+
+	// Créer la requête préparée
+	stmt, err := u.GetDB().Prepare(query)
+	if err != nil {
+		return fmt.Errorf("failed to prepare statement: %w", err)
+	}
+	defer stmt.Close()
+
+	// Exécuter la requête avec l'ID de l'utilisateur
+	_, err = stmt.Exec(userID)
+	if err != nil {
+		return fmt.Errorf("failed to execute statement: %w", err)
+	}
+
+	fmt.Printf("User with ID %s has been deleted from table %s\n", userID, tableName)
+	return nil
 }

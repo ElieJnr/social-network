@@ -50,8 +50,6 @@ func LoginHandler() http.HandlerFunc {
 
 		services.SendFront(w, map[string]*models.User{"user": user}, 200)
 
-		
-
 	}
 }
 

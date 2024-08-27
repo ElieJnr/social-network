@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,8 +12,37 @@ import { MountainIcon, BellIcon, LogOutIcon, UsersIcon, CalendarDaysIcon, ImageI
 import { fetchPost } from '@/app/api/post/fetcherPost';
 import { mutate } from "swr";
 import Image from 'next/image';
+// import LogoutButton from './butonlgout';
+import dynamic from 'next/dynamic';
+import LogoutButton from './buttonlogout';
 
 function Header() {
+
+  const router = useRouter();
+  const handleLogout = async () => {
+
+    console.log("hello");
+
+    try {
+      const response = await fetch('http://localhost:8080/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+
+        router.push('/auth');
+
+      } else {
+
+        console.error('Failed to log out');
+      }
+    } catch (error) {
+
+      console.error('An error occurred during logout:', error);
+    }
+  };
+
   return (
     <header className="bg-primary text-primary-foreground py-4 px-6">
       <div className="container mx-auto flex items-center justify-between">
@@ -33,13 +64,13 @@ function Header() {
           </nav>
         </div>
         <div className="flex items-center">
-          <Button variant="ghost">
+          <Button variant="ghost" >
             <BellIcon className="h-5 w-5" />
           </Button>
-          <Button variant="ghost">
+          <Button variant="ghost" onClick={handleLogout}>
             <LogOutIcon className="h-5 w-5" />
           </Button>
-          <div />
+          {/* <LogoutButton variant="ghost" /> */}
         </div>
       </div>
     </header>
@@ -277,6 +308,7 @@ export function HomePage() {
   return (
     <div className="flex flex-col h-screen">
       <Header />
+
       <div className="flex-1 grid grid-cols-[350px_1fr_400px] gap-6 p-6">
         <div className="space-y-6">
           <ProfileCard />

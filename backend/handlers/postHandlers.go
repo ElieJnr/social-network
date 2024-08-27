@@ -12,7 +12,7 @@ import (
 // handler qui gère la récupération des posts avant de les encapsuler dans un objet JSON
 func PostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
+		fmt.Println("here we go")
 		posts, err := PostService.GetAllPosts(w, r)
 		if err != nil {
 			fmt.Println("Error getting posts:", err)
@@ -35,7 +35,6 @@ func CreatePostHandler() http.HandlerFunc {
 // se charge de récuperer les posts et de les inserer dans la base de données s'il sont correctes
 func CreatePost(w http.ResponseWriter, r *http.Request) {
 	postValue := CheckPost(w, r)
-
 	if !postValue.Success {
 		http.Error(w, postValue.Error, http.StatusBadRequest)
 		return
@@ -47,7 +46,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// c'est une redirection temporaire
-	http.Redirect(w, r, "/post", http.StatusSeeOther)
+	// http.Redirect(w, r, "/post", http.StatusSeeOther)
 }
 
 // se charge de vérifier si les données du post sont correctes
@@ -55,6 +54,7 @@ func CheckPost(w http.ResponseWriter, r *http.Request) models.CheckResult {
 	content := strings.TrimSpace(r.FormValue("thread"))
 	privacy := r.FormValue("privacy")
 	photoURL := utils.UploadImage(w, r, "post")
+	fmt.Println("check post values", content, privacy, photoURL)
 
 	var allowedUsers []string
 	if privacy == "almost_private" {
@@ -68,7 +68,7 @@ func CheckPost(w http.ResponseWriter, r *http.Request) models.CheckResult {
 			Error:   validationError,
 		}
 	}
-
+	
 	return models.CheckResult{
 		Success:      true,
 		PhotoURL:     photoURL,

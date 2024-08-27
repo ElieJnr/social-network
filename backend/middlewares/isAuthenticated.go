@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"socialNetwork/pkg/services"
 	"socialNetwork/utils"
@@ -13,11 +14,14 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		var sessService = services.NewSessionService()
 		_, user, err := sessService.Authenticated(w, r)
 		if err != nil {
+			services.SendFront(w, http.StatusUnauthorized, 401)
+			fmt.Println("Error getting user:", err)
+			// Redirection vers la page d'authentification
 			return
 		}
 
 		// Ajouter l'utilisateur au contexte de la requête
-		ctx := context.WithValue(r.Context(), utils.UserContextKey, &user)
+		ctx := context.WithValue(r.Context(), utils.UserContextKey, user)
 
 		// Créer une nouvelle requête avec le contexte modifié
 		r = r.WithContext(ctx)

@@ -116,8 +116,6 @@ func IsValidImage(file multipart.File, handler *multipart.FileHeader) bool {
 	switch contentType {
 	case "image/svg+xml", "image/jpeg", "image/gif", "image/png":
 	default:
-		fmt.Println(contentType)
-		fmt.Println("type")
 		return false
 	}
 	return true
@@ -126,17 +124,23 @@ func IsValidImage(file multipart.File, handler *multipart.FileHeader) bool {
 func UploadImage(w http.ResponseWriter, r *http.Request, origin string) string {
 	var photoURL string
 
+	fileOrAvatar:="file"
+	if origin=="register"{
+		fileOrAvatar="avatar"
+	}
+
+
 	err := r.ParseMultipartForm(10 << 10)
 	if err != nil {
 		return "err400"
 	}
-	file, handler, err := r.FormFile("file")
+	file, handler, err := r.FormFile(fileOrAvatar)
 	if file != nil {
 		if err != nil {
 			return "err400"
 		}
 		defer file.Close()
-		if IsValidImage(file, handler) {
+		if !IsValidImage(file, handler) {
 			return "err400"
 		}
 		if handler.Size > 20<<20 {

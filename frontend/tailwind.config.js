@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 import { fontFamily } from "tailwindcss/defaultTheme";
 export const darkMode = ["class"];
-export const content = ["app/**/*.{ts,tsx}", "components/**/*.{ts,tsx}"];
+export const content = ["app/**/*.{js,jsx}", "components/**/*.{js,jsx}"];
 export const prefix = "";
 export const theme = {
   container: {

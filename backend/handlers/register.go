@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"socialNetwork/pkg/models"
@@ -11,21 +10,35 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// Response structure
+type Response struct {
+	Status  int    `json:"status"`
+	Message string `json:"message"`
+	Data    any    `json:"data,omitempty"`
+}
+
 func RegistrationHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("hello")
 
 		if r.Method != http.MethodPost {
-			fmt.Println("1")
-			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			json.NewEncoder(w).Encode(Response{
+				Status:  http.StatusMethodNotAllowed,
+				Message: "Method Not Allowed",
+			})
 			return
 		}
 
 		// Parse multipart form, with a maximum of 10MB for uploaded files
 		err := r.ParseMultipartForm(10 << 20) // 10MB
 		if err != nil {
-			fmt.Println("2")
-			http.Error(w, "Could not parse form", http.StatusBadRequest)
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(Response{
+				Status:  http.StatusBadRequest,
+				Message: "Could not parse form",
+			})
 			return
 		}
 
@@ -39,52 +52,80 @@ func RegistrationHandler() http.HandlerFunc {
 		newUser.DateOfBirth = r.FormValue("dateOfBirth")
 
 		imgPath := utils.UploadImage(w, r, "register")
-
-		fmt.Println("imgpath",imgPath)
 		newUser.Avatar = imgPath
 
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newUser.Password), bcrypt.DefaultCost)
 		if err != nil {
-			fmt.Println("3")
-			http.Error(w, "Failed to hash password", http.StatusInternalServerError)
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(Response{
+				Status:  http.StatusInternalServerError,
+				Message: "Failed to hash password",
+			})
 			return
 		}
 
 		newUser.Password = string(hashedPassword)
 
-		fmt.Println("4")
-
 		emailExists, err := UserService.EmailExists(newUser.Email)
 		if err != nil {
-			fmt.Println("5")
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(Response{
+				Status:  http.StatusInternalServerError,
+				Message: err.Error(),
+			})
 			return
 		}
+
 		if emailExists {
-			fmt.Println("6")
-			http.Error(w, "Email already exists", http.StatusMethodNotAllowed)
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			json.NewEncoder(w).Encode(Response{
+				Status:  http.StatusMethodNotAllowed,
+				Message: "Email already exists",
+			})
 			return
 		}
 
 		usernameExists, err := UserService.UsernameExists(newUser.Username)
 		if err != nil {
-			fmt.Println("8")
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(Response{
+				Status:  http.StatusInternalServerError,
+				Message: err.Error(),
+			})
 			return
 		}
+
 		if usernameExists {
-			fmt.Println("9")
-			http.Error(w, "Username already exists", http.StatusMethodNotAllowed)
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			json.NewEncoder(w).Encode(Response{
+				Status:  http.StatusMethodNotAllowed,
+				Message: "Username already exists",
+			})
 			return
 		}
 
 		err = UserService.CreateUser(newUser)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(Response{
+				Status:  http.StatusInternalServerError,
+				Message: err.Error(),
+			})
 			return
 		}
 
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode("User created successfully")
+		json.NewEncoder(w).Encode(Response{
+			Status:  http.StatusCreated,
+			Message: "User created successfully",
+			Data:    newUser,
+		})
 	}
 }

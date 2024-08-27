@@ -7,7 +7,7 @@ export function middleware(req) {
   if (!token) {
     console.log('Redirecting to /auth/login');
     const url = req.nextUrl.clone();
-    return NextResponse.redirect(new URL("/auth/login", req.url));
+    return NextResponse.redirect(new URL("/auth", req.url));
   }
 
   console.log('Token valid, continuing to the page');

@@ -1,128 +1,248 @@
 "use client";
 import { useState } from "react";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import DatePicker from "@/components/Datepicker";
+import Link from "next/link";
+import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
 
-export default function Register() {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [dob, setDob] = useState(null);
-  const [avatar, setAvatar] = useState(null);
-  const [nickname, setNickname] = useState("");
-  const [about, setAbout] = useState("");
+import {
+  LockIcon,
+  MailIcon,
+  UserIcon,
+  CalendarIcon,
+  ImageIcon,
+  AtSignIcon,
+  FileTextIcon,
+} from "lucide-react";
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+import { useForm } from "react-hook-form";
+import { authentification } from "../authentificationActions";
 
-    const formData = {
-      firstName,
-      lastName,
-      email,
-      password,
-      dob,
-      avatar,
-      nickname,
-      about,
-    };
+export default function RegisterForm() {
+  const { toast } = useToast();
+  const router = useRouter();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+  const [loading, setLoading] = useState(false);
 
-    console.log("Form Data:", formData);
+  const onSubmit = async (formData) => {
+    setLoading(true);
+    const data = new FormData();
 
+    // Ajout des champs texte
+    data.append("firstname", formData.firstname);
+    data.append("lastname", formData.lastname);
+    data.append("email", formData.email);
+    data.append("username", formData.username || ""); // Optionnel
+    data.append("bio", formData.bio || ""); // Optionnel
+    data.append("dateOfBirth", formData.dateOfBirth);
+    data.append("password", formData.password);
+
+    // Ajout du fichier d'avatar s'il existe
+    if (formData.avatar && formData.avatar.length > 0) {
+      data.append("avatar", formData.avatar[0]);
+    }
+
+    try {
+      const response = await authentification(data);
+      if (response.status != 201) {
+        toast({
+          title: "Registration Failed",
+          description: response.message,
+        });
+        return;
+      }
+      toast({
+        title: "Registration Successful",
+        description: "Your account has been created.",
+      });
+      router.push("/auth/login");
+    } catch (error) {
+      toast({
+        title: "Registration Failed",
+        description: "An error occurred during registration. Please try again.",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
-
   return (
-    <div className="flex flex-col items-center justify-center min-h-[100dvh] bg-background px-4 md:px-6">
-      <form onSubmit={handleSubmit} className="max-w-[500px] w-full space-y-8">
-        <div className="text-center space-y-2">
-          <p className="text-muted-foreground">
-            Create your account and start connecting with friends.
-          </p>
-        </div>
-        <Card className="p-6 md:p-8">
-          <CardContent className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="firstName">First Name</Label>
-                <Input
-                  id="firstName"
-                  placeholder="John"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name</Label>
-                <Input
-                  id="lastName"
-                  placeholder="Doe"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                />
-              </div>
+    <>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="grid grid-cols-2 gap-4">
+          {/* Prénom */}
+          <div className="space-y-2">
+            <Label htmlFor="firstname">First Name</Label>
+            <div className="relative">
+              <UserIcon
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                size={18}
+              />
+              <Input
+                id="firstname"
+                placeholder="Enter your first name"
+                className="pl-10"
+                {...register("firstname", {
+                  required: "First name is required",
+                })}
+              />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email Address</Label>
+            {errors.firstname && (
+              <p className="text-sm text-red-500">{errors.firstname.message}</p>
+            )}
+          </div>
+
+          {/* Nom */}
+          <div className="space-y-2">
+            <Label htmlFor="lastname">Last Name</Label>
+            <div className="relative">
+              <UserIcon
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                size={18}
+              />
+              <Input
+                id="lastname"
+                placeholder="Enter your last name"
+                className="pl-10"
+                {...register("lastname", { required: "Last name is required" })}
+              />
+            </div>
+            {errors.lastname && (
+              <p className="text-sm text-red-500">{errors.lastname.message}</p>
+            )}
+          </div>
+
+          {/* Email */}
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <div className="relative">
+              <MailIcon
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                size={18}
+              />
               <Input
                 id="email"
                 type="email"
-                placeholder="john@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                className="pl-10"
+                {...register("email", { required: "Email is required" })}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+            {errors.email && (
+              <p className="text-sm text-red-500">{errors.email.message}</p>
+            )}
+          </div>
+
+          {/* Username (optionnel) */}
+          <div className="space-y-2">
+            <Label htmlFor="username">Username (Optional)</Label>
+            <div className="relative">
+              <AtSignIcon
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                size={18}
+              />
               <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                id="username"
+                placeholder="Enter your username"
+                className="pl-10"
+                {...register("username")}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="dob">Date of Birth</Label>
-              <DatePicker date={dob} setDate={setDob} />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="avatar">Avatar</Label>
+          </div>
+
+          {/* Avatar (optionnel) */}
+          <div className="space-y-2">
+            <Label htmlFor="avatar">Avatar/Image (Optional)</Label>
+            <div className="relative">
+              <ImageIcon
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                size={18}
+              />
               <Input
                 id="avatar"
                 type="file"
-                onChange={(e) => setAvatar(e.target.files[0])}
+                className="pl-10"
+                {...register("avatar")}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="nickname">Nickname</Label>
+          </div>
+
+          {/* Date de naissance */}
+          <div className="space-y-2">
+            <Label htmlFor="dateOfBirth">Date of Birth</Label>
+            <div className="relative">
+              <CalendarIcon
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                size={18}
+              />
               <Input
-                id="nickname"
-                placeholder="JohnD"
-                value={nickname}
-                onChange={(e) => setNickname(e.target.value)}
+                id="dateOfBirth"
+                type="date"
+                className="pl-10"
+                {...register("dateOfBirth", {
+                  required: "Date of birth is required",
+                })}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="about">About Me</Label>
-              <Textarea
-                id="about"
-                rows={3}
-                placeholder="Tell us about yourself..."
-                value={about}
-                onChange={(e) => setAbout(e.target.value)}
-              />
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Button type="submit" className="w-full">
-              Create Account
-            </Button>
-          </CardFooter>
-        </Card>
+            {errors.dateOfBirth && (
+              <p className="text-sm text-red-500">
+                {errors.dateOfBirth.message}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Bio (optionnel) */}
+        <div className="space-y-2">
+          <Label htmlFor="bio">About Me (Optional)</Label>
+          <div className="relative">
+            <FileTextIcon
+              className="absolute left-3 top-3 text-gray-400"
+              size={18}
+            />
+            <Textarea
+              id="bio"
+              placeholder="Tell us about yourself"
+              className="pl-10 min-h-[100px]"
+              {...register("bio")}
+            />
+          </div>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="password">Password</Label>
+          <div className="relative">
+            <LockIcon
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              size={18}
+            />
+            <Input
+              id="password"
+              type="password"
+              placeholder="Enter your password"
+              className="pl-10"
+              {...register("password", { required: "Password is required" })}
+            />
+          </div>
+          {errors.password && (
+            <p className="text-sm text-red-500">{errors.password.message}</p>
+          )}
+        </div>
+
+        {/* Bouton d'inscription */}
+        <Button type="submit" disabled={loading}>
+          {loading ? "Registering..." : "Register"}
+        </Button>
       </form>
-    </div>
+      <div>
+        Already have an account?
+        <Link href="/auth/login"> Log in</Link>
+      </div>
+    </>
   );
 }

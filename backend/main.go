@@ -4,11 +4,9 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"socialNetwork/config"
 	"socialNetwork/pkg/db/sqlite"
 	"socialNetwork/routes"
-
-	"github.com/joho/godotenv"
+	"socialNetwork/config"
 )
 
 func main() {
@@ -21,11 +19,6 @@ func main() {
 	// On passe le db ouvert a global qui sera utiliser dans les service
 	sqlite.GlobalDB = db
 
-	// Charger les variables d'environnement depuis le fichier .env
-	err = godotenv.Load()
-	if err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
-	}
 
 	// Obtenir les configurations du serveur
 	serverPort := os.Getenv("SERVER_PORT")

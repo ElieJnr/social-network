@@ -7,9 +7,8 @@ import (
 	"net/http"
 	"socialNetwork/pkg/db/sqlite"
 	"socialNetwork/pkg/models"
+	"socialNetwork/utils"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type SessionService struct {
@@ -33,22 +32,27 @@ func (s *SessionService) SetDB(db *sql.DB) {
 }
 
 func (s *SessionService) SessionStart(user *models.User, w http.ResponseWriter) error {
-	SessionToken := uuid.NewString()
-	ExpiresAT := time.Now().UTC().Add(time.Hour)
-	expired_at := ExpiresAT.Format("2006-01-02 15:04:05")
-	maxAge := 4400
-	if saveErr := s.SaveSession(SessionToken, user.Username, expired_at, user.Id); saveErr != nil {
-		return saveErr
-	}
-	cookie := http.Cookie{
-		Name:    "session_token",
-		Value:   SessionToken,
-		Expires: ExpiresAT,
-		MaxAge:  maxAge,
-	}
-	http.SetCookie(w, &cookie)
-	return nil
+    SessionToken, err := utils.GenerateUuid()
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return err
+    }
+    ExpiresAT := time.Now().UTC().Add(time.Hour)
+    expired_at := ExpiresAT.Format("2006-01-02 15:04:05")
+    maxAge := 4400
+    if saveErr := s.SaveSession(SessionToken, user.Username, expired_at, user.Id); saveErr != nil {
+        return saveErr
+    }
+    cookie := http.Cookie{
+        Name:     "session_token",
+        Value:    SessionToken,
+        Expires:  ExpiresAT,
+        MaxAge:   maxAge,
+    }
+    http.SetCookie(w, &cookie)
+    return nil
 }
+
 
 func (s *SessionService) SaveSession(token, username, expired_AT string, user_id string) error {
 	_, err := s.GetDB().Exec("INSERT INTO sessions (sessionId,userId,username,expired_at) VALUES(?,?,?,?)", token, user_id, username, expired_AT)

@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { MountainIcon, BellIcon, LogOutIcon, UsersIcon, CalendarDaysIcon, ImageIcon } from "lucide-react";
 import { fetchPost } from '@/app/api/post/fetcherPost';
 import { mutate } from "swr";
+import Image from 'next/image';
 
 function Header() {
   return (
@@ -185,11 +186,11 @@ function PostCard() {
         </div>
         <div className="prose prose-sm">
           <p>
-            Hey everyone! Just wanted to share a quick update. I'm working on a new project that I'm really excited
-            about. It's going to be a game-changer in the industry. Stay tuned for more details!
+            Hey everyone! Just wanted to share a quick update. I&apos;m working on a new project that I&apos;m really excited
+            about. It&apos;s going to be a game-changer in the industry. Stay tuned for more details!
           </p>
         </div>
-        <img
+        <Image
           src="/placeholder.svg"
           width={800}
           height={450}

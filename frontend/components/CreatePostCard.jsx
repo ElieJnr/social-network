@@ -8,6 +8,8 @@ const { Card, CardHeader, CardTitle, CardContent } = require("./ui/card");
 const { Textarea } = require("./ui/textarea");
 const { Input } = require("./ui/input");
 const { Label } = require("./ui/label");
+import { fetchPost } from '@/app/actions/post';
+import { mutate } from "swr";
 
 export default function CreatePostCard() {
     const [thread, setThread] = useState('');

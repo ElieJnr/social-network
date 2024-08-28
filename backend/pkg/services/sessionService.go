@@ -106,13 +106,14 @@ func (s *SessionService) GetExpired_AT(SessionID string) (string, error) {
 
 func (s *SessionService) Authenticated(w http.ResponseWriter, r *http.Request) (*http.Cookie, *models.Session, error) {
 	c, err := r.Cookie("session_token")
+	fmt.Println(r.Cookies())
 	if err != nil {
 		data := models.Data{
 			NoAuth: true,
 		}
 		SendFront(w, data, 200)
 	}
-
+	fmt.Println("cookie-------", c)
 	sessionID := c.Value
 	UserInfo, er := s.CheckSession(sessionID)
 	if er != sql.ErrNoRows && er != nil {

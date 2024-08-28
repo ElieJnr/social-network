@@ -12,8 +12,8 @@ import (
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var sessService = services.NewSessionService()
-		_, user, err := sessService.Authenticated(w, r)
-		if err != nil {
+		c, user, err := sessService.Authenticated(w, r)
+		if err != nil || c == nil {
 			services.SendFront(w, http.StatusUnauthorized, 401)
 			fmt.Println("Error getting user:", err)
 			// Redirection vers la page d'authentification

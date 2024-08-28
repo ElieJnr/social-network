@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 
 import { useForm } from "react-hook-form";
-import { authentification } from "../authentificationActions";
+import { authentification } from "../actions/authentification";
 
 export default function RegisterForm() {
   const { toast } = useToast();

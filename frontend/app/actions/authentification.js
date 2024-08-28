@@ -1,8 +1,7 @@
-"use server";
 
 import * as z from "zod";
-import { makePostFetch } from "./actions";
-import { domain } from ".";
+import { makePostFetch } from ".";
+import { domain } from "..";
 
 const registerSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),

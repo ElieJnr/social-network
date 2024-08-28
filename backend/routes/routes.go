@@ -17,6 +17,8 @@ func InitializeRoutes() *mux.Router {
 	// users
 	router.Handle("/", middlewares.AuthMiddleware(handlers.HomeHandler())).Methods("GET")
 	router.Handle("/users", middlewares.AuthMiddleware(handlers.UsersHandler())).Methods("GET")
+	router.Handle("/userConnect", middlewares.AuthMiddleware(handlers.GetUserConnectHandler())).Methods("GET")
+
 
 	// Authentification
 	router.Handle("/login", handlers.LoginHandler()).Methods("POST")

@@ -69,6 +69,9 @@ function NavBar() {
 }
 
 function ProfileCard() {
+  //const [user, SetUser] = useState(null)
+  console.log(userConnect());
+  console.log("ok");
   return (
     <Card>
       <CardContent className="flex flex-col items-center gap-4 p-6">

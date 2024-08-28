@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
-import { authentificationLogin } from "@/app/authentificationActions";
 import Link from "next/link";
 import {
   LockIcon,

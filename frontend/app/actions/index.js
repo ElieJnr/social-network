@@ -19,6 +19,20 @@ export async function makePostFetch(url, formData) {
   return data;
 }
 
+
+export async function userConnect() {
+  const response = await fetch("http://localhost:8080/userConnect", {
+    method: "GET",
+    credentials: "include",
+    // cache: "no-store",
+  });
+
+  const data = await response.json();
+  console.log(data);
+  return data;
+}
+
+
 // export async function fetchPost(formData) {
 //   try {
 //     const response = await fetch("http://localhost:8080/post/create", {

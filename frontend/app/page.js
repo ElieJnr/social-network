@@ -6,9 +6,11 @@ import PostCard from "@/components/PostCard";
 import ProfileCard from "@/components/ProfileCard";
 import SuggestionsCard from "@/components/SuggestionsCard";
 import TrendingCard  from "@/components/TrendingCard";
-import { useEffect } from "react";
+import { userConnect } from "./actions";
 
 export default function HomePage() {
+ console.log( userConnect());
+ 
   return (
     <div className="flex flex-col h-screen">
       <NavBar />

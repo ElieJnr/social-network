@@ -5,6 +5,7 @@ const { Card, CardContent } = require("./ui/card");
 const { Avatar, AvatarImage, AvatarFallback } = require("./ui/avatar");
 
 export default function ProfileCard() {
+  console.log( userConnect());
     return (
       <Card>
         <CardContent className="flex flex-col items-center gap-4 p-6">

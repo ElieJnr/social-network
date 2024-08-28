@@ -70,6 +70,15 @@ func (u *UserService) UsernameExists(username string) (bool, error) {
 	return exists, nil
 }
 
+func (u *UserService) GetUserById(userId uuid.UUID) (models.User, error) {
+	var user models.User
+	err := u.GetDB().QueryRow("SELECT id, email, password, firstname, lastname, username, dateOfBirth, bio, avatar, isPrivate FROM Users WHERE id = ?", userId).Scan(&user.Id, &user.Email, &user.Password, &user.Firstname, &user.Lastname, &user.Username, &user.DateOfBirth, &user.Bio, &user.Avatar, &user.IsPrivate)
+	if err != nil {
+		return models.User{}, err
+	}
+	return user, nil
+}
+
 func (u *UserService) EmailExists(email string) (bool, error) {
 	var exists bool
 	query := "SELECT EXISTS(SELECT 1 FROM users WHERE email = ? LIMIT 1)"

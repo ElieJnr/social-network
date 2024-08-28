@@ -5,11 +5,12 @@ import NavBar from "@/components/NavBar";
 import PostCard from "@/components/PostCard";
 import ProfileCard from "@/components/ProfileCard";
 import SuggestionsCard from "@/components/SuggestionsCard";
-import TrendingCard from "@/components/TrendingCard";
-import { ClickMessageApp } from "@/components/ui/message";
+import TrendingCard  from "@/components/TrendingCard";
 import { useEffect } from "react";
 
 export default function HomePage() {
+ 
+ 
   return (
     <div className="flex flex-col h-screen">
       <NavBar />

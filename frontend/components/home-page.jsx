@@ -15,6 +15,7 @@ import Image from 'next/image';
 // import LogoutButton from './butonlgout';
 import dynamic from 'next/dynamic';
 import LogoutButton from './buttonlogout';
+import { ClickMessageApp } from './ui/message';
 
 function NavBar() {
   const router = useRouter();
@@ -311,7 +312,7 @@ export function HomePage() {
           <PostCard />
         </div>
         <div className="space-y-6">
-          <TrendingCard />
+          {/* <TrendingCard /> */}
           <SuggestionsCard />
         </div>
       </div>

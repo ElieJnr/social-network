@@ -5,7 +5,8 @@ import NavBar from "@/components/NavBar";
 import PostCard from "@/components/PostCard";
 import ProfileCard from "@/components/ProfileCard";
 import SuggestionsCard from "@/components/SuggestionsCard";
-import TrendingCard  from "@/components/TrendingCard";
+import TrendingCard from "@/components/TrendingCard";
+import { ClickMessageApp } from "@/components/ui/message";
 import { useEffect } from "react";
 
 export default function HomePage() {
@@ -15,6 +16,7 @@ export default function HomePage() {
       <div className="flex-1 grid grid-cols-[350px_1fr_400px] gap-6 p-6">
         <div className="space-y-6">
           <ProfileCard />
+          <SuggestionsCard />
         </div>
         <div className="space-y-6">
           <CreatePostCard />
@@ -22,8 +24,8 @@ export default function HomePage() {
           <PostCard />
         </div>
         <div className="space-y-6">
-          <TrendingCard />
-          <SuggestionsCard />
+          {/* <TrendingCard /> */}
+          <ClickMessageApp />
         </div>
       </div>
     </div>

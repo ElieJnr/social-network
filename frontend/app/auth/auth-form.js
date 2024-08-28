@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { useActionState } from "next/action";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
@@ -313,8 +312,8 @@ export default function AuthForm() {
                 ? "Logging in..."
                 : "Registering..."
               : isLogin
-              ? "Log in"
-              : "Register"}
+                ? "Log in"
+                : "Register"}
           </Button>
           <Button
             variant="link"

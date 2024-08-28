@@ -32,6 +32,7 @@ func (s *SessionService) SetDB(db *sql.DB) {
 }
 
 func (s *SessionService) SessionStart(user *models.User, w http.ResponseWriter) error {
+	fmt.Println("session start")
     SessionToken, err := utils.GenerateUuid()
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -43,12 +44,14 @@ func (s *SessionService) SessionStart(user *models.User, w http.ResponseWriter) 
     if saveErr := s.SaveSession(SessionToken, user.Username, expired_at, user.Id); saveErr != nil {
         return saveErr
     }
+	fmt.Println("cookis start")
     cookie := http.Cookie{
         Name:     "session_token",
         Value:    SessionToken,
         Expires:  ExpiresAT,
         MaxAge:   maxAge,
     }
+	fmt.Println(cookie)
     http.SetCookie(w, &cookie)
     return nil
 }
@@ -187,3 +190,7 @@ func SendFront(w http.ResponseWriter, api interface{}, statusCode int) error {
 	}
 	return nil
 }
+
+// if v := cookie.String(); v != "" {
+// 	w.Header().Add("Set-Cookie", v)
+// }

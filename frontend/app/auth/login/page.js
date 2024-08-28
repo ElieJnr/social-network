@@ -27,7 +27,11 @@ const LoginForm = () => {
     data.append("password", formdata.password)
     setLoading(true);
     try {
-      const response = await authentificationLogin(data);
+      const response = await fetch("http://localhost:8080/login", {
+        method: "POST",
+        credentials: "include", //bayil deugeur boppeu
+        body: data,
+      });
       if (!response.user) {
         toast({
           title: "Login Failed",

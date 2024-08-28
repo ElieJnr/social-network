@@ -22,24 +22,31 @@ func UsersHandler() http.HandlerFunc {
 	}
 }
 
-func GetUserConnectHandler() http.HandlerFunc {
+func GetUsertHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Récupérer l'utilisateur depuis le contexte
+		query := r.URL.Query()
 		userInfo, err := utils.CurrentUser(w, r)
 		if err != nil {
 			http.Error(w, "User not found in context", http.StatusUnauthorized)
 			return
 		}
-		fmt.Println(userInfo)
 		id, err := uuid.FromString(userInfo.UserId)
 		if err != nil {
-			http.Error(w, "Cannot convert to uuid", http.StatusBadRequest)
+			http.Error(w, "Cannot convert ", http.StatusBadRequest)
 			return
+		}
+		key := query.Get("key")
+		if (key != "userConnect"){
+			id, err = uuid.FromString(query.Get("id"))
+			if err != nil {
+				http.Error(w, "Cannot convert to uuid", http.StatusBadRequest)
+				return
+			} 
 		}
 		userService := services.NewUserService()
 		user, err := userService.GetUserById(id)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("Error",err)
 			http.Error(w, "Cannot convert to uuid", http.StatusBadRequest)
 			return
 		}

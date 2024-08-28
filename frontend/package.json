@@ -24,13 +24,15 @@
     "emoji-picker-react": "^4.11.1",
     "lucide-react": "^0.436.0",
     "next": "^14.2.6",
+    "radix-ui": "^1.0.1",
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.52.2",
     "swr": "^2.2.5",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "zustand": "^4.5.5"
   },
   "devDependencies": {
     "eslint": "^8",

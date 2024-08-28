@@ -1,9 +1,45 @@
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
+"use client";
 
-export function Profil() {
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
+import { GetAllInfoForUserById } from "../actions/users";
+
+
+export default function Profil() {
+  const [userId, setUserId] = useState(null);
+  const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const userIdFromQuery = urlParams.get('userId');
+    setUserId(userIdFromQuery);
+  }, []); 
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (userId) {
+        try {
+          const userData = await GetAllInfoForUserById(userId);
+          setUser(userData);
+        } catch (error) {
+          console.error("Erreur lors de la récupération de l'utilisateur:", error);
+        }
+      }
+    };
+
+    fetchUserData();
+  }, [userId]); 
+
+
+  if (!user) {
+    return <div>Loading...</div>; 
+  }
+
+  
+
   return (
-    (<div className="bg-background text-foreground min-h-screen flex flex-col">
+    <div className="bg-background text-foreground min-h-screen flex flex-col">
       <header className="bg-card py-4 px-6 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-4">
           <Avatar className="h-10 w-10">
@@ -108,13 +144,13 @@ export function Profil() {
           </div>
         </div>
       </div>
-    </div>)
+    </div>
   );
 }
 
 function EyeIcon(props) {
   return (
-    (<svg
+    <svg
       {...props}
       xmlns="http://www.w3.org/2000/svg"
       width="24"
@@ -127,14 +163,13 @@ function EyeIcon(props) {
       strokeLinejoin="round">
       <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
       <circle cx="12" cy="12" r="3" />
-    </svg>)
+    </svg>
   );
 }
 
-
 function LockIcon(props) {
   return (
-    (<svg
+    <svg
       {...props}
       xmlns="http://www.w3.org/2000/svg"
       width="24"
@@ -147,14 +182,13 @@ function LockIcon(props) {
       strokeLinejoin="round">
       <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
       <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-    </svg>)
+    </svg>
   );
 }
 
-
 function MoveHorizontalIcon(props) {
   return (
-    (<svg
+    <svg
       {...props}
       xmlns="http://www.w3.org/2000/svg"
       width="24"
@@ -168,6 +202,6 @@ function MoveHorizontalIcon(props) {
       <polyline points="18 8 22 12 18 16" />
       <polyline points="6 8 2 12 6 16" />
       <line x1="2" x2="22" y1="12" y2="12" />
-    </svg>)
+    </svg>
   );
 }

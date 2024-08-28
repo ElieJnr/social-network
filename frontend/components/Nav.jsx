@@ -11,7 +11,7 @@ export default function NavBar() {
     (<header
       className="flex items-center justify-between bg-background px-4 py-3 shadow-sm sm:px-6">
       <div className="flex items-center gap-4">
-        <Link href="#" className="flex items-center gap-2" prefetch={false}>
+        <Link href="/" className="flex items-center gap-2" prefetch={false}>
           <MountainIcon className="h-6 w-6" />
           <span className="text-lg font-semibold">Acme Social</span>
         </Link>

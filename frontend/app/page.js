@@ -9,7 +9,7 @@ import TrendingCard  from "@/components/TrendingCard";
 import { userConnect } from "./actions";
 
 export default function HomePage() {
- console.log( userConnect());
+ 
  
   return (
     <div className="flex flex-col h-screen">

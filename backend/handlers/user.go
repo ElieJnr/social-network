@@ -6,7 +6,6 @@ import (
 	"socialNetwork/pkg/models"
 	"socialNetwork/pkg/services"
 	"socialNetwork/utils"
-
 	"github.com/gofrs/uuid/v5"
 )
 

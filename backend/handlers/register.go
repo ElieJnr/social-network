@@ -20,15 +20,15 @@ type Response struct {
 func RegistrationHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		if r.Method != http.MethodPost {
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusMethodNotAllowed)
-			json.NewEncoder(w).Encode(Response{
-				Status:  http.StatusMethodNotAllowed,
-				Message: "Method Not Allowed",
-			})
-			return
-		}
+		// if r.Method != http.MethodPost {
+		// 	w.Header().Set("Content-Type", "application/json")
+		// 	w.WriteHeader(http.StatusMethodNotAllowed)
+		// 	json.NewEncoder(w).Encode(Response{
+		// 		Status:  http.StatusMethodNotAllowed,
+		// 		Message: "Method Not Allowed",
+		// 	})
+		// 	return
+		// }
 
 		// Parse multipart form, with a maximum of 10MB for uploaded files
 		err := r.ParseMultipartForm(10 << 20) // 10MB

@@ -72,7 +72,8 @@ export default function RegisterForm() {
     }
   };
   return (
-    <>
+    <div className="w-full flex justify-center items-center min-h-screen">
+    <div className="w-full max-w-md">
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid grid-cols-2 gap-4">
           {/* Prénom */}
@@ -197,22 +198,6 @@ export default function RegisterForm() {
           </div>
         </div>
 
-        {/* Bio (optionnel) */}
-        <div className="space-y-2">
-          <Label htmlFor="bio">About Me (Optional)</Label>
-          <div className="relative">
-            <FileTextIcon
-              className="absolute left-3 top-3 text-gray-400"
-              size={18}
-            />
-            <Textarea
-              id="bio"
-              placeholder="Tell us about yourself"
-              className="pl-10 min-h-[100px]"
-              {...register("bio")}
-            />
-          </div>
-        </div>
         <div className="space-y-2">
           <Label htmlFor="password">Password</Label>
           <div className="relative">
@@ -232,17 +217,36 @@ export default function RegisterForm() {
             <p className="text-sm text-red-500">{errors.password.message}</p>
           )}
         </div>
+        {/* Bio (optionnel) */}
+        <div className="space-y-2">
+          <Label htmlFor="bio">About Me (Optional)</Label>
+          <div className="relative">
+            <FileTextIcon
+              className="absolute left-3 top-3 text-gray-400"
+              size={18}
+            />
+            <Textarea
+              id="bio"
+              placeholder="Tell us about yourself"
+              className="pl-10 min-h-[100px]"
+              {...register("bio")}
+            />
+          </div>
+        </div>
+        
 
         {/* Bouton d'inscription */}
-        <Button type="submit" disabled={loading}>
+        <Button className="my-4 w-full" type="submit" disabled={loading}>
           {loading ? "Registering..." : "Register"}
         </Button>
       </form>
-      <div>
-        Already have an account?
-        <Link href="/auth/login"> Log in</Link>
+      <div className="text-center">
+        Already have an account ?
+        <Link className="text-primary font-bold" href="/auth/login"> log in </Link>
+        .
       </div>
-    </>
+    </div>
+    </div>
   );
 }
 // import React from 'react'

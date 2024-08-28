@@ -19,10 +19,6 @@ func LoginHandler() http.HandlerFunc {
 		credentials.EmailOrUsername = r.FormValue("emailOrUsername")
 		credentials.Password = r.FormValue("password")
 		user, err := UserService.UserExists(credentials.EmailOrUsername)
-		// id := user.Id
-		// username := user.Username
-		//  := user.Password
-		// email := user.Email
 		if err != nil {
 			fmt.Println(err)
 			services.SendFront(w, models.Errors["401"], 401)

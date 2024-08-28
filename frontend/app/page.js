@@ -1,7 +1,7 @@
 "use client";
 
 import CreatePostCard from "@/components/CreatePostCard";
-import NavBar from "@/components/NavBar";
+import NavBar from "@/components/Nav";
 import PostCard from "@/components/PostCard";
 import ProfileCard from "@/components/ProfileCard";
 import SuggestionsCard from "@/components/SuggestionsCard";

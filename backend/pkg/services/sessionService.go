@@ -51,7 +51,6 @@ func (s *SessionService) SessionStart(user *models.User, w http.ResponseWriter) 
         Expires:  ExpiresAT,
         MaxAge:   maxAge,
     }
-	fmt.Println(cookie)
     http.SetCookie(w, &cookie)
     return nil
 }
@@ -112,8 +111,8 @@ func (s *SessionService) Authenticated(w http.ResponseWriter, r *http.Request) (
 			NoAuth: true,
 		}
 		SendFront(w, data, 200)
+		return nil, nil, err
 	}
-	fmt.Println("cookie-------", c)
 	sessionID := c.Value
 	UserInfo, er := s.CheckSession(sessionID)
 	if er != sql.ErrNoRows && er != nil {

@@ -11,7 +11,7 @@ export async function makePostFetch(url, formData) {
   const response = await fetch(url, {
     method: "POST",
     credentials: "include",
-    // cache: "no-store",
+    cache: "no-store",
     body: formData,
   });
 
@@ -24,7 +24,7 @@ export async function userConnect() {
   const response = await fetch("http://localhost:8080/userConnect", {
     method: "GET",
     credentials: "include",
-    // cache: "no-store",
+    cache: "no-store",
   });
 
   const data = await response.json();

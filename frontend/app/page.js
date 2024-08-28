@@ -6,6 +6,7 @@ import PostCard from "@/components/PostCard";
 import ProfileCard from "@/components/ProfileCard";
 import SuggestionsCard from "@/components/SuggestionsCard";
 import TrendingCard  from "@/components/TrendingCard";
+import { ClickMessageApp } from "@/components/ui/message";
 import { useEffect } from "react";
 
 export default function HomePage() {
@@ -26,7 +27,7 @@ export default function HomePage() {
         </div>
         <div className="space-y-6">
           {/* <TrendingCard /> */}
-          <ClickMessageApp />
+          <ClickMessageApp/>
         </div>
       </div>
     </div>

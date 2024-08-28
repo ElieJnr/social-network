@@ -9,7 +9,7 @@ import Link from "next/link";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { MountainIcon, BellIcon, LogOutIcon, UsersIcon, CalendarDaysIcon, ImageIcon } from "lucide-react";
-import { fetchPost } from '@/app/api/post/fetcherPost';
+import { fetchPost } from '@/app/postActions';
 import { mutate } from "swr";
 import Image from 'next/image';
 // import LogoutButton from './butonlgout';

@@ -4,7 +4,8 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast"; // Import useToast
+import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
 import { authentificationLogin } from "@/app/authentificationActions";
 import Link from "next/link";
 import {
@@ -13,6 +14,7 @@ import {
 } from "lucide-react";
 
 const LoginForm = () => {
+  const router = useRouter()
   const { toast } = useToast();
   const {
     register,
@@ -29,10 +31,11 @@ const LoginForm = () => {
     try {
       const response = await fetch("http://localhost:8080/login", {
         method: "POST",
-        credentials: "include", //bayil deugeur boppeu
+        credentials: "include",
         body: data,
       });
-      if (!response.user) {
+      console.log(response)
+      if (response.status != 200) {
         toast({
           title: "Login Failed",
           description: response.message || "Invalid credentials. Please try again.",
@@ -44,8 +47,7 @@ const LoginForm = () => {
         title: "Login Successful",
         description: "You have been logged in successfully.",
       });
-      // Redirect or perform any other necessary action on successful login
-      
+      router.push("/")
     } catch (error) {
       toast({
         title: "Login Failed",

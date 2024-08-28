@@ -1,3 +1,5 @@
+"use server";
+
 export async function makeGetFetch(url) {
   const response = await fetch(url, {
     credentials: "include",

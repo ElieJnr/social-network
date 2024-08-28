@@ -16,29 +16,20 @@ import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import LogoutButton from './buttonlogout';
 
-function Header() {
-
+function NavBar() {
   const router = useRouter();
   const handleLogout = async () => {
-
-    console.log("hello");
-
     try {
       const response = await fetch('http://localhost:8080/logout', {
         method: 'POST',
         credentials: 'include',
       });
-
       if (response.ok) {
-
         router.push('/auth');
-
       } else {
-
         console.error('Failed to log out');
       }
     } catch (error) {
-
       console.error('An error occurred during logout:', error);
     }
   };

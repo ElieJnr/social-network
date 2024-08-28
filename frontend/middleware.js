@@ -5,7 +5,6 @@ export function middleware(req) {
   const token = req.cookies.get('session_token');
 
   if (!token) {
-    console.log('Redirecting to /auth/login');
     const url = req.nextUrl.clone();
     return NextResponse.redirect(new URL("/auth", req.url));
   }

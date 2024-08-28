@@ -12,19 +12,20 @@ type Author struct {
 }
 
 type Posts struct {
-	PostID        string
-	UserID        string
-	Content       string
-	Image_url     string
-	Post_status   string
-	Creation_date time.Time
-	Formated_date string
-	Author        Author
-	Can_see       bool
-	Like_nbr      int
-	Dislike_nbr   int
-	Comments_nbr  int
+	PostID         string
+	UserID         string
+	Content        string
+	Image_url      string
+	Post_status    string
+	Creation_date  time.Time
+	Formated_date  string
+	Author         Author
+	Can_see        bool
+	Like_nbr       int
+	Dislike_nbr    int
+	Comments_nbr   int
 	Comments       []Comment
+	OwnPost        []Posts
 	Like_status    bool
 	Dislike_status bool
 }

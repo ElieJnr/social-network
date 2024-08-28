@@ -1,10 +1,10 @@
 package handlers
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"socialNetwork/pkg/models"
+	"socialNetwork/pkg/services"
 	"socialNetwork/utils"
 	"strings"
 )
@@ -12,15 +12,14 @@ import (
 // handler qui gère la récupération des posts avant de les encapsuler dans un objet JSON
 func PostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("here we go")
 		posts, err := PostService.GetAllPosts(w, r)
 		if err != nil {
 			fmt.Println("Error getting posts:", err)
-		}
-		w.Header().Set("Content-Type", "application/json")
-		if err := json.NewEncoder(w).Encode(posts); err != nil {
-			http.Error(w, "Failed to encode posts as JSON", http.StatusInternalServerError)
+			services.SendFront(w, map[string]string{"error": "Error getting posts"}, http.StatusInternalServerError)
 			return
+		}
+		if err := services.SendFront(w, posts, http.StatusOK); err != nil {
+			fmt.Println("Failed to send posts as JSON:", err)
 		}
 	}
 }
@@ -45,8 +44,6 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	// c'est une redirection temporaire
-	// http.Redirect(w, r, "/post", http.StatusSeeOther)
 }
 
 // se charge de vérifier si les données du post sont correctes
@@ -68,7 +65,7 @@ func CheckPost(w http.ResponseWriter, r *http.Request) models.CheckResult {
 			Error:   validationError,
 		}
 	}
-	
+
 	return models.CheckResult{
 		Success:      true,
 		PhotoURL:     photoURL,

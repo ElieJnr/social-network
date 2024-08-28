@@ -94,7 +94,7 @@ func (p *PostService) InsertPost(postValue models.CheckResult, w http.ResponseWr
 // se charge de récuperer les posts et de le partager au service de post
 func (p *PostService) GetAllPosts(w http.ResponseWriter, r *http.Request) ([]models.Posts, error) {
 	query := `SELECT id, userId, content, imageUrl, statut, createDate FROM Posts ORDER BY createDate DESC`
-	rows, err := p.db.Query(query) // Utilisation de p.db au lieu de db
+	rows, err := p.db.Query(query) 
 	if err != nil {
 		return nil, fmt.Errorf("failed to query posts: %w", err)
 	}
@@ -119,6 +119,8 @@ func (p *PostService) GetAllPosts(w http.ResponseWriter, r *http.Request) ([]mod
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("error iterating over posts: %w", err)
 	}
+
+	fmt.Println("all posts retrieved successfully", allPosts)
 
 	return allPosts, nil
 }
@@ -165,6 +167,11 @@ func postDetails(db *sql.DB, post *models.Posts, w http.ResponseWriter, r *http.
 		return fmt.Errorf("failed to get comments: %w", err)
 	}
 
+	ownPost, err := GetOwnPosts(db, currentUser.UserId)
+	if err != nil {
+		return fmt.Errorf("failed to get own posts: %w", err)
+	}
+
 	post.Author = author
 	post.Formated_date = utils.FormatTimeAgo(post.Creation_date)
 	post.Can_see = isVisible
@@ -172,6 +179,7 @@ func postDetails(db *sql.DB, post *models.Posts, w http.ResponseWriter, r *http.
 	post.Like_nbr = nbrLike
 	post.Comments_nbr = nbrComment
 	post.Like_status = likeStatus
+	post.OwnPost = ownPost
 	post.Dislike_nbr = nbrDislike
 	post.Dislike_status = dislikeStatus
 
@@ -230,19 +238,31 @@ func CheckVisibility(db *sql.DB, userId string, postId string, currentUserId str
 	return false, nil
 }
 
-// se charge de récuperer le nombre de commentaires d'un post
+// Récupère le nombre de commentaires d'un post
 func GetNbrComment(db *sql.DB, postId string) (int, error) {
-	return getCountForPost(db, "Comments", "AND postid = ?", postId)
+	return getCountForPost(db, "Comments", "postid = ?", postId)
 }
 
-// se charge de récuperer le nombre de like d'un post
+// Récupère le nombre de likes d'un post
 func GetNbrLike(db *sql.DB, postId string) (int, error) {
-	return getCountForPost(db, "LikesDislikes", "AND liked = TRUE", postId)
+	return getCountForPost(db, "LikesDislikes", "postid = ? AND liked = TRUE", postId)
 }
 
-// se charge de récuperer le nombre de dislike d'un post
+// Récupère le nombre de dislikes d'un post
 func GetNbrDislike(db *sql.DB, postId string) (int, error) {
-	return getCountForPost(db, "LikesDislikes", "AND disliked = TRUE", postId)
+	return getCountForPost(db, "LikesDislikes", "postid = ? AND disliked = TRUE", postId)
+}
+
+// Fonction utilitaire pour compter les enregistrements dans une table donnée avec une condition spécifique
+func getCountForPost(db *sql.DB, tableName string, condition string, postId string) (int, error) {
+	query := fmt.Sprintf(`SELECT COUNT(*) FROM %s WHERE %s`, tableName, condition)
+
+	var count int
+	err := db.QueryRow(query, postId).Scan(&count)
+	if err != nil {
+		return 0, fmt.Errorf("erreur lors de la requête SQL : %v", err)
+	}
+	return count, nil
 }
 
 // se charge de récuperer le status de like et dislike d'un post
@@ -266,14 +286,28 @@ func GetLikeDislikeStatus(db *sql.DB, postId string, userId string) (bool, bool,
 	return liked, disliked, nil
 }
 
-// fonction creer pour eviter la redondance de code pour le nombre de like et dislike et peut etre utilisé pour tous ce qui nécessite un count
-func getCountForPost(db *sql.DB, tableName string, condition string, postId string) (int, error) {
-	query := fmt.Sprintf(`SELECT COUNT(*) FROM %s WHERE postId = ? %s`, tableName, condition)
-
-	var count int
-	err := db.QueryRow(query, postId).Scan(&count)
+// retourne tous les posts d'un user
+func GetOwnPosts(db *sql.DB, userId string) ([]models.Posts, error) {
+	query := `SELECT id, userId, content, imageUrl, statut, createDate FROM Posts WHERE userId = ? ORDER BY createDate DESC`
+	rows, err := db.Query(query, userId)
 	if err != nil {
-		return 0, fmt.Errorf("error querying database: %v", err)
+		return nil, fmt.Errorf("error querying database: %v", err)
 	}
-	return count, nil
+	defer rows.Close()
+
+	var ownPosts []models.Posts
+	for rows.Next() {
+		var post models.Posts
+		if err := rows.Scan(&post.PostID, &post.UserID, &post.Content, &post.Image_url, &post.Post_status, &post.Creation_date); err != nil {
+			return nil, fmt.Errorf("error scanning row: %v", err)
+		}
+
+		ownPosts = append(ownPosts, post)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating over rows: %v", err)
+	}
+
+	return ownPosts, nil
 }

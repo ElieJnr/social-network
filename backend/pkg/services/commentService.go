@@ -49,7 +49,7 @@ func (c *CommentService) InsertComment(commentValue models.CheckResult, w http.R
 }
 
 func GetComments(db *sql.DB, postId string) ([]models.Comment, error) {
-	query := `SELECT id, userId, content, imageUrl, createDate FROM Comments WHERE postId = ? ORDER BY createDate DESC`
+	query := `SELECT id, userId, content, imageUrl, creatdate FROM Comments WHERE postId = ? ORDER BY creatdate DESC`
 	rows, err := db.Query(query, postId)
 	if err != nil {
 		return nil, err

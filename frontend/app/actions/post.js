@@ -17,3 +17,20 @@ export async function fetchPost(formData) {
     throw error;
   }
 }
+
+export async function fetchAllPosts(setPosts) {
+  try {
+    const response = await fetch('http://localhost:8080/posts', {
+      method: 'GET',
+      credentials: 'include',
+    });
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+    setPosts(data);
+    console.log('Posts fetched:', data);
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+  }
+}

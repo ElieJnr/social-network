@@ -29,7 +29,8 @@ export default function CreatePostCard() {
         const data = await fetchPost(formData);
         console.log('Post created:', data);
         
-        mutate('http://localhost:8080/posts');
+
+        // mutate('http://localhost:8080/posts');
         window.location.href = "/";
   
         setThread('');

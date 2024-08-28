@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
-
 import {
   LockIcon,
   MailIcon,
@@ -17,7 +16,6 @@ import {
   AtSignIcon,
   FileTextIcon,
 } from "lucide-react";
-
 import { useForm } from "react-hook-form";
 import { authentification } from "../actions/authentification";
 export default function RegisterForm() {

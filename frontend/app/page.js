@@ -19,7 +19,6 @@ export default function HomePage() {
         <div className="space-y-6">
           <CreatePostCard />
           <PostCard />
-          <PostCard />
         </div>
         <div className="space-y-6">
           {/* <TrendingCard /> */}

@@ -25,7 +25,7 @@ type Posts struct {
 	Dislike_nbr    int
 	Comments_nbr   int
 	Comments       []Comment
-	OwnPost        []Posts
+	// OwnPost        []Posts
 	Like_status    bool
 	Dislike_status bool
 }

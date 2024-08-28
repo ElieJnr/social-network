@@ -38,8 +38,8 @@ Social Network App:
             ✔ Implémenter l'option privé @done(24-08-19 14:50)
             ✔ Implémenter l'option presque privé (almost private) @done(24-08-19 14:50)
         Frontend :
-            ☐ Créer l'interface de création de posts
-            ☐ Développer l'affichage des posts
+            ✔ Créer l'interface de création de posts @done(24-08-28 17:41) @done(24-08-28 17:41)
+            ✔ Développer l'affichage des posts @done(24-08-28 17:41)
             ☐ Créer l'interface pour les commentaires
             ☐ Implémenter l'affichage des likes et la possibilité de liker
     ✘ Groupes et Événements :

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"socialNetwork/pkg/models"
@@ -33,6 +34,7 @@ func RegistrationHandler() http.HandlerFunc {
 		// Parse multipart form, with a maximum of 10MB for uploaded files
 		err := r.ParseMultipartForm(10 << 20) // 10MB
 		if err != nil {
+			fmt.Println("Could not parse form:", err)
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusBadRequest)
 			json.NewEncoder(w).Encode(Response{
@@ -56,6 +58,7 @@ func RegistrationHandler() http.HandlerFunc {
 
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newUser.Password), bcrypt.DefaultCost)
 		if err != nil {
+			fmt.Println("Failed to hash password:", err)
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusInternalServerError)
 			json.NewEncoder(w).Encode(Response{
@@ -69,6 +72,7 @@ func RegistrationHandler() http.HandlerFunc {
 
 		emailExists, err := UserService.EmailExists(newUser.Email)
 		if err != nil {
+			fmt.Println("Failed to check if email exists:", err)
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusInternalServerError)
 			json.NewEncoder(w).Encode(Response{
@@ -90,6 +94,7 @@ func RegistrationHandler() http.HandlerFunc {
 
 		usernameExists, err := UserService.UsernameExists(newUser.Username)
 		if err != nil {
+			fmt.Println("Failed to check if username exists:", err)
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusInternalServerError)
 			json.NewEncoder(w).Encode(Response{
@@ -111,6 +116,7 @@ func RegistrationHandler() http.HandlerFunc {
 
 		err = UserService.CreateUser(newUser)
 		if err != nil {
+			fmt.Println("Failed to create user:", err)
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusInternalServerError)
 			json.NewEncoder(w).Encode(Response{

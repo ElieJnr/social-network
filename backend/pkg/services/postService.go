@@ -120,7 +120,7 @@ func (p *PostService) GetAllPosts(w http.ResponseWriter, r *http.Request) ([]mod
 		return nil, fmt.Errorf("error iterating over posts: %w", err)
 	}
 
-	fmt.Println("all posts retrieved successfully", allPosts)
+	fmt.Println("all posts retrieved successfully")
 
 	return allPosts, nil
 }
@@ -167,10 +167,10 @@ func postDetails(db *sql.DB, post *models.Posts, w http.ResponseWriter, r *http.
 		return fmt.Errorf("failed to get comments: %w", err)
 	}
 
-	ownPost, err := GetOwnPosts(db, currentUser.UserId)
-	if err != nil {
-		return fmt.Errorf("failed to get own posts: %w", err)
-	}
+	// ownPost, err := GetOwnPosts(db, currentUser.UserId)
+	// if err != nil {
+	// 	return fmt.Errorf("failed to get own posts: %w", err)
+	// }
 
 	post.Author = author
 	post.Formated_date = utils.FormatTimeAgo(post.Creation_date)
@@ -179,7 +179,7 @@ func postDetails(db *sql.DB, post *models.Posts, w http.ResponseWriter, r *http.
 	post.Like_nbr = nbrLike
 	post.Comments_nbr = nbrComment
 	post.Like_status = likeStatus
-	post.OwnPost = ownPost
+	// post.OwnPost = ownPost
 	post.Dislike_nbr = nbrDislike
 	post.Dislike_status = dislikeStatus
 

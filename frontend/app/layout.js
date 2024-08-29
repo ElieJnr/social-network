@@ -1,6 +1,6 @@
 import "./globals.css";
 import { Inter as FontSans } from "next/font/google";
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 import NavBar from "@/components/Nav";
 
@@ -19,7 +19,7 @@ export default function RootLayout({ children }) {
           fontSans.variable
         )}
       >
-      <NavBar />
+        {/* <NavBar /> */}
         {children}
         <Toaster />
       </body>

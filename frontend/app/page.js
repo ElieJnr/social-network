@@ -10,7 +10,7 @@ import { ClickMessageApp } from "@/components/ui/message";
 export default function HomePage() {
   return (
     <div className="flex flex-col h-screen">
-      {/* <NavBar /> */}
+      <NavBar />
       <div className="flex-1 grid grid-cols-[350px_1fr_400px] gap-6 p-6">
         <div className="space-y-6">
           <ProfileCard />
@@ -22,7 +22,7 @@ export default function HomePage() {
         </div>
         <div className="space-y-6">
           {/* <TrendingCard /> */}
-          <ClickMessageApp/>
+          <ClickMessageApp />
         </div>
       </div>
     </div>

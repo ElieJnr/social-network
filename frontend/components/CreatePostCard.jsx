@@ -8,7 +8,7 @@ const { Card, CardHeader, CardTitle, CardContent } = require("./ui/card");
 const { Textarea } = require("./ui/textarea");
 const { Input } = require("./ui/input");
 const { Label } = require("./ui/label");
-import { fetchPost } from '@/app/actions/post';
+import { fetchCreatePost } from '@/app/actions/post';
 import { mutate } from "swr";
 
 export default function CreatePostCard() {
@@ -26,7 +26,7 @@ export default function CreatePostCard() {
       }
   
       try {
-        const data = await fetchPost(formData);
+        const data = await fetchCreatePost(formData);
         console.log('Post created:', data);
         
 

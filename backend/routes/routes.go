@@ -26,7 +26,8 @@ func InitializeRoutes() *mux.Router {
 	router.Handle("/logout", middlewares.AuthMiddleware(handlers.Logout())).Methods("POST")
 
 	// posts
-	router.Handle("/posts", middlewares.AuthMiddleware(handlers.PostHandler())).Methods("GET")
+	router.Handle("/posts", middlewares.AuthMiddleware(handlers.PostHandler("allPost"))).Methods("GET")
+	router.Handle("/postUser", middlewares.AuthMiddleware(handlers.PostHandler("userPost"))).Methods("GET")
 	router.Handle("/post/create", middlewares.AuthMiddleware(handlers.CreatePostHandler())).Methods("POST")
 	
 	// group

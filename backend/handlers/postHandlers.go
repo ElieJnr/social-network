@@ -10,17 +10,28 @@ import (
 )
 
 // handler qui gère la récupération des posts avant de les encapsuler dans un objet JSON
-func PostHandler() http.HandlerFunc {
+func PostHandler(types string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("here we go!!")
-		posts, err := PostService.GetAllPosts(w, r)
-		if err != nil {
-			fmt.Println("Error getting posts:", err)
-			services.SendFront(w, map[string]string{"error": "Error getting posts"}, http.StatusInternalServerError)
-			return
-		}
-		if err := services.SendFront(w, posts, http.StatusOK); err != nil {
-			fmt.Println("Failed to send posts as JSON:", err)
+		if types == "userPost" {
+			posts, err := PostService.GetOwnPosts(w, r)
+			if err != nil {
+				fmt.Println("Error getting user posts:", err)
+				services.SendFront(w, map[string]string{"error": "Error getting user posts"}, http.StatusInternalServerError)
+				return
+			}
+			if err := services.SendFront(w, posts, http.StatusOK); err != nil {
+				fmt.Println("Failed to send user posts as JSON:", err)
+			}
+		} else {
+			posts, err := PostService.GetAllPosts(w, r)
+			if err != nil {
+				fmt.Println("Error getting posts:", err)
+				services.SendFront(w, map[string]string{"error": "Error getting posts"}, http.StatusInternalServerError)
+				return
+			}
+			if err := services.SendFront(w, posts, http.StatusOK); err != nil {
+				fmt.Println("Failed to send posts as JSON:", err)
+			}
 		}
 	}
 }

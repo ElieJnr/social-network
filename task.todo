@@ -42,6 +42,7 @@ Social Network App:
             ✔ Développer l'affichage des posts @done(24-08-28 17:41)
             ☐ Créer l'interface pour les commentaires
             ☐ Implémenter l'affichage des likes et la possibilité de liker
+            ☐ suggest to follow
     ✘ Groupes et Événements :
         Backend :
             ☐ Implémenter la création de groupes

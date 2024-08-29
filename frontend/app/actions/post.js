@@ -1,5 +1,5 @@
 
-export async function fetchPost(formData) {
+export async function fetchCreatePost(formData) {
   try {
     const response = await fetch("http://localhost:8080/post/create", {
       method: "POST",

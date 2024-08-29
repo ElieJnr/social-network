@@ -123,11 +123,10 @@ func IsValidImage(file multipart.File, handler *multipart.FileHeader) bool {
 func UploadImage(w http.ResponseWriter, r *http.Request, origin string) string {
 	var photoURL string
 
-	fileOrAvatar:="file"
-	if origin=="register"{
-		fileOrAvatar="avatar"
+	fileOrAvatar := "file"
+	if origin == "register" {
+		fileOrAvatar = "avatar"
 	}
-
 
 	err := r.ParseMultipartForm(10 << 10)
 	if err != nil {
@@ -145,7 +144,7 @@ func UploadImage(w http.ResponseWriter, r *http.Request, origin string) string {
 		if handler.Size > 20<<20 {
 			return "err408"
 		}
-		// path temporaire
+		// temporary path
 		dirPath := "../frontend/public/uploads/"
 		if _, err := os.Stat(dirPath); os.IsNotExist(err) {
 			err := os.MkdirAll(dirPath, 0755)
@@ -162,7 +161,7 @@ func UploadImage(w http.ResponseWriter, r *http.Request, origin string) string {
 		if err != nil {
 			return "err500"
 		}
-		photoURL = tempFile.Name()
+		photoURL = filepath.Base(tempFile.Name())
 	}
 	if origin == "login" && photoURL == "" {
 		return "lien_avatar_par_defaut_en_attendant_qu'on_trouve_image.jpg"

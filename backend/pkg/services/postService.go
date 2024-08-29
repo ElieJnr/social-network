@@ -125,6 +125,26 @@ func (p *PostService) GetAllPosts(w http.ResponseWriter, r *http.Request) ([]mod
 	return allPosts, nil
 }
 
+func (p *PostService) GetOwnPosts(w http.ResponseWriter, r *http.Request) ([]models.Posts, error) {
+	currentUser, err := utils.CurrentUser(w, r)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get current user: %w", err)
+	}
+
+	ownPosts, err := GetOwnPosts(p.db, currentUser.UserId)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get own posts: %w", err)
+	}
+
+	for i := range ownPosts {
+		if err := postDetails(p.db, &ownPosts[i], w, r); err != nil {
+			return nil, fmt.Errorf("failed to get post details: %w", err)
+		}
+	}
+
+	return ownPosts, nil
+}
+
 // se charge de récuperer les informations d'un post ie author, nbr de like, qui peut voir le post, nbr de commentaires...
 func postDetails(db *sql.DB, post *models.Posts, w http.ResponseWriter, r *http.Request) error {
 	currentUser, err := utils.CurrentUser(w, r)
@@ -167,10 +187,10 @@ func postDetails(db *sql.DB, post *models.Posts, w http.ResponseWriter, r *http.
 		return fmt.Errorf("failed to get comments: %w", err)
 	}
 
-	// ownPost, err := GetOwnPosts(db, currentUser.UserId)
-	// if err != nil {
-	// 	return fmt.Errorf("failed to get own posts: %w", err)
-	// }
+	isFollowing, err := IsFollowing(db, post.UserID, currentUser.UserId)
+	if err != nil {
+		return fmt.Errorf("failed to check if user is following: %w", err)
+	}
 
 	post.Author = author
 	post.Formated_date = utils.FormatTimeAgo(post.Creation_date)
@@ -179,7 +199,8 @@ func postDetails(db *sql.DB, post *models.Posts, w http.ResponseWriter, r *http.
 	post.Like_nbr = nbrLike
 	post.Comments_nbr = nbrComment
 	post.Like_status = likeStatus
-	// post.OwnPost = ownPost
+	post.IsFollower = isFollowing
+	post.HasImage = post.Image_url != ""
 	post.Dislike_nbr = nbrDislike
 	post.Dislike_status = dislikeStatus
 
@@ -195,25 +216,7 @@ func CheckVisibility(db *sql.DB, userId string, postId string, currentUserId str
 
 	// Si le post est privé, vérifier si l'utilisateur est l'auteur du post ou un follower
 	if postPrivacy == "private" {
-		if currentUserId == userId {
-			return true, nil
-		}
-
-		// Vérifier si le currentUserId est un follower de l'auteur du post
-		query := `SELECT COUNT(*) FROM Followers WHERE userId = ? AND followerId = ?`
-		var count int
-		err := db.QueryRow(query, userId, currentUserId).Scan(&count)
-		if err != nil {
-			return false, fmt.Errorf("error checking follower status: %v", err)
-		}
-
-		// Si currentUserId est un follower, retourner true
-		if count > 0 {
-			return true, nil
-		}
-
-		// Sinon, retourner false car l'utilisateur n'est ni l'auteur ni un follower
-		return false, nil
+		return IsFollowing(db, userId, currentUserId)
 	}
 
 	// Si le post est "almost_private", vérifier si l'utilisateur est autorisé à voir le post
@@ -310,4 +313,27 @@ func GetOwnPosts(db *sql.DB, userId string) ([]models.Posts, error) {
 	}
 
 	return ownPosts, nil
+}
+
+func IsFollowing(db *sql.DB, userId string, currentUserId string) (bool, error) {
+	if currentUserId == userId {
+		return true, nil
+	}
+
+	// Vérifier si currentUserId est un follower de l'utilisateur
+	query := `SELECT COUNT(*) FROM Followers WHERE userId = ? AND follwedId = ?`
+	var count int
+	err := db.QueryRow(query, userId, currentUserId).Scan(&count)
+	if err != nil {
+		fmt.Println("error checking follower status")
+		return false, err
+	}
+
+	// Si currentUserId est un follower, retourner true
+	if count > 0 {
+		return true, nil
+	}
+
+	// Sinon, retourner false car l'utilisateur n'est ni l'auteur ni un follower
+	return false, nil
 }

@@ -81,11 +81,11 @@ console.log(user);
             <div className="text-xs text-muted-foreground">Posts</div>
           </div>
           <div className="bg-[#e2e1e1] rounded-lg p-4">
-            <div className="font-medium">1.2K</div>
+            <div className="font-medium"> {user && user.followers ? user.followers.length : "0"}</div>
             <div className="text-xs text-muted-foreground">Followers</div>
           </div>
           <div className="bg-[#e2e1e1] rounded-lg p-4">
-            <div className="font-medium">500</div>
+            <div className="font-medium">{user && user.follows ? user.follows.length : "0"}</div>
             <div className="text-xs text-muted-foreground">Following</div>
           </div>
         </div>

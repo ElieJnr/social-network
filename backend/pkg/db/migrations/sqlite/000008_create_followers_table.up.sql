@@ -1,6 +1,8 @@
 CREATE TABLE IF NOT EXISTS Followers (
     id TEXT PRIMARY KEY,
     userId TEXT NOT NULL,
-    follwedId TEXT NOT NULL,
-    FOREIGN KEY (userid) REFERENCES Users(id)
+    followedId TEXT NOT NULL,
+    statut BOOLEAN,
+    FOREIGN KEY (userId) REFERENCES Users(id),
+    FOREIGN KEY (followedId) REFERENCES Users(id)
 );

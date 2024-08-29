@@ -6,6 +6,8 @@ import (
 	"socialNetwork/pkg/db/sqlite"
 	"socialNetwork/pkg/models"
 	"socialNetwork/utils"
+
+	"github.com/gofrs/uuid/v5"
 )
 
 type FollowerService struct {
@@ -27,39 +29,61 @@ func (f *FollowerService) SetDB(db *sql.DB) {
 	f.db = db
 }
 
-func (f *FollowerService) FollowUser(userId string, followedUser []models.User) error {
-	for _, user := range followedUser {
-		id, e := utils.GenerateUuid()
-		if e != nil {
-			return e
-		}
-		query := `
-			INSERT INTO Followers (id, userId, followedId) 
-			VALUES (?, ?, ?)
+func (f *FollowerService) FollowUserOrUpdateStatus(userId uuid.UUID, followedUser uuid.UUID, statut bool) error {
+	var existingId string
+	queryCheck := `
+		SELECT id 
+		FROM Followers 
+		WHERE userId = ? AND followedId = ?
+	`
+	err := f.GetDB().QueryRow(queryCheck, userId, followedUser).Scan(&existingId)
 
+	if err != nil {
+		if err == sql.ErrNoRows {
+			id, err := utils.GenerateUuid()
+			if err != nil {
+				return fmt.Errorf("could not generate UUID: %w", err)
+			}
+			queryInsert := `
+				INSERT INTO Followers (id, userId, followedId, statut) 
+				VALUES (?, ?, ?, ?)
+			`
+			_, err = f.GetDB().Exec(queryInsert, id, userId, followedUser, statut)
+			if err != nil {
+				return fmt.Errorf("could not insert follower: %w", err)
+			}
+		} else {
+			return fmt.Errorf("error checking existing follower: %w", err)
+		}
+	} else {
+		queryUpdate := `
+			UPDATE Followers 
+			SET statut = ? 
+			WHERE id = ?
 		`
-		_, err := f.GetDB().Exec(query, id, userId, user.Id)
+		_, err = f.GetDB().Exec(queryUpdate, statut, existingId)
 		if err != nil {
-			return fmt.Errorf("could not insert follower: %w", err)
+			return fmt.Errorf("could not update follower status: %w", err)
 		}
 	}
 	return nil
 }
 
-func (f *FollowerService) GetUserFollow(userId string, ok bool) ([]models.User, error) {
-	var users []models.User
+func (f *FollowerService) GetUserFollow(userId string, ok bool) ([]models.Follower, error) {
+	var follows []models.Follower
 
 	query := `
-        SELECT u.id, u.email, u.passwords, u.firstname, u.lastname, u.username, u.dateOfBirth, u.bio, u.avatar, u.isPrivate 
-        FROM Users u
-        INNER JOIN Followers f ON u.id = f.followedId
-        WHERE f.userId = ?`
+    SELECT f.id, f.userId, f.followedId, f.statut
+    FROM Followers f
+    INNER JOIN Users u ON f.userId = u.id
+    WHERE f.followedId = ? AND statut = TRUE`
+
 	if !ok {
 		query = `
-        SELECT u.id, u.email, u.passwords, u.firstname, u.lastname, u.username, u.dateOfBirth, u.bio, u.avatar, u.isPrivate 
-        FROM Users u
-        INNER JOIN Followers f ON u.id = f.userId
-        WHERE f.followedId = ?`
+    SELECT f.id, f.userId, f.followedId, f.statut
+    FROM Followers f
+    INNER JOIN Users u ON f.userId = u.id
+    WHERE f.userId = ? AND statut = TRUE`
 	}
 
 	rows, err := f.GetDB().Query(query, userId)
@@ -69,16 +93,16 @@ func (f *FollowerService) GetUserFollow(userId string, ok bool) ([]models.User, 
 	defer rows.Close()
 
 	for rows.Next() {
-		var user models.User
-		if err := rows.Scan(&user.Id, &user.Email, &user.Password, &user.Firstname, &user.Lastname, &user.Username, &user.DateOfBirth, &user.Bio, &user.Avatar, &user.IsPrivate); err != nil {
+		var follow models.Follower
+		if err := rows.Scan(&follow.Id, &follow.UserId, &follow.FollowedId, &follow.Statut); err != nil {
 			return nil, fmt.Errorf("could not scan row: %w", err)
 		}
-		users = append(users, user)
+		follows = append(follows, follow)
 	}
 
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("row iteration error: %w", err)
 	}
 
-	return users, nil
+	return follows, nil
 }

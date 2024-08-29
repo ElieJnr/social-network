@@ -1,12 +1,28 @@
-
+"use client"
 import Link from "next/link"
 import { Input } from "@/components/ui/input"
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet"
+import { userConnect } from "@/app/actions/users";
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 
 export default function NavBar() {
+  const [userOnLine, setUserOnLine] = useState(null)
+  const router = useRouter()
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await userConnect();
+        setUserOnLine(response.user);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    };
+    fetchUser();
+  }, []);
   return (
     (<header
       className="flex items-center justify-between bg-background px-4 py-3 shadow-sm sm:px-6">
@@ -98,7 +114,12 @@ export default function NavBar() {
             <DropdownMenuLabel>Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link href="#" className="flex items-center gap-2" prefetch={false}>
+              <Link  href={ userOnLine ?`/profil?userId=${userOnLine.id}` : "#"}
+                onClick={(e) => {
+                  e.preventDefault();
+                  router.push(`/profil?userId=${userOnLine.id}`);
+                }}
+                prefetch={false} className="flex items-center gap-2">
                 <UserIcon className="h-4 w-4" />
                 Profile
               </Link>

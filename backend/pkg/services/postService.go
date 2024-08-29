@@ -321,7 +321,7 @@ func IsFollowing(db *sql.DB, userId string, currentUserId string) (bool, error) 
 	}
 
 	// Vérifier si currentUserId est un follower de l'utilisateur
-	query := `SELECT COUNT(*) FROM Followers WHERE userId = ? AND follwedId = ?`
+	query := `SELECT COUNT(*) FROM Followers WHERE userId = ? AND followedId = ?`
 	var count int
 	err := db.QueryRow(query, userId, currentUserId).Scan(&count)
 	if err != nil {

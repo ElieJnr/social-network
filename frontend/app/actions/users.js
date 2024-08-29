@@ -1,4 +1,4 @@
-import { makeGetFetch } from ".";
+import { makeGetFetchUsers, makeGetFetch } from ".";
 
 export async function userConnect() {
     const data = await makeGetFetch("http://localhost:8080/getUser?key=userConnect&id=null");
@@ -13,6 +13,6 @@ export async function GetAllInfoForUserById(userId) {
 }
 
 export async function allUsers() {
-    const data = await makeGetFetch("http://localhost:8080/users");
+    const data = await makeGetFetchUsers("http://localhost:8080/users");
     return data
 }

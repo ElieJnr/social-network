@@ -61,6 +61,18 @@ func (u *UserService) GetAllUsers() ([]models.User, error) {
 		if err != nil {
 			return nil, fmt.Errorf("could not scan user: %w", err)
 		}
+		followService := NewFollowerService()
+		followers, err := followService.GetUserFollow(user.Id, true)
+		if err != nil {
+			return nil, fmt.Errorf("could not scan user: %w", err)
+		}
+
+		follows, err := followService.GetUserFollow(user.Id, false)
+		if err != nil {
+			return nil, fmt.Errorf("could not scan user: %w", err)
+		}
+		user.Followers = followers
+		user.Follows = follows
 		users = append(users, user)
 	}
 
@@ -70,8 +82,6 @@ func (u *UserService) GetAllUsers() ([]models.User, error) {
 
 	return users, nil
 }
-
-
 
 func (u *UserService) UserExists(EmailOrName string) (*models.User, error) {
 	var user models.User
@@ -102,6 +112,18 @@ func (u *UserService) GetUserById(userId uuid.UUID) (models.User, error) {
 	if err != nil {
 		return models.User{}, err
 	}
+	followService := NewFollowerService()
+	followers, err := followService.GetUserFollow(user.Id, true)
+	if err != nil {
+		return models.User{}, fmt.Errorf("could not scan user: %w", err)
+	}
+
+	follows, err := followService.GetUserFollow(user.Id, false)
+	if err != nil {
+		return models.User{}, fmt.Errorf("could not scan user: %w", err)
+	}
+	user.Followers = followers
+	user.Follows = follows
 	return user, nil
 }
 

@@ -1,10 +1,10 @@
 package models
 
-import (
-)
+import "github.com/gofrs/uuid/v5"
 
 type Follower struct {
-	// Id           uuid.UUID `json:"id"`
-	// UserID       uuid.UUID `json:"userId"`
-	// FollowedUser uuid.UUID `json:"followedUser"`
+	Id         uuid.UUID `json:"id"`
+	UserId     uuid.UUID `json:"userId"`
+	FollowedId uuid.UUID `json:"followedUser"`
+	Statut     bool      `json:"statut"`
 }

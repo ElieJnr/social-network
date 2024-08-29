@@ -1,14 +1,12 @@
 package routes
 
 import (
-	// "database/sql"
-	// "net/http"
-
 	"socialNetwork/handlers"
-
 	"socialNetwork/middlewares"
 
 	"github.com/gorilla/mux"
+	// "database/sql"
+	// "net/http"
 )
 
 func InitializeRoutes() *mux.Router {
@@ -19,6 +17,8 @@ func InitializeRoutes() *mux.Router {
 	router.Handle("/users", middlewares.AuthMiddleware(handlers.UsersHandler())).Methods("GET")
 	router.Handle("/getUser", middlewares.AuthMiddleware(handlers.GetUsertHandler())).Methods("GET")
 
+	//follower
+	router.Handle("/follow", middlewares.AuthMiddleware(handlers.Follow())).Methods("POST")
 
 	// Authentification
 	router.Handle("/login", handlers.LoginHandler()).Methods("POST")
@@ -29,16 +29,14 @@ func InitializeRoutes() *mux.Router {
 	router.Handle("/posts", middlewares.AuthMiddleware(handlers.PostHandler("allPost"))).Methods("GET")
 	router.Handle("/postUser", middlewares.AuthMiddleware(handlers.PostHandler("userPost"))).Methods("GET")
 	router.Handle("/post/create", middlewares.AuthMiddleware(handlers.CreatePostHandler())).Methods("POST")
-	
-	// group
 
+	// group
 
 	// comments
 	router.Handle("/comment/create", middlewares.AuthMiddleware(handlers.CreateCommentHandler())).Methods("POST")
 
 	// chat
 	router.HandleFunc("/ws", handlers.WebsocketHandler)
-
 
 	router.Use(middlewares.CORSMiddleware)
 	return router

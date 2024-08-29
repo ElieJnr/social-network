@@ -15,6 +15,7 @@ func UsersHandler() http.HandlerFunc {
 
 		users, err := userService.GetAllUsers()
 		if err != nil {
+			fmt.Println(err)
 			http.Error(w, "Cannot get users ", http.StatusInternalServerError)
 			return
 		}

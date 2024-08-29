@@ -6,6 +6,7 @@ import ProfileCard from "@/components/ProfileCard";
 import SuggestionsCard from "@/components/SuggestionsCard";
 import { ClickMessageApp } from "@/components/ui/message";
 import { allUsers } from "./actions/users";
+import NavBar from "@/components/Nav";
 
 export default  function HomePage() {
   

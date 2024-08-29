@@ -14,4 +14,8 @@ const useStore = create((set) => ({
   setLoading: (loading) => set({ loading }),
 }));
 
+// const response = await fetch('https://api.example.com/data', {
+//     next: { revalidate: 10 }, // Revalidate every 10 seconds
+//   });
+
 export default useStore;

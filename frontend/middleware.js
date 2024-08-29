@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 export function middleware(req) {
   const token = req.cookies.get('session_token');
   const url = req.nextUrl.clone();
-
+  
   if (token && (url.pathname === '/auth' || url.pathname === '/auth/login')) {
     return NextResponse.redirect(new URL('/', req.url));
   }

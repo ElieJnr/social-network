@@ -8,6 +8,7 @@ type Comment struct {
 	CommentID     string
 	UserID        string
 	Content       string
+	HasImage       bool
 	Image_url     string
 	Creation_date time.Time
 	Formated_date string

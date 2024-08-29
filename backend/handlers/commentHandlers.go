@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"socialNetwork/pkg/models"
 	"socialNetwork/utils"
@@ -14,28 +15,29 @@ func CreateCommentHandler() http.HandlerFunc {
 }
 
 func CreateComment(w http.ResponseWriter, r *http.Request) {
-	var postId string
 	commentValue := CheckComment(w, r)
 
 	if !commentValue.Success {
+		fmt.Println("Error: ", commentValue.Error)
 		http.Error(w, commentValue.Error, http.StatusBadRequest)
 		return
 	}
 
-	err := CommentService.InsertComment(commentValue, w, r, postId)
+	err := CommentService.InsertComment(commentValue, w, r)
 	if err != nil {
+		fmt.Println("Error InsertComment: ", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 	http.Redirect(w, r, "/post", http.StatusSeeOther)
 }
 
-
 func CheckComment(w http.ResponseWriter, r *http.Request) models.CheckResult {
 	content := strings.TrimSpace(r.FormValue("commentContent"))
+	postId := r.FormValue("postId")
 	photoURL := utils.UploadImage(w, r, "comment")
 
-	success, err := utils.IsValidComment(content, photoURL)
+	success, err := utils.IsValidComment(content, photoURL, postId)
 	if !success {
 		return models.CheckResult{
 			Success: false,
@@ -46,6 +48,7 @@ func CheckComment(w http.ResponseWriter, r *http.Request) models.CheckResult {
 	return models.CheckResult{
 		Success:  true,
 		Error:    "",
+		PostId:   postId,
 		Content:  content,
 		PhotoURL: photoURL,
 	}

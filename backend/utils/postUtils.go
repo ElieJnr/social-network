@@ -177,9 +177,13 @@ func GenerateUuid() (string, error) {
 	return id.String(), nil
 }
 
-func IsValidComment(content string, photoURL string) (bool, string) {
+func IsValidComment(content string, photoURL string, postId string) (bool, string) {
 	if len(content) == 0 || utf8.RuneCountInString(content) > 500 {
 		return false, "Bad Request: Invalid content length"
+	}
+
+	if len(postId) == 0 {
+		return false, "Bad Request: Invalid post ID"
 	}
 
 	if photoURL != "" {

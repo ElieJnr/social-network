@@ -28,7 +28,7 @@ func (c *CommentService) SetDB(db *sql.DB) {
 	c.db = db
 }
 
-func (c *CommentService) InsertComment(commentValue models.CheckResult, w http.ResponseWriter, r *http.Request, postId string) error {
+func (c *CommentService) InsertComment(commentValue models.CheckResult, w http.ResponseWriter, r *http.Request) error {
 	user, err := utils.CurrentUser(w, r)
 	if err != nil {
 		return err
@@ -40,11 +40,12 @@ func (c *CommentService) InsertComment(commentValue models.CheckResult, w http.R
 	}
 
 	_, err = c.db.Exec("INSERT INTO Comments (id, postId, userId, content, imageUrl) VALUES (?, ?, ?, ?, ?)",
-		commentID, postId, user.UserId, commentValue.Content, commentValue.PhotoURL)
+		commentID, commentValue.PostId, user.UserId, commentValue.Content, commentValue.PhotoURL)
 	if err != nil {
 		return err
 	}
 
+	fmt.Println("Comment inserted successfully")
 	return nil
 }
 
@@ -69,6 +70,7 @@ func GetComments(db *sql.DB, postId string) ([]models.Comment, error) {
 		}
 
 		comment.Author = author
+		comment.HasImage = comment.Image_url != ""
 		comment.Formated_date = utils.FormatTimeAgo(comment.Creation_date)
 		comments = append(comments, comment)
 	}

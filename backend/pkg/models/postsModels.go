@@ -31,18 +31,20 @@ type Posts struct {
 	Dislike_status bool
 }
 
-type OwnPosts struct {
-	PostID        string
-	UserID        string
-	Content       string
-	Image_url     string
-	Post_status   string
-	Creation_date time.Time
-	Formated_date string
-	Author        Author
-	Can_see       bool
-	Comments      []Comment
-}
+ 
+
+// type OwnPosts struct {
+// 	PostID        string
+// 	UserID        string
+// 	Content       string
+// 	Image_url     string
+// 	Post_status   string
+// 	Creation_date time.Time
+// 	Formated_date string
+// 	Author        Author
+// 	Can_see       bool
+// 	Comments      []Comment
+// }
 
 type CheckResult struct {
 	Success      bool
@@ -50,5 +52,6 @@ type CheckResult struct {
 	Content      string
 	PhotoURL     string
 	Status       string
+	PostId	 string 
 	AllowedUsers []string
 }

@@ -1,10 +1,12 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"socialNetwork/pkg/models"
 	"socialNetwork/pkg/services"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -38,10 +40,10 @@ func WebsocketHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("clients websocket:", ClientWebSocketConnections)
 
 	// ------------------------------------------
-	go Reader(conn)
+	go Reader(conn, w, r)
 }
 
-func Reader(conn *websocket.Conn) error {
+func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error {
 	for {
 		var msg models.Message
 		err := conn.ReadJSON(&msg)
@@ -54,33 +56,51 @@ func Reader(conn *websocket.Conn) error {
 			//fonction qui gere groupChat:
 		case "clickOnUser":
 			messageService := services.NewChatService()
-			err := messageService.SendStockedMessage(conn, msg.SenderId, msg.ReceiverId)
+			sender, sendErr := messageService.GetConnectedUserId(r)
+			if sendErr != nil {
+				return sendErr
+			}
+			// fmt.Println("connected user id :", sender)
+			msg.SenderId = sender
+			fmt.Println("msg: ", msg)
+			err := messageService.SendStockedMessage(conn, sender, msg.ReceiverId)
 			if err != nil {
+				fmt.Println("erreur :", err)
 				return err
 			}
 		case "notifications":
-			// id ,e:= utils.GenerateUuid()
-			// if e != nil{
-			// 	return err
-			// }
-			// mem := models.Member{
-			// 	UserId: "d5525173-68d4-48f9-8786-2df3c625fcaa",
-			// 	GroupId: "16be658f-d612-4b8c-b5d5-065cf478ea03",
-			// 	Role: "admin",
-			// }
 			gr, e := GroupeService.GetGroups()
-			if e != nil{
+			if e != nil {
 				fmt.Println(e)
 			}
 			fmt.Println(gr)
 			//fonction qui gere notifications
 		case "sendMessage":
 			messageService := services.NewChatService()
+			sender, sendErr := ChatService.GetConnectedUserId(r)
+			if sendErr != nil {
+				return sendErr
+			}
+			// fmt.Println("connected user id :", sender)
+			msg.SenderId = sender
+			// fmt.Println("msg: ", msg)
+
 			err := messageService.RegisterMsg(msg)
+			if err != nil {
+				fmt.Println("error: ", err)
+				return err
+			}
+			message := models.ChatMessage{
+				Type:      "simpleChat",
+				Message:   msg.Content,
+				CreatedAt: time.Now(),
+			}
+
+			messageJSON, err := json.Marshal(message)
 			if err != nil {
 				return err
 			}
-			sendError := conn.WriteMessage(websocket.TextMessage, []byte(msg.Content))
+			sendError := conn.WriteMessage(websocket.TextMessage, []byte(messageJSON))
 			if receiverConn, ok := ClientWebSocketConnections[msg.ReceiverId]; ok {
 				sendErrorReceiver := receiverConn.WriteMessage(websocket.TextMessage, []byte(msg.Content))
 				if sendErrorReceiver != nil {
@@ -90,6 +110,14 @@ func Reader(conn *websocket.Conn) error {
 			if sendError != nil {
 				return fmt.Errorf("problem sending message to users:%s", sendError)
 			}
+		case "userSender":
+			ChatService := services.NewChatService()
+			user, err := ChatService.FetchUser()
+			if err != nil {
+				fmt.Println("err: ", err)
+				return fmt.Errorf(err.Error())
+			}
+			conn.WriteMessage(websocket.TextMessage, []byte(user))
 		}
 	}
 }

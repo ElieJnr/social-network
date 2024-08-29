@@ -2,10 +2,13 @@ package services
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
+	"net/http"
 	"socialNetwork/pkg/db/sqlite"
 	"socialNetwork/pkg/models"
 	"socialNetwork/utils"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -60,13 +63,18 @@ func (c *ChatService) SendStockedMessage(conn *websocket.Conn, senderId, receive
 }
 
 // fonction de recuperation des messages enregistre dans la base de donnee
-func (c *ChatService) GetStoredMessages(sender, receiver string) ([]models.Chat, error) {
+type sendMessage struct {
+	Type    string
+	Message []models.Chat
+}
 
-	query := "SELECT * FROM Chats WHERE (senderId = ? AND receverId = ?) OR (receverId = ? AND senderId = ?)"
+func (c *ChatService) GetStoredMessages(sender, receiver string) (sendMessage, error) {
+	var sendMessage sendMessage
+
+	query := "SELECT id, senderId, receverId, content, sendAt FROM Chats WHERE (senderId = ? AND receverId = ?) OR (receverId = ? AND senderId = ?)"
 	rows, err := c.GetDB().Query(query, sender, receiver, sender, receiver)
 	if err != nil {
-
-		return nil, fmt.Errorf("failed to retrieve stored messages: %w", err)
+		return sendMessage, fmt.Errorf("failed to retrieve stored messages: %w", err)
 	}
 	defer rows.Close()
 
@@ -82,7 +90,11 @@ func (c *ChatService) GetStoredMessages(sender, receiver string) ([]models.Chat,
 	}
 
 	fmt.Println("messages: ", messages)
-	return messages, nil
+
+	sendMessage.Type = "clickOnUser"
+	sendMessage.Message = messages
+
+	return sendMessage, nil
 }
 
 // fonction d'enregistrement des messages dans la base de donnees
@@ -92,11 +104,82 @@ func (c *ChatService) RegisterMsg(msg models.Message) error {
 	if er != nil {
 		return er
 	}
-	query := "INSERT INTO Chats (id,senderId,receverId, content) VALUES (?, ?, ?, ?)"
+	query := "INSERT INTO Chats (id,senderId,receverId, content,type) VALUES (?, ?, ?, ?,?)"
 
-	_, err := c.GetDB().Exec(query, idMsg, msg.SenderId, msg.ReceiverId, msg.Content)
+	_, err := c.GetDB().Exec(query, idMsg, msg.SenderId, msg.ReceiverId, msg.Content, "userText")
 	if err != nil {
 		return fmt.Errorf("failed to register data: %w", err)
 	}
 	return nil
+}
+
+func (c *ChatService) FetchUser() ([]byte, error) {
+	query := "SELECT id, firstname, lastname FROM Users"
+	rows, err := c.GetDB().Query(query)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch users: %w", err)
+	}
+	defer rows.Close()
+
+	type User struct {
+		Id        string
+		Firstname string
+		Lastname  string
+	}
+	type sendUser struct {
+		Type  string
+		Users []User
+	}
+
+	var users []User
+	for rows.Next() {
+		var id, firstname, lastname string
+		err := rows.Scan(&id, &firstname, &lastname)
+		if err != nil {
+			fmt.Println("Failed to scan user:", err)
+			continue
+		}
+
+		user := User{
+			Id:        id,
+			Firstname: firstname,
+			Lastname:  lastname,
+		}
+		users = append(users, user)
+	}
+	sendUsers := sendUser{
+		Type:  "sendUser",
+		Users: users,
+	}
+
+	jsonUsers, err := json.Marshal(sendUsers)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal users: %w", err)
+	}
+
+	return jsonUsers, nil
+}
+
+func GetCookie(r *http.Request) string {
+	cookie, err := r.Cookie("session_token")
+	if err != nil {
+		return ""
+	}
+	return cookie.Value
+}
+
+func (c *ChatService) GetConnectedUserId(r *http.Request) (string, error) {
+	var userId string
+	cookie := GetCookie(r)
+	query := `SELECT userId FROM sessions WHERE sessionId = ? AND expired_at > ?`
+
+	err := c.GetDB().QueryRow(query, cookie, time.Now()).Scan(&userId)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return "", nil
+		}
+		return "", err
+	}
+
+	return userId, nil
 }

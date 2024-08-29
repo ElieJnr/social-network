@@ -1,13 +1,14 @@
 "use client";
 
 import CreatePostCard from "@/components/CreatePostCard";
-import NavBar from "@/components/Nav";
 import PostCard from "@/components/PostCard";
 import ProfileCard from "@/components/ProfileCard";
 import SuggestionsCard from "@/components/SuggestionsCard";
 import { ClickMessageApp } from "@/components/ui/message";
+import { allUsers } from "./actions/users";
 
-export default function HomePage() {
+export default  function HomePage() {
+  
   return (
     <div className="flex flex-col h-screen">
       <NavBar />

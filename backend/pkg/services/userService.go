@@ -48,6 +48,31 @@ func (u *UserService) CreateUser(user models.User) error {
 	return nil
 }
 
+func (u *UserService) GetAllUsers() ([]models.User, error) {
+	query := `SELECT id, email, firstname, lastname, dateOfBirth, avatar, username, bio, isPrivate FROM Users`
+	rows, err := u.GetDB().Query(query)
+	if err != nil {
+		return nil, fmt.Errorf("could not retrieve users: %w", err)
+	}
+	var users []models.User
+	for rows.Next() {
+		var user models.User
+		err := rows.Scan(&user.Id, &user.Email, &user.Firstname, &user.Lastname, &user.DateOfBirth, &user.Avatar, &user.Username, &user.Bio, &user.IsPrivate)
+		if err != nil {
+			return nil, fmt.Errorf("could not scan user: %w", err)
+		}
+		users = append(users, user)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("error occurred during rows iteration: %w", err)
+	}
+
+	return users, nil
+}
+
+
+
 func (u *UserService) UserExists(EmailOrName string) (*models.User, error) {
 	var user models.User
 

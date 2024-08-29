@@ -11,14 +11,14 @@ import (
 
 func UsersHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Récupérer l'utilisateur depuis le contexte
-		user, err := utils.CurrentUser(w, r)
+		userService := services.NewUserService()
+
+		users, err := userService.GetAllUsers()
 		if err != nil {
-			http.Error(w, "User not found in context", http.StatusUnauthorized)
+			http.Error(w, "Cannot get users ", http.StatusInternalServerError)
 			return
 		}
-		// Utiliser les informations de l'utilisateur
-		fmt.Fprintf(w, user.Token, user.Username, user.UserId)
+		services.SendFront(w, map[string][]models.User{"users": users}, 200)
 	}
 }
 

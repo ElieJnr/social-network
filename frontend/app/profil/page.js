@@ -21,7 +21,7 @@ export default function Profil() {
       if (userId) {
         try {
           const userData = await GetAllInfoForUserById(userId);
-          setUser(userData);
+          setUser(userData.user);
         } catch (error) {
           console.error("Erreur lors de la récupération de l'utilisateur:", error);
         }
@@ -31,7 +31,7 @@ export default function Profil() {
     fetchUserData();
   }, [userId]); 
 
-
+console.log(user);
   if (!user) {
     return <div>Loading...</div>; 
   }
@@ -40,15 +40,15 @@ export default function Profil() {
 
   return (
     <div className="bg-background text-foreground min-h-screen flex flex-col">
-      <header className="bg-card py-4 px-6 flex items-center justify-between shadow-sm">
+      <header className="bg-[#e2e1e1] py-4 px-6 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-4">
           <Avatar className="h-10 w-10">
             <AvatarImage src="/placeholder-user.jpg" alt="@shadcn" />
             <AvatarFallback>JD</AvatarFallback>
           </Avatar>
           <div className="grid gap-1">
-            <div className="font-medium">John Doe</div>
-            <div className="text-xs text-muted-foreground">@johndoe</div>
+            <div className="font-medium">{ user ? user.firstname : "loading"} {user ? user.lastname : ""} </div>
+            <div className="text-xs text-muted-foreground">{user ? user.email: ""}</div>
           </div>
         </div>
         <Button variant="outline" size="sm">
@@ -59,7 +59,7 @@ export default function Profil() {
         <div className="grid gap-4">
           <div className="flex items-center justify-between">
             <div className="grid gap-1">
-              <div className="font-medium text-2xl">John Doe</div>
+              <div className="font-medium text-2xl">{ user ? user.firstname: "loading"} {user ? user.lastname: ""} </div>
               <div className="text-muted-foreground">Software Engineer</div>
             </div>
             <div className="flex items-center gap-4">
@@ -72,20 +72,19 @@ export default function Profil() {
             </div>
           </div>
           <div className="text-sm leading-loose text-muted-foreground">
-            I'm a software engineer with a passion for building innovative products. In my free time, I enjoy exploring
-            new technologies and reading about the latest industry trends.
+          {user ? user.bio: ""}
           </div>
         </div>
         <div className="grid sm:grid-cols-3 gap-4 text-center">
-          <div className="bg-card rounded-lg p-4">
+          <div className="bg-[#e2e1e1] rounded-lg p-4">
             <div className="font-medium">100</div>
             <div className="text-xs text-muted-foreground">Posts</div>
           </div>
-          <div className="bg-card rounded-lg p-4">
+          <div className="bg-[#e2e1e1] rounded-lg p-4">
             <div className="font-medium">1.2K</div>
             <div className="text-xs text-muted-foreground">Followers</div>
           </div>
-          <div className="bg-card rounded-lg p-4">
+          <div className="bg-[#e2e1e1] rounded-lg p-4">
             <div className="font-medium">500</div>
             <div className="text-xs text-muted-foreground">Following</div>
           </div>

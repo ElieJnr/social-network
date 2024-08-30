@@ -38,6 +38,9 @@ func InitializeRoutes() *mux.Router {
 	// chat
 	router.HandleFunc("/ws", handlers.WebsocketHandler)
 
+	//notifications
+	router.Handle("/notifications", middlewares.AuthMiddleware(handlers.NotifHandler())).Methods("GET")
+
 	router.Use(middlewares.CORSMiddleware)
 	return router
 }

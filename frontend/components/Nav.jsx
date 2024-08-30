@@ -8,10 +8,13 @@ import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet"
 import { userConnect } from "@/app/actions/users";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { Notifications } from "./notifications"
+
 
 export default function NavBar() {
   const [userOnLine, setUserOnLine] = useState(null)
   const router = useRouter()
+  
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -52,55 +55,7 @@ export default function NavBar() {
             placeholder="Search"
             className="pl-9 pr-4 focus:outline-none focus:ring-1 focus:ring-primary" />
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="relative">
-              <BellIcon className="h-5 w-5" />
-              <span
-                className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-red-500 text-xs text-white" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-80">
-            <DropdownMenuLabel>Notifications</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <div className="flex items-start gap-3">
-                <Avatar className="h-9 w-9">
-                  <AvatarImage src="/placeholder-user.jpg" alt="User avatar" />
-                  <AvatarFallback>AC</AvatarFallback>
-                </Avatar>
-                <div className="flex-1 space-y-1">
-                  <p className="font-medium">John Doe commented on your post</p>
-                  <p className="text-sm text-muted-foreground">2 hours ago</p>
-                </div>
-              </div>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <div className="flex items-start gap-3">
-                <Avatar className="h-9 w-9">
-                  <AvatarImage src="/placeholder-user.jpg" alt="User avatar" />
-                  <AvatarFallback>AC</AvatarFallback>
-                </Avatar>
-                <div className="flex-1 space-y-1">
-                  <p className="font-medium">Jane Smith started following you</p>
-                  <p className="text-sm text-muted-foreground">1 day ago</p>
-                </div>
-              </div>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <div className="flex items-start gap-3">
-                <Avatar className="h-9 w-9">
-                  <AvatarImage src="/placeholder-user.jpg" alt="User avatar" />
-                  <AvatarFallback>AC</AvatarFallback>
-                </Avatar>
-                <div className="flex-1 space-y-1">
-                  <p className="font-medium">Your post has 10 new likes</p>
-                  <p className="text-sm text-muted-foreground">3 days ago</p>
-                </div>
-              </div>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Notifications/>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="relative">

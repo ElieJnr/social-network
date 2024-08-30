@@ -94,6 +94,11 @@ func (u *UserService) UserExists(EmailOrName string) (*models.User, error) {
 }
 
 func (u *UserService) UsernameExists(username string) (bool, error) {
+
+	if username == ""{
+		return false, nil
+	}
+
 	var exists bool
 	query := "SELECT EXISTS(SELECT 1 FROM users WHERE username = ? LIMIT 1)"
 	err := u.GetDB().QueryRow(query, username).Scan(&exists)

@@ -4,13 +4,16 @@ const useStore = create((set) => ({
 
   // State variables
   user: [],
-  getMessage:[],
+  getMessage: [],
   isAuthenticated: false,
   loading: false,
+  messageArrive: false,
+  newMessage: "",
 
   // Actions
   setUser: (user) => set({ user }),
-  setgetMessage:(getMessage)=>set(getMessage),
+  setgetMessage: (getMessage) => set({ getMessage, messageArrive: true }),
+  setNewMessage: (NewMessage) => set({ NewMessage }),
   logout: () => set({ user: null, isAuthenticated: false }),
 
   setLoading: (loading) => set({ loading }),

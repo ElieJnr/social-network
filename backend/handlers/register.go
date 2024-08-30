@@ -43,7 +43,7 @@ func RegistrationHandler() http.HandlerFunc {
 			})
 			return
 		}
-
+ 
 		var newUser models.User
 		newUser.Email = r.FormValue("email")
 		newUser.Password = r.FormValue("password")

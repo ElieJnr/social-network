@@ -1,13 +1,15 @@
 package handlers
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"socialNetwork/pkg/models"
 	"socialNetwork/pkg/services"
+<<<<<<< Updated upstream
 	"socialNetwork/utils"
 	"time"
+=======
+>>>>>>> Stashed changes
 
 	"github.com/gorilla/websocket"
 )
@@ -28,8 +30,13 @@ var (
 func WebsocketHandler(w http.ResponseWriter, r *http.Request) {
 	//------------ Dés que l'utilisateur se connecte il est brancher au websocket via ws:localhost:port/?userId=10521@-fnc...
 	// ------on récupére du userId de l'expéditeur ------
-	UserId := r.URL.Query().Get("userId")
-	fmt.Println("userID: ", UserId)
+	messageService := services.NewChatService()
+	sender, sendErr := messageService.GetConnectedUserId(r)
+	if sendErr != nil {
+		return
+	}
+	// UserId := r.URL.Query().Get("userId")
+	// fmt.Println("userID: ", UserId)
 	// ------------------------------------------
 	// ajout de l'utilisateur dans le tableau des connexions
 	conn, err := Upgrader.Upgrade(w, r, nil)
@@ -37,7 +44,7 @@ func WebsocketHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("probleme lors de l'initialisation: ", err)
 		return
 	}
-	ClientWebSocketConnections[UserId] = conn
+	ClientWebSocketConnections[sender] = conn
 	fmt.Println("clients websocket:", ClientWebSocketConnections)
 
 	// ------------------------------------------
@@ -58,13 +65,14 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error 
 		case "clickOnUser":
 			messageService := services.NewChatService()
 			sender, sendErr := messageService.GetConnectedUserId(r)
+			fmt.Println("senderId :", msg.SenderId, "sender: ", sender, "receiver: ", msg.ReceiverId)
 			if sendErr != nil {
 				return sendErr
 			}
 			// fmt.Println("connected user id :", sender)
 			msg.SenderId = sender
-			fmt.Println("msg: ", msg)
-			err := messageService.SendStockedMessage(conn, sender, msg.ReceiverId)
+			fmt.Println("msg: ", sender == msg.ReceiverId)
+			err := messageService.SendStockedMessage(conn, sender, msg.ReceiverId, false)
 			if err != nil {
 				fmt.Println("erreur :", err)
 				return err
@@ -104,26 +112,42 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error 
 				fmt.Println("error: ", err)
 				return err
 			}
-			message := models.ChatMessage{
-				Type:      "simpleChat",
-				Message:   msg.Content,
-				CreatedAt: time.Now(),
+
+			errToSender := messageService.SendStockedMessage(conn, sender, msg.ReceiverId, true)
+			if errToSender != nil {
+				return errToSender
 			}
 
-			messageJSON, err := json.Marshal(message)
-			if err != nil {
-				return err
-			}
-			sendError := conn.WriteMessage(websocket.TextMessage, []byte(messageJSON))
 			if receiverConn, ok := ClientWebSocketConnections[msg.ReceiverId]; ok {
-				sendErrorReceiver := receiverConn.WriteMessage(websocket.TextMessage, []byte(msg.Content))
-				if sendErrorReceiver != nil {
-					return fmt.Errorf("problem sending message to receiver: %s", sendErrorReceiver)
+				errtoreceiver := messageService.SendStockedMessage(receiverConn, sender, msg.ReceiverId, true)
+				if errtoreceiver != nil {
+					return errtoreceiver
 				}
 			}
-			if sendError != nil {
-				return fmt.Errorf("problem sending message to users:%s", sendError)
-			}
+
+			// message := models.ChatMessage{
+			// 	Type:      "simpleChat",
+			// 	Message:   msg.Content,
+			// 	CreatedAt: time.Now(),
+			// }
+
+			// messageJSON, err := json.Marshal(message)
+			// if err != nil {
+			// 	fmt.Println("errrrr:  ", err)
+			// 	return err
+			// }
+			// fmt.Println("msg.receiverid", msg.ReceiverId)
+			// fmt.Println("websocket", ClientWebSocketConnections)
+			// sendError := conn.WriteMessage(websocket.TextMessage, []byte(messageJSON))
+			// if receiverConn, ok := ClientWebSocketConnections[msg.ReceiverId]; ok {
+			// 	sendErrorReceiver := receiverConn.WriteMessage(websocket.TextMessage, []byte(messageJSON))
+			// 	if sendErrorReceiver != nil {
+			// 		return fmt.Errorf("problem sending message to receiver: %s", sendErrorReceiver)
+			// 	}
+			// }
+			// if sendError != nil {
+			// 	return fmt.Errorf("problem sending message to users:%s", sendError)
+			// }
 		case "userSender":
 			ChatService := services.NewChatService()
 			user, err := ChatService.FetchUser()

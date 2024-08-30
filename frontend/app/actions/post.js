@@ -29,7 +29,7 @@ export async function fetchAllPosts(setPosts) {
     }
     const data = await response.json();
     setPosts(data);
-    console.log('Posts fetched:', data);
+    // console.log('Posts fetched:', data);
   } catch (error) {
     console.error('Error fetching posts:', error);
   }

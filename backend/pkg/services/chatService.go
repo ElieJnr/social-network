@@ -33,25 +33,13 @@ func (c *ChatService) SetDB(db *sql.DB) {
 	c.db = db
 }
 
-// func (c *ChatService) SendMessage(msg models.Message, websocket map[string]*websocket.Conn) error {
-// 	receiverConn, ok := websocket[msg.ReceiverId]
-// 	if ok {
-// 		if err := receiverConn.WriteJSON(msg); err != nil {
-// 			return fmt.Errorf("writing error: %w", err)
-// 		}
-// 	}
-// 	RegisterError := c.RegisterMsg(msg)
-
-// 	if RegisterError != nil {
-// 		return RegisterError
-// 	}
-
-// 	return nil
-// }
-
 // les messages une fois recupere sont envoyes a l'utilisateur via sa connection websocket
-func (c *ChatService) SendStockedMessage(conn *websocket.Conn, senderId, receiverId string) error {
-	messages, err := c.GetStoredMessages(senderId, receiverId)
+func (c *ChatService) SendStockedMessage(conn *websocket.Conn, senderId, receiverId string, newMessage bool) error {
+	booleen := false
+	if newMessage {
+		booleen = true
+	}
+	messages, err := c.GetStoredMessages(senderId, receiverId, booleen)
 	if err != nil {
 		return err
 	}
@@ -68,7 +56,7 @@ type sendMessage struct {
 	Message []models.Chat
 }
 
-func (c *ChatService) GetStoredMessages(sender, receiver string) (sendMessage, error) {
+func (c *ChatService) GetStoredMessages(sender, receiver string, newMessage bool) (sendMessage, error) {
 	var sendMessage sendMessage
 
 	query := "SELECT id, senderId, receverId, content, sendAt FROM Chats WHERE (senderId = ? AND receverId = ?) OR (receverId = ? AND senderId = ?)"
@@ -90,7 +78,9 @@ func (c *ChatService) GetStoredMessages(sender, receiver string) (sendMessage, e
 	}
 
 	fmt.Println("messages: ", messages)
-
+	if newMessage {
+		sendMessage.Type = "sendMessage"
+	}
 	sendMessage.Type = "clickOnUser"
 	sendMessage.Message = messages
 

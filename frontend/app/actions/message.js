@@ -1,15 +1,19 @@
 import { useEffect, useRef } from 'react';
 import useStore from '../store/useStore';
+import { ClickMessageApp } from '@/components/ui/message';
 
 export const useWebSocket = (url) => {
-    const socket = useRef(null);
-    const { user, setUser } = useStore()
+    let socket = useRef(null);
+    let { user, setUser } = useStore()
+    let { getMessage, setgetMessage } = useStore()
+    let { newMessage, setNewMessage } = useStore()
+
 
     useEffect(() => {
         socket.current = new WebSocket(url);
 
         socket.current.addEventListener('open', (event) => {
-            console.log('WebSocket connection opened');
+            // console.log('WebSocket connection opened');
             const message = { Type: "userSender" };
             socket.current.send(JSON.stringify(message));
         });
@@ -19,16 +23,22 @@ export const useWebSocket = (url) => {
             if (message.Type === "sendUser") {
                 setUser(message.Users)
             } else if (message.Type === "clickOnUser") {
-                console.log('message: ',JSON.parse(event.data))
+                if (message.Message) {
+                    setgetMessage(message.Message)
+                    console.log("parsing part: ", message.Message);
+                } else {
+                    console.log("no message between two users");
+                }
             } else if (message.Type === "messageService") {
                 console.log('message: ', event.data)
             } else if ("simpleChat") {
-                console.log(event.data);
+                setNewMessage(message.message)
+                console.log(message.message);
             }
         });
 
         socket.current.addEventListener('close', (event) => {
-            console.log('WebSocket connection closed');
+
         });
 
         socket.current.addEventListener('error', (event) => {

@@ -9,7 +9,7 @@ import { useWebSocket } from "@/app/actions/message";
 
 export function ClickMessageApp({ socket }) {
     const [showMessageApp, setShowMessageApp] = useState(false);
-    const { message, setMessage } = useStore()
+    let { newMessage, setNewMessage } = useStore()
 
     const [selectedUser, setSelectedUser] = useState({
         Id: "",
@@ -33,7 +33,7 @@ export function ClickMessageApp({ socket }) {
         );
 }
 
-export function MessageComponent({ onNameClick, setSelectedUser,socket }) {
+export function MessageComponent({ onNameClick, setSelectedUser, socket }) {
     const { user, setUser } = useStore()
 
     const handleClick = (user) => {
@@ -48,7 +48,6 @@ export function MessageComponent({ onNameClick, setSelectedUser,socket }) {
         }
     };
 
-    const [getMessage, setGetMessage] = useState([])
 
     return (
         <div className="w-full max-w-md mx-auto bg-background text-foreground rounded-lg shadow-lg">
@@ -91,14 +90,24 @@ function UserList({ id, name, lastMessage }) {
         </div>
     )
 }
-export function MessageApp({ backClick, user, socket }) {
-    const [message, setMessage] = useState('');
+export function MessageApp({ backClick, user, socket, newMessage }) {
+    let [message, setMessage] = useState('');
+    let { getMessage, messageArrive } = useStore()
+
+
+    if (!messageArrive) {
+        return (
+            <div>
+                loading...
+            </div>
+        )
+    }
 
     const handleEmojiSelect = (emoji) => {
         setMessage((prevMessage) => prevMessage + emoji.emoji);
     };
     return (
-        <div className="flex flex-col h-screen bg-white" style={{ height: "40%" }}>
+        <div className="flex flex-col h-screen bg-white" style={{ height: "30%" }}>
             <header className="bg-[#f0f4f8] py-4 px-6 flex items-center justify-between">
                 <div onClick={backClick} className="flex items-center gap-3">
                     <Button variant="ghost" size="icon">
@@ -116,8 +125,17 @@ export function MessageApp({ backClick, user, socket }) {
             </header>
             <div className="flex-1 overflow-y-auto p-6">
                 <div className="grid gap-4">
-                    <ReceivedMessage />
-                    <SendingMessage />
+                    {getMessage && getMessage.map((messTab) => (
+                        messTab.user_id === user.Id ? (
+                            <SendingMessage key={messTab.id} mess={messTab.msg} />
+                        ) : (
+                            <ReceivedMessage key={messTab.id} mess={messTab.msg} />
+                        )
+                    ))}
+
+                    {newMessage && (
+                        <ClickMessageApp mess={newMessage} />
+                    )}
                 </div>
             </div>
             <div className="bg-[#f0f4f8] py-4 px-6" style={{ position: "relative", bottom: 0, left: 0 }}>
@@ -127,7 +145,6 @@ export function MessageApp({ backClick, user, socket }) {
                         e.preventDefault();
 
                         if (message.trim() !== "") {
-                            // console.log("Formulaire rempli avec:", message);
                             if (socket && socket.readyState === WebSocket.OPEN) {
                                 console.log(user);
 
@@ -183,25 +200,30 @@ function ShowEmoji({ onEmojiSelect }) {
         </div>
     );
 }
-function ReceivedMessage() {
+function ReceivedMessage({ mess }) {
+
     return (
         <div className="flex justify-end">
+            <div className="bg-[#e6f4ea] text-sm rounded-lg px-4 py-3 max-w-[70%]">
+                <p>{mess}</p>
+            </div>
+        </div>
+    );
+}
+
+function SendingMessage({ mess }) {
+    console.log("sending", mess);
+
+    return (
+        <div className="flex">
             <div className="bg-[#f0f4f8] text-sm rounded-lg px-4 py-3 max-w-[70%]">
-                <p>Hey there! How are you doing today?</p>
+                <p>{mess}</p>
             </div>
         </div>
     )
 }
 
-function SendingMessage() {
-    return (
-        <div className="flex">
-            <div className="bg-[#e6f4ea] text-sm rounded-lg px-4 py-3 max-w-[70%]">
-                <p>I'm doing great, thanks for asking! It's good to hear from you.</p>
-            </div>
-        </div>
-    )
-}
+
 
 function SendIcon(props) {
     return (

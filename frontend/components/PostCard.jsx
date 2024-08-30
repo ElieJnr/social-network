@@ -18,7 +18,7 @@ export default function Posts() {
   useEffect(() => {
     if (!isMounted) {
       fetchAllPosts(setPosts);
-      console.log("Component mounted");
+      // console.log("Component mounted");
       setIsMounted(true);
     }
   }, [isMounted]);

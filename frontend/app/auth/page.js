@@ -48,6 +48,7 @@ export default function RegisterForm() {
 
     try {
       const response = await authentification(data);
+      
       if (response.status != 201) {
         toast({
           title: "Registration Failed",

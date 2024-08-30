@@ -120,7 +120,7 @@ func (p *PostService) GetAllPosts(w http.ResponseWriter, r *http.Request) ([]mod
 		return nil, fmt.Errorf("error iterating over posts: %w", err)
 	}
 
-	fmt.Println("all posts retrieved successfully")
+	// fmt.Println("all posts retrieved successfully")
 
 	return allPosts, nil
 }

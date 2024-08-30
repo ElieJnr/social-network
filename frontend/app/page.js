@@ -12,8 +12,9 @@ export default function HomePage() {
   const socket = useWebSocket('ws://localhost:8080/ws');
 
   return (
+
     <div className="flex flex-col h-screen">
-      <NavBar />
+      <NavBar socket={socket} />
       <div className="flex-1 grid grid-cols-[350px_1fr_400px] gap-6 p-6">
         <div className="space-y-6">
           <ProfileCard />
@@ -29,5 +30,6 @@ export default function HomePage() {
         </div>
       </div>
     </div>
+
   );
 }

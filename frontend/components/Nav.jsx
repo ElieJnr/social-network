@@ -1,17 +1,17 @@
 "use client"
 import Link from "next/link"
 import { Input } from "@/components/ui/input"
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem } from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
-import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet"
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 import { userConnect } from "@/app/actions/users";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Notifications } from "./notifications"
 
 
-export default function NavBar() {
+export default function NavBar({ socket }) {
   const [userOnLine, setUserOnLine] = useState(null)
   const handleUserClick = (userId) => {
     window.location.href = `/profil?userId=${userId}`;

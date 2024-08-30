@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { userConnect } from "@/app/actions/users";
+import { userConnect } from "@/app/actions";
+
 const { CalendarDaysIcon, UsersIcon } = require("lucide-react");
 const { Card, CardContent } = require("./ui/card");
 const { Avatar, AvatarImage, AvatarFallback } = require("./ui/avatar");

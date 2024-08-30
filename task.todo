@@ -9,7 +9,7 @@ Social Network App:
             ✔ Implémenter le système de migration @done(24-08-26 21:21)
             ✔ Créer et organiser les fichiers de migration @done(24-08-26 21:21)
         Frontend :
-            ☐ Mettre en place l'infrastructure frontend pour communiquer avec le backend
+            ✔ Mettre en place l'infrastructure frontend pour communiquer avec le backend @done(24-08-28 13:33)
     Authentification et Profil Utilisateur :
         Backend :
             ✔ Créer le middleware d'authentification @done(24-08-26 21:21)
@@ -17,22 +17,22 @@ Social Network App:
             ✔ Implémenter la connexion @done(24-08-26 21:21)
             ✔ Implémenter la déconnexion @done(24-08-26 21:23)
             ✔ Gérer les sessions et les cookies @done(24-08-26 21:22)
-            ☐ Développer la logique des profils utilisateurs
+            ☐ Développer la logique des profils utilisateurs @started(24-08-28 13:42)  @fakeita
             ✔ Implémenter l'option profil public/privé @done(24-08-26 21:22)
-            ☐ Implémenter le système de followers
-            ☐ Gérer les demandes de suivi pour les profils privés
+            ✔ Implémenter le système de followers @done(24-08-28 13:35)
+            ☐ Gérer les demandes de suivi pour les profils privés @started(24-08-28 13:42)
         Frontend :
             ✔ Créer le formulaire d'inscription @done(24-08-26 21:22)
             ✔ Créer le formulaire de connexion @done(24-08-26 21:22)
-            ☐ Développer l'interface du profil utilisateur
-            ☐ Implémenter l'affichage des followers et des utilisateurs suivis
+            ☐ Développer l'interface du profil utilisateur @started(24-08-28 13:41)
+            ☐ Implémenter l'affichage des followers et des utilisateurs suivis @started(24-08-28 13:42)
     Posts et Commentaires :
         Backend :
             ✔ Développer la logique de création de posts @done(24-08-19 14:50)
             ✔ Gérer les posts @done(24-08-19 14:50)
             ✔ Gérer les posts image @done(24-08-19 14:50)
             ✔ Implémenter le système de commentaires @done(24-08-26 21:23)
-            ✔ Gérer les likes pour les posts et commentaires @done(24-08-29 19:58)
+            ✔ Gérer les likes pour les posts et commentaires @done(24-08-28 13:49)
             ✔ Gérer les options de confidentialité des posts @done(24-08-19 14:50)
             ✔ Implémenter l'option public @done(24-08-19 14:50)
             ✔ Implémenter l'option privé @done(24-08-19 14:50)
@@ -59,16 +59,16 @@ Social Network App:
             ☐ Implémenter l'interface de gestion des événements
     Chat et Notifications :
         Backend :
-            ☐ Développer le middleware WebSocket pour les connexions en temps réel
-            ☐ Implémenter le système de messagerie privée
+            ✔ Développer le middleware WebSocket pour les connexions en temps réel @done(24-08-28 13:45)
+            ✔ Implémenter le système de messagerie privée @done(24-08-28 13:45)
             ☐ Créer les salons de discussion pour les groupes
-            ☐ Développer le système de notifications @started(24-08-16 19:58)
+            ✔ Développer le système de notifications @started(24-08-16 19:58) @done(24-08-28 13:46) @lasted(1w4d17h48m10s)
             ✔ Notifications pour les demandes de suivi @done(24-08-18 15:54)
             ✔ Notifications pour les invitations de groupe @done(24-08-18 15:54)
             ✔ Notifications pour les demandes de rejoindre un groupe @done(24-08-18 15:54)
             ✔ Notifications pour la création d'événements @done(24-08-18 15:54)
         Frontend :
-            ☐ Créer l'interface de chat en temps réel
+            ✔ Créer l'interface de chat en temps réel @done(24-08-28 13:46)
             ☐ Implémenter l'affichage des notifications
     ✘ Docker et Tests :
         Backend :

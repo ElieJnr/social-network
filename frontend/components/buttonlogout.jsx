@@ -12,7 +12,7 @@ export default function LogoutButton() {
       });
 
       if (response.ok) {
-        router.push("/auth");
+        router.push("/auth/login");
       } else {
         console.error("Failed to log out");
       }

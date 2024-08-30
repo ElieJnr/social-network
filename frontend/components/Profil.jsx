@@ -1,5 +1,6 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import Image from "next/image";
 
 export function Profil() {
   return (
@@ -70,7 +71,7 @@ export function Profil() {
           </div>
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
             <div className="bg-card rounded-lg overflow-hidden">
-              <img
+              <Image
                 src="/placeholder.svg"
                 alt="Post Image"
                 width={600}
@@ -82,7 +83,7 @@ export function Profil() {
               </div>
             </div>
             <div className="bg-card rounded-lg overflow-hidden">
-              <img
+              < Image
                 src="/placeholder.svg"
                 alt="Post Image"
                 width={600}
@@ -94,7 +95,7 @@ export function Profil() {
               </div>
             </div>
             <div className="bg-card rounded-lg overflow-hidden">
-              <img
+              < Image
                 src="/placeholder.svg"
                 alt="Post Image"
                 width={600}

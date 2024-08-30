@@ -13,8 +13,9 @@ import { Notifications } from "./notifications"
 
 export default function NavBar() {
   const [userOnLine, setUserOnLine] = useState(null)
-  const router = useRouter()
-  
+  const handleUserClick = (userId) => {
+    window.location.href = `/profil?userId=${userId}`;
+  };
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -55,7 +56,7 @@ export default function NavBar() {
             placeholder="Search"
             className="pl-9 pr-4 focus:outline-none focus:ring-1 focus:ring-primary" />
         </div>
-        <Notifications/>
+        <Notifications />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="relative">
@@ -69,15 +70,15 @@ export default function NavBar() {
             <DropdownMenuLabel>Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link  href={ userOnLine ?`/profil?userId=${userOnLine.id}` : "#"}
-                onClick={(e) => {
-                  e.preventDefault();
-                  router.push(`/profil?userId=${userOnLine.id}`);
-                }}
-                prefetch={false} className="flex items-center gap-2">
+              <button
+                onClick={() => handleUserClick(userOnLine ? userOnLine.id : null)}
+                disabled={!userOnLine}
+                className="flex items-center gap-2"
+              >
                 <UserIcon className="h-4 w-4" />
                 Profile
-              </Link>
+              </button>
+
             </DropdownMenuItem>
             <DropdownMenuItem>
               <Link href="#" className="flex items-center gap-2" prefetch={false}>

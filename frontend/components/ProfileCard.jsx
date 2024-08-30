@@ -1,16 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+//import { useRouter } from "next/navigation";
 import { userConnect } from "@/app/actions/users";
-import { userConnect } from "@/app/actions";
 
 const { CalendarDaysIcon, UsersIcon } = require("lucide-react");
 const { Card, CardContent } = require("./ui/card");
 const { Avatar, AvatarImage, AvatarFallback } = require("./ui/avatar");
 
 export default function ProfileCard() {
-  const router = useRouter()
+ // const router = useRouter()
   const [user, setUser] = useState(null)
   useEffect(() => {
     const fetchUser = async () => {
@@ -26,7 +25,7 @@ export default function ProfileCard() {
 
     return (
       <Card>
-        <CardContent onClick={() => router.push(`/profil?userId=${user.id}`)}  className="flex flex-col items-center gap-4 p-6">
+        <CardContent   className="flex flex-col items-center gap-4 p-6">
           <Avatar className="w-20 h-20">
             <AvatarImage src="/placeholder-user.jpg" alt="@shadcn" />
             <AvatarFallback>CN</AvatarFallback>

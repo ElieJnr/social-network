@@ -315,6 +315,7 @@ func GetOwnPosts(db *sql.DB, userId string) ([]models.Posts, error) {
 	return ownPosts, nil
 }
 
+// verifie si l'utilisateur est un follower pour les posts
 func IsFollowing(db *sql.DB, userId string, currentUserId string) (bool, error) {
 	if currentUserId == userId {
 		return true, nil

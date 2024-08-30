@@ -3,7 +3,7 @@
 const { ThumbsUp, ThumbsDown, MessageCircle, ShareIcon, HeartIcon, MessageCircleIcon, ChevronDown, ChevronUp } = require("lucide-react");
 const { AvatarFallback, AvatarImage, Avatar } = require("./ui/avatar");
 const { CardContent, Card, CardFooter } = require("./ui/card");
-import { fetchAllPosts } from '@/app/actions/post';
+import { fetchAllPosts, fetchLike } from '@/app/actions/post';
 const { default: Image } = require("next/image");
 const { useEffect, useState } = require('react');
 const { Textarea } = require("./ui/textarea");
@@ -41,9 +41,23 @@ function PostCard({ post }) {
     setShowComments(!showComments);
   };
 
+
+  const handleLikeClick = async () => {
+    const formData = new FormData();
+    formData.append("like-postId", post.PostID);
+
+    try {
+      await fetchLike(formData);
+      window.location.href = "/";
+    } catch (error) {
+      console.error("Error liking post:", error);
+    }
+  };
+
   return (
     <Card>
       <CardContent className="space-y-4">
+        {/* <br /> */}
         <div className="flex items-center gap-4">
           <Avatar className="w-10 h-10">
             <AvatarImage src={post.Author.Avatar || "/placeholder-user.jpg"} alt={post.Author.Username} />
@@ -56,6 +70,10 @@ function PostCard({ post }) {
             <span className="text-muted-foreground">•</span>
             <span className="text-muted-foreground">{post.Formated_date || "just now"}</span>
           </div>
+
+          {/* <Button  variant="outline" size="sm" className="ml-auto">
+            Follow
+          </Button> */}
         </div>
         <div className="text-sm grid gap-2 p-4">
           {post.Content || "No content available."}
@@ -73,8 +91,10 @@ function PostCard({ post }) {
         <CardFooter className="grid gap-2 p-4">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1">
-              <Button variant="ghost" size="icon">
-                <HeartIcon className="h-5 w-5" />
+              <Button variant="ghost" size="icon" onClick={handleLikeClick}>
+                <HeartIcon
+                  className={`h-5 w-5 ${post.Like_status ? 'text-red-500' : ''}`}
+                />
               </Button>
               <span>{post.Like_nbr || 0}</span>
             </div>

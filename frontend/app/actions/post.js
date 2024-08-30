@@ -35,7 +35,7 @@ export async function fetchAllPosts(setPosts) {
   }
 }
 
-export async function fetchPostComments(formData){
+export async function fetchPostComments(formData) {
   try {
     const response = await fetch("http://localhost:8080/comment/create", {
       method: "POST",
@@ -54,3 +54,22 @@ export async function fetchPostComments(formData){
   }
 }
 
+export async function fetchLike(formData) {
+  try {
+    const response = await fetch("http://localhost:8080/like", {
+      method: "POST",
+      body: formData,
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      throw new Error("Échec de la création du post");
+    }
+
+    return;
+  } catch (error) {
+    console.error("Erreur lors de la création du post :", error);
+    throw error;
+  }
+
+}

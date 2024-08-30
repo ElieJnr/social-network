@@ -5,11 +5,7 @@ import (
 	"net/http"
 	"socialNetwork/pkg/models"
 	"socialNetwork/pkg/services"
-<<<<<<< Updated upstream
 	"socialNetwork/utils"
-	"time"
-=======
->>>>>>> Stashed changes
 
 	"github.com/gorilla/websocket"
 )
@@ -88,7 +84,7 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error 
 				ReceiverID: msg.ReceiverId,
 				SenderID:   msg.SenderId,
 				Type:       "msg",
-				Message:   msg.Content,
+				Message:    msg.Content,
 			}
 
 			er := NotifService.CreateNotification(&notif)

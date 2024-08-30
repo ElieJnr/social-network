@@ -6,6 +6,7 @@ import (
 
 var (
 	UserService    *services.UserService
+	LikeService    *services.LikeService
 	PostService    *services.PostService
 	ChatService    *services.ChatService
 	NotifService   *services.NotifService

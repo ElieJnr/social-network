@@ -33,6 +33,10 @@ func InitializeRoutes() *mux.Router {
 
 	// group
 
+
+	// Reactions
+	router.Handle("/like", middlewares.AuthMiddleware(handlers.LikeHandler())).Methods("POST")
+
 	// comments
 	router.Handle("/comment/create", middlewares.AuthMiddleware(handlers.CreateCommentHandler())).Methods("POST")
 

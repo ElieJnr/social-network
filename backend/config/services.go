@@ -7,6 +7,7 @@ import (
 
 func InitServices() {
 	handlers.PostService = services.NewPostService()
+	handlers.LikeService = services.NewLikeService()
 	handlers.ChatService = services.NewChatService()
 	handlers.NotifService = services.NewNotifService()
 	handlers.UserService = services.NewUserService()

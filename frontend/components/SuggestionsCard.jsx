@@ -6,9 +6,9 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link"
 
+const { Card, CardHeader, CardTitle, CardContent } = require("./ui/card");
 const { Avatar, AvatarImage, AvatarFallback } = require("./ui/avatar");
 const { Button } = require("./ui/button");
-const { Card, CardHeader, CardTitle, CardContent } = require("./ui/card");
 
 export default function SuggestionsCard() {
   const [users, setUsers] = useState(null)
@@ -31,10 +31,6 @@ export default function SuggestionsCard() {
     const fetchUsers = async () => {
       try {
         const response = await allUsers();
-<<<<<<< Updated upstream
-=======
-        // console.log(response);
->>>>>>> Stashed changes
         setUsers(response.users);
 
 
@@ -44,7 +40,6 @@ export default function SuggestionsCard() {
     };
     fetchUsers();
   }, []);
-<<<<<<< Updated upstream
   useEffect(() => {
     if (users) {
       setTabFilter(search(users, userOnLine?.follows || []));
@@ -52,11 +47,6 @@ export default function SuggestionsCard() {
       console.log("Something went wrong! users is null");
     }
   }, [users, userOnLine]);
-=======
-  // console.log(users);
- 
-  
->>>>>>> Stashed changes
   const handleClick = (user, statut) => {
     console.log(user.id);
     setHiddenUsers(prev => [...prev, user]);

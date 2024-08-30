@@ -31,9 +31,6 @@ export default function SuggestionsCard() {
         const response = await allUsers();
         console.log(response);
         setUsers(response.users);
-        setUsers(users.filter(user => 
-          user?.follows?.some(follow => follow.followedUser === userConnect.id)
-        ));
       } catch (error) {
         console.error("Error fetching user:", error);
       }

@@ -21,7 +21,7 @@ export async function makePostFetch(url, formData) {
     method: "POST",
     credentials: "include",
     cache: "no-store",
-    body: JSON.stringify(formData),
+    body: formData,
   });
 
   const data = await response.json();

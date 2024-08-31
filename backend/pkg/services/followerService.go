@@ -106,3 +106,44 @@ func (f *FollowerService) GetUserFollow(userId string, ok bool) ([]models.Follow
 
 	return follows, nil
 }
+
+
+func (f *FollowerService) UnfollowUser(userId uuid.UUID, followedUser uuid.UUID, statut bool) error {
+	var existingId string
+	queryCheck := `
+		SELECT id 
+		FROM Followers 
+		WHERE userId = ? AND followedId = ?
+	`
+	err := f.GetDB().QueryRow(queryCheck, userId, followedUser).Scan(&existingId)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			// Si la relation n'existe pas, on crée une nouvelle entrée
+			id, err := utils.GenerateUuid()
+			if err != nil {
+				return fmt.Errorf("could not generate UUID: %w", err)
+			}
+			queryInsert := `
+				INSERT INTO Followers (id, userId, followedId, statut) 
+				VALUES (?, ?, ?, true)
+			`
+			_, err = f.GetDB().Exec(queryInsert, id, userId, followedUser, statut)
+			if err != nil {
+				return fmt.Errorf("could not insert follower: %w", err)
+			}
+		} else {
+			return fmt.Errorf("error checking existing follower: %w", err)
+		}
+	} else {
+		queryDelete := `
+			DELETE FROM Followers 
+			WHERE id = ?
+		`
+		_, err = f.GetDB().Exec(queryDelete, existingId)
+		if err != nil {
+			return fmt.Errorf("could not delete follower: %w", err)
+		}
+	}
+	return nil
+}

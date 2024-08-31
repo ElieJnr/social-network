@@ -2,16 +2,18 @@
 
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
-import { GetAllInfoForUserById, userConnect } from "../actions/users";
+import { GetAllInfoForUserById, search, userConnect } from "../actions/users";
 import NavBar from "@/components/Nav";
 import UserListModal from "./popup";
 import Image from "next/image";
+import { follow } from "../actions/follow";
 
 export default function Profil() {
     const [userId, setUserId] = useState(null);
     const [user, setUser] = useState(null);
     const [userOnLine, setUserOnLine] = useState(null)
-
+    const [refreshTrigger, setRefreshTrigger] = useState(false);
+    const [posts, setPosts] = useState([])
     const [isFollowersOpen, setFollowersOpen] = useState(false);
     const [isFollowingOpen, setFollowingOpen] = useState(false);
 
@@ -32,7 +34,7 @@ export default function Profil() {
             }
         };
         fetchUser();
-    }, []);
+    }, [refreshTrigger]);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -47,13 +49,18 @@ export default function Profil() {
         };
 
         fetchUserData();
-    }, [userId]);
-
-    if (!user) {
+    }, [userId, refreshTrigger]);
+   
+    if (!user || !userOnLine) {
         return <div>Loading...</div>;
     }
+    const handleClick = (user, statut) => {
+        console.log(user.id);
+        follow(userOnLine.id, user.id, statut, false);
+        setRefreshTrigger(prev => !prev);
+       
+    };
 
-    console.log(user.follows);
 
     return (
         <>
@@ -70,11 +77,10 @@ export default function Profil() {
                             </div>
                             <div className="flex items-center gap-4">
                                 {userOnLine.id !== user.id && (
-                                    <Button variant="outline" size="sm">
-                                        Follow
+                                    <Button onClick={() => handleClick(user, !user.isPrivate)} variant="outline" size="sm">
+                                       {(search([user], userOnLine?.follows || [])).length === 0 ? "UnFollow" : "Follow"}
                                     </Button>
                                 )}
-
                                 <Button variant="ghost" size="icon" className="rounded-full">
                                     <MoveHorizontalIcon className="w-5 h-5" />
                                 </Button>

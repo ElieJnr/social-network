@@ -9,6 +9,7 @@ import { userConnect } from "@/app/actions/users";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Notifications } from "./notifications"
+import { MsgNotif } from "./MsgNotig";
 
 
 export default function NavBar({ socket }) {
@@ -56,6 +57,7 @@ export default function NavBar({ socket }) {
             placeholder="Search"
             className="pl-9 pr-4 focus:outline-none focus:ring-1 focus:ring-primary" />
         </div>
+        <MsgNotif/>
         <Notifications socket={socket} />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

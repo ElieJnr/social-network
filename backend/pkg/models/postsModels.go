@@ -9,20 +9,21 @@ type Author struct {
 	Lastname  string
 	Username  string
 	Avatar    string
+	Email     string
 }
 
 type Posts struct {
-	PostID         string
-	UserID         string
-	Content        string
-	Image_url      string
-	Post_status    string
-	Creation_date  time.Time
-	Formated_date  string
-	Author         Author
-	HasImage       bool
-	Can_see        bool
-	Like_nbr       int
+	PostID        string
+	UserID        string
+	Content       string
+	Image_url     string
+	Post_status   string
+	Creation_date time.Time
+	Formated_date string
+	Author        Author
+	HasImage      bool
+	Can_see       bool
+	Like_nbr      int
 	// Dislike_nbr    int
 	Comments_nbr   int
 	IsFollower     bool
@@ -30,8 +31,6 @@ type Posts struct {
 	Like_status    bool
 	Dislike_status bool
 }
-
- 
 
 // type OwnPosts struct {
 // 	PostID        string
@@ -52,6 +51,6 @@ type CheckResult struct {
 	Content      string
 	PhotoURL     string
 	Status       string
-	PostId	 string 
+	PostId       string
 	AllowedUsers []string
 }

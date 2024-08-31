@@ -38,7 +38,7 @@ func (s *SessionService) SessionStart(user *models.User, w http.ResponseWriter) 
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return err
     }
-    ExpiresAT := time.Now().UTC().Add(time.Hour)
+    ExpiresAT := time.Now().UTC().Add(time.Hour*24)
     expired_at := ExpiresAT.Format("2006-01-02 15:04:05")
     maxAge := 4400
     if saveErr := s.SaveSession(SessionToken, user.Username, expired_at, user.Id); saveErr != nil {

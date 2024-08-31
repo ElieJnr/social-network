@@ -66,7 +66,7 @@ function UserPlusIcon(props) {
 }
 function UsersIcon(props) {
     return (
-        (<div className="flex-shrink-0 rounded-full bg-red-500 p-2 text-white">
+        (<div className="flex-shrink-0 rounded-full bg-green-500 p-2 text-white">
             <svg
                 {...props}
                 xmlns="http://www.w3.org/2000/svg"

@@ -40,6 +40,7 @@ func PostHandler(types string) http.HandlerFunc {
 func CreatePostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		CreatePost(w, r)
+		// PostHandler("allPost")(w, r)
 	}
 }
 
@@ -63,7 +64,7 @@ func CheckPost(w http.ResponseWriter, r *http.Request) models.CheckResult {
 	content := strings.TrimSpace(r.FormValue("thread"))
 	privacy := r.FormValue("privacy")
 	photoURL := utils.UploadImage(w, r, "post")
-	fmt.Println("check post values", content, privacy, photoURL)
+	// fmt.Println("check post values", content, privacy, photoURL)
 
 	var allowedUsers []string
 	if privacy == "almost_private" {

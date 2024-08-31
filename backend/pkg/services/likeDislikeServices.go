@@ -51,7 +51,7 @@ func (l *LikeService) LikeTreatment(postID string, w http.ResponseWriter, r *htt
 		}
 	}
 
-	fmt.Println("Like inserted/updated successfully")
+	// fmt.Println("Like inserted/updated successfully")
 	return nil
 }
 
@@ -67,7 +67,7 @@ func (l *LikeService) GetExistingLike(postID, userID string) (bool, error) {
 }
 
 func (l *LikeService) InsertLike(postID, userID string, liked bool) error {
-	fmt.Println("InsertLike here we GOOOOOOOOOOO")
+	// fmt.Println("InsertLike here we GOOOOOOOOOOO")
 	query := `INSERT INTO LikesDislikes (postId, userId, liked) VALUES (?, ?, ?)`
 	_, err := l.db.Exec(query, postID, userID, liked)
 	return err

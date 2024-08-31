@@ -38,7 +38,7 @@ func WebsocketHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	ClientWebSocketConnections[sender] = conn
-	fmt.Println("clients websocket:", ClientWebSocketConnections)
+	// fmt.Println("clients websocket:", ClientWebSocketConnections)
 
 	// ------------------------------------------
 	go Reader(conn, w, r)

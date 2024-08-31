@@ -11,35 +11,33 @@ const { Label } = require("./ui/label");
 import { fetchCreatePost } from '@/app/actions/post';
 import { mutate } from "swr";
 
-export default function CreatePostCard() {
-    const [thread, setThread] = useState('');
-    const [privacy, setPrivacy] = useState('public');
-    const [file, setFile] = useState(null);
-  
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      const formData = new FormData();
-      formData.append('thread', thread);
-      formData.append('privacy', privacy);
-      if (file) {
-        formData.append('file', file);
-      }
-  
-      try {
-        const data = await fetchCreatePost(formData);
-        console.log('Post created:', data);
-        
 
-        // mutate('http://localhost:8080/posts');
-        window.location.href = "/";
-  
-        setThread('');
-        setPrivacy('public');
-        setFile(null);
-      } catch (error) {
-        console.error('Error creating post:', error);
-      }
-    };
+export default function CreatePostCard() {
+  const [thread, setThread] = useState('');
+  const [privacy, setPrivacy] = useState('public');
+  const [file, setFile] = useState(null);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append('thread', thread);
+    formData.append('privacy', privacy);
+    if (file) {
+      formData.append('file', file);
+    }
+
+    try {
+      await fetchCreatePost(formData);
+      // Utiliser mutate pour mettre à jour les posts sans recharger la page
+      mutate('http://localhost:8080/posts');
+      
+      setThread('');
+      setPrivacy('public');
+      setFile(null);
+    } catch (error) {
+      console.error('Error creating post:', error);
+    }
+  };
   
     return (
       <Card>

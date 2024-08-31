@@ -1,14 +1,11 @@
 "use client";
 
-const { ThumbsUp, ThumbsDown, MessageCircle, ShareIcon, HeartIcon, MessageCircleIcon, ChevronDown, ChevronUp } = require("lucide-react");
 const { AvatarFallback, AvatarImage, Avatar } = require("./ui/avatar");
-const { CardContent, Card, CardFooter } = require("./ui/card");
 import { fetchPostComments } from '@/app/actions/post';
-const { useEffect, useState } = require('react');
-const { default: Image } = require("next/image");
+const { useState } = require('react');
 const { Textarea } = require("./ui/textarea");
 const { Button } = require("./ui/button");
-import Link from "next/link";
+import { mutate } from 'swr';
 
 export default function CommentCard({ postId, commentData }) {
     console.log('Received commentData:', commentData);
@@ -32,8 +29,6 @@ export default function CommentCard({ postId, commentData }) {
         </div>
     );
 }
-
-
 
 export function CommentList({ comments }) {
     console.log('Comments in CommentList:', comments);
@@ -102,7 +97,9 @@ export function CommentForm({ postId }) {
 
         try {
             const data = await fetchPostComments(formData);
-            console.log('Comment created:', data);
+            // console.log('Comment created:', data);
+            mutate('http://localhost:8080/posts');
+
             setCommentContent('');
             setFile(null);
         } catch (error) {

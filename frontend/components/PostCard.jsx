@@ -1,35 +1,34 @@
 "use client";
 
-const { ThumbsUp, ThumbsDown, MessageCircle, ShareIcon, HeartIcon, MessageCircleIcon, ChevronDown, ChevronUp } = require("lucide-react");
+const {HeartIcon, MessageCircleIcon} = require("lucide-react");
 const { AvatarFallback, AvatarImage, Avatar } = require("./ui/avatar");
 const { CardContent, Card, CardFooter } = require("./ui/card");
-import { fetchAllPosts, fetchLike } from '@/app/actions/post';
-const { default: Image } = require("next/image");
-const { useEffect, useState } = require('react');
-const { Textarea } = require("./ui/textarea");
+import { fetchLike } from '@/app/actions/post';
 const { Button } = require("./ui/button");
-import Link from "next/link";
 import CommentCard from './CommentCard';
+const { useState } = require('react');
+import useSWR, { mutate } from 'swr';
+
+const fetcher = (url) => fetch(url, { credentials: 'include' }).then((res) => res.json());
 
 export default function Posts() {
-  const [posts, setPosts] = useState([]);
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    if (!isMounted) {
-      fetchAllPosts(setPosts);
-      // console.log("Component mounted");
-      setIsMounted(true);
-    }
-  }, [isMounted]);
+  const { data: posts, mutate, isValidating } = useSWR('http://localhost:8080/posts', fetcher);
 
   return (
     <div className="space-y-4">
-      {posts && posts.length > 0 ? (
-        posts.map(post =>
-          post.Can_see ? <PostCard key={post.PostID} post={post} /> : null
-        )
-      ) : null}
+      {isValidating && !posts ? (
+        <>
+          <SkeletonPostCard />
+          <SkeletonPostCard />
+          <SkeletonPostCard />
+        </>
+      ) : (
+        posts && posts.length > 0 ? (
+          posts.map(post => 
+            post.Can_see ? <PostCard key={post.PostID} post={post} /> : null
+          )
+        ) : null
+      )}
     </div>
   );
 }
@@ -48,7 +47,8 @@ function PostCard({ post }) {
 
     try {
       await fetchLike(formData);
-      window.location.href = "/";
+      mutate('http://localhost:8080/posts');
+      // window.location.href = "/";
     } catch (error) {
       console.error("Error liking post:", error);
     }
@@ -110,5 +110,41 @@ function PostCard({ post }) {
       </CardContent>
     </Card>
 
+  );
+}
+
+function SkeletonPostCard() {
+  return (
+    <Card className="animate-pulse">
+      <CardContent className="space-y-4">
+        <div className="flex items-center gap-4 mt-2">
+          <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
+          <div className="flex-1 space-y-2">
+            <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+            <div className="h-4 bg-gray-300 rounded w-1/4"></div>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <div className="h-4 bg-gray-300 rounded w-full"></div>
+          <div className="h-4 bg-gray-300 rounded w-5/6"></div>
+        </div>
+        
+        <div className="h-48 bg-gray-300 rounded"></div>
+
+        <CardFooter className="grid gap-2 p-4">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              <div className="w-5 h-5 bg-gray-300 rounded-full"></div>
+              <div className="h-4 bg-gray-300 rounded w-6"></div>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-5 h-5 bg-gray-300 rounded-full"></div>
+              <div className="h-4 bg-gray-300 rounded w-6"></div>
+            </div>
+          </div>
+        </CardFooter>
+      </CardContent>
+    </Card>
   );
 }

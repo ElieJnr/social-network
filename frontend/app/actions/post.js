@@ -10,7 +10,7 @@ export async function fetchCreatePost(formData) {
     if (!response.ok) {
       throw new Error("Échec de la création du post");
     }
-
+    fetchAllPosts();
     return;
   } catch (error) {
     console.error("Erreur lors de la création du post :", error);

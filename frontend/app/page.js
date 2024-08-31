@@ -13,7 +13,6 @@ export default function HomePage() {
   console.log(socket);
   
   return (
-
     <div className="flex flex-col h-screen">
       <NavBar socket={socket} />
       <div className="flex-1 grid grid-cols-[350px_1fr_400px] gap-6 p-6">
@@ -22,7 +21,9 @@ export default function HomePage() {
           <SuggestionsCard />
         </div>
         <div className="space-y-6">
-          <CreatePostCard />
+          <div className="w-full p-2">
+            <CreatePostCard />
+          </div>
           <PostCard />
         </div>
         <div className="space-y-6">
@@ -30,6 +31,6 @@ export default function HomePage() {
         </div>
       </div>
     </div>
-
   );
 }
+

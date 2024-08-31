@@ -23,7 +23,7 @@ type Posts struct {
 	HasImage       bool
 	Can_see        bool
 	Like_nbr       int
-	Dislike_nbr    int
+	// Dislike_nbr    int
 	Comments_nbr   int
 	IsFollower     bool
 	Comments       []Comment

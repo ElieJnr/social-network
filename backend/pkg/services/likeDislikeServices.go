@@ -20,8 +20,7 @@ func NewLikeService() *LikeService {
 }
 
 func (l *LikeService) LikeTreatment(postID string, w http.ResponseWriter, r *http.Request) error {
-	fmt.Println("LikeTreatment here we GOOOOOOOOOOO")
-	// Récupération de l'utilisateur actuel
+
 	currentUser, err := utils.CurrentUser(w, r)
 	if err != nil {
 		fmt.Println("failed to get current user")
@@ -44,8 +43,8 @@ func (l *LikeService) LikeTreatment(postID string, w http.ResponseWriter, r *htt
 		}
 	} else {
 		// Basculer le statut du like
-		newLikeStatus := !liked
-		err = l.UpdateLike(postID, currentUser.UserId, newLikeStatus)
+		// newLikeStatus := !liked
+		err = l.UpdateLike(postID, currentUser.UserId, !liked)
 		if err != nil {
 			fmt.Println("error updating like")
 			return fmt.Errorf("error updating like: %w", err)
@@ -57,7 +56,6 @@ func (l *LikeService) LikeTreatment(postID string, w http.ResponseWriter, r *htt
 }
 
 func (l *LikeService) GetExistingLike(postID, userID string) (bool, error) {
-	fmt.Println("GetExistingLike here we GOOOOOOOOOOO")
 	query := `SELECT liked FROM LikesDislikes WHERE postId = ? AND userId = ?`
 	var liked bool
 	row := l.db.QueryRow(query, postID, userID)
@@ -76,7 +74,6 @@ func (l *LikeService) InsertLike(postID, userID string, liked bool) error {
 }
 
 func (l *LikeService) UpdateLike(postID, userID string, liked bool) error {
-	fmt.Println("UpdateLike here we GOOOOOOOOOOO")
 	query := `UPDATE LikesDislikes SET liked = ? WHERE postId = ? AND userId = ?`
 	_, err := l.db.Exec(query, liked, postID, userID)
 	return err

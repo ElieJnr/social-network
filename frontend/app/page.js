@@ -25,7 +25,6 @@ export default function HomePage() {
           <PostCard />
         </div>
         <div className="space-y-6">
-          {/* <TrendingCard /> */}
           <ClickMessageApp socket={socket} />
         </div>
       </div>

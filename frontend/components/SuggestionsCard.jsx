@@ -15,7 +15,6 @@ export default function SuggestionsCard() {
   const [userOnLine, setUserOnLine] = useState(null)
   const [hiddenUsers, setHiddenUsers] = useState([]);
   const [tabFilter, setTabFilter] = useState([])
-  const router = useRouter()
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -50,7 +49,7 @@ export default function SuggestionsCard() {
   const handleClick = (user, statut) => {
     console.log(user.id);
     setHiddenUsers(prev => [...prev, user]);
-    follow(userOnLine.id, user.id, statut)
+    follow(userOnLine.id, user.id, statut, true)
   }
   if (!users || !userOnLine) {
     return <div>Loading...</div>;

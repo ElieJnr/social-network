@@ -57,8 +57,7 @@ function PostCard({ post }) {
   return (
     <Card>
       <CardContent className="space-y-4">
-        {/* <br /> */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 mt-2"> {/* Ajout d'une marge en bas */}
           <Avatar className="w-10 h-10">
             <AvatarImage src={post.Author.Avatar || "/placeholder-user.jpg"} alt={post.Author.Username} />
             <AvatarFallback>{post.Author.Username ? post.Author.Username[0].toUpperCase() : 'U'}</AvatarFallback>
@@ -71,10 +70,11 @@ function PostCard({ post }) {
             <span className="text-muted-foreground">{post.Formated_date || "just now"}</span>
           </div>
 
-          {/* <Button  variant="outline" size="sm" className="ml-auto">
+          {post.IsFollower ? '' : <Button variant="outline" size="sm" className="ml-auto">
             Follow
-          </Button> */}
+          </Button>}
         </div>
+
         <div className="text-sm grid gap-2 p-4">
           {post.Content || "No content available."}
         </div>
@@ -109,5 +109,6 @@ function PostCard({ post }) {
         {showComments && <CommentCard postId={post.PostID} commentData={post.Comments} />}
       </CardContent>
     </Card>
+
   );
 }

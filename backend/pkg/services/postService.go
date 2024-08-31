@@ -167,12 +167,12 @@ func postDetails(db *sql.DB, post *models.Posts, w http.ResponseWriter, r *http.
 		return fmt.Errorf("failed to get number of likes: %w", err)
 	}
 
-	nbrDislike, err := GetNbrDislike(db, post.PostID)
-	if err != nil {
-		return fmt.Errorf("failed to get number of likes: %w", err)
-	}
+	// nbrDislike, err := GetNbrDislike(db, post.PostID)
+	// if err != nil {
+	// 	return fmt.Errorf("failed to get number of likes: %w", err)
+	// }
 
-	likeStatus, dislikeStatus, err := GetLikeDislikeStatus(db, post.PostID, post.UserID)
+	likeStatus, dislikeStatus, err := GetLikeDislikeStatus(db, post.PostID, currentUser.UserId)
 	if err != nil {
 		return fmt.Errorf("failed to get like/dislike status: %w", err)
 	}
@@ -201,7 +201,7 @@ func postDetails(db *sql.DB, post *models.Posts, w http.ResponseWriter, r *http.
 	post.Like_status = likeStatus
 	post.IsFollower = isFollowing
 	post.HasImage = post.Image_url != ""
-	post.Dislike_nbr = nbrDislike
+	// post.Dislike_nbr = nbrDislike
 	post.Dislike_status = dislikeStatus
 
 	return nil

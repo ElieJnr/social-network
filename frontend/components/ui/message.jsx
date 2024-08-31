@@ -90,24 +90,43 @@ function UserList({ id, name, lastMessage }) {
         </div>
     )
 }
-export function MessageApp({ backClick, user, socket, newMessage }) {
-    let [message, setMessage] = useState('');
-    let { getMessage, messageArrive } = useStore()
 
-
-    if (!messageArrive) {
-        return (
-            <div>
-                loading...
-            </div>
-        )
+const sendMessage = (message, socket, user, setMessage) => {
+    if (message.trim() && socket?.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({
+            Type: "sendMessage",
+            Content: message,
+            ReceiverId: user.Id
+        }));
+        setMessage('');
+    } else {
+        console.log("Le formulaire n'est pas rempli");
     }
+};
 
-    const handleEmojiSelect = (emoji) => {
-        setMessage((prevMessage) => prevMessage + emoji.emoji);
-    };
+const handleKeyPress = (e, message, socket, user, setMessage) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage(message, socket, user, setMessage);
+    }
+};
+
+const handleSubmit = (e, message, socket, user, setMessage) => {
+    e.preventDefault();
+    sendMessage(message, socket, user, setMessage);
+};
+
+const handleEmojiSelect = (emoji, setMessage) => {
+    setMessage((prev) => prev + emoji.emoji);
+};
+
+export function MessageApp({ backClick, user, socket }) {
+    const [message, setMessage] = useState('');
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const { getMessage } = useStore();
+
     return (
-        <div className="flex flex-col h-screen bg-white" style={{ height: "30%" }}>
+        <div className="flex flex-col  bg-white justify-center" style={{ height: "70vh" }}>
             <header className="bg-[#f0f4f8] py-4 px-6 flex items-center justify-between">
                 <div onClick={backClick} className="flex items-center gap-3">
                     <Button variant="ghost" size="icon">
@@ -118,62 +137,54 @@ export function MessageApp({ backClick, user, socket, newMessage }) {
                         <AvatarFallback>MS</AvatarFallback>
                     </Avatar>
                     <div>
-                        <p className="font-medium">{capitalize(user.Firstname) + " " + capitalize(user.Lastname)}</p>
+                        <p className="font-medium">{`${capitalize(user.Firstname)} ${capitalize(user.Lastname)}`}</p>
                         <p className="text-sm text-muted-foreground">Online</p>
                     </div>
                 </div>
             </header>
             <div className="flex-1 overflow-y-auto p-6">
                 <div className="grid gap-4">
-                    {getMessage && getMessage.map((messTab) => (
-                        messTab.user_id === user.Id ? (
-                            <SendingMessage key={messTab.id} mess={messTab.msg} />
-                        ) : (
-                            <ReceivedMessage key={messTab.id} mess={messTab.msg} />
+                    {getMessage?.map(({ id, receiver_id, user_id, msg }) => (
+                        (receiver_id === user.Id || user_id === user.Id) && (
+                            user_id === user.Id
+                                ? <SendingMessage key={id} mess={msg} />
+                                : <ReceivedMessage key={id} mess={msg} />
                         )
                     ))}
-
-                    {newMessage && (
-                        <ClickMessageApp mess={newMessage} />
-                    )}
                 </div>
             </div>
-            <div className="bg-[#f0f4f8] py-4 px-6" style={{ position: "relative", bottom: 0, left: 0 }}>
-                <form
-                    className="flex items-center gap-3"
-                    onSubmit={(e) => {
-                        e.preventDefault();
-
-                        if (message.trim() !== "") {
-                            if (socket && socket.readyState === WebSocket.OPEN) {
-                                console.log(user);
-
-                                socket.send(JSON.stringify({ Type: "sendMessage", Content: message, ReceiverId: user.Id }));
-                            }
-
-                        } else {
-                            console.log("Le formulaire n'est pas rempli");
-                        }
-                    }}
-                >
-                    <ShowEmoji onEmojiSelect={handleEmojiSelect} />
-                    <Input
-                        id="message"
-                        placeholder="Type your message..."
-                        className="flex-1"
-                        autoComplete="off"
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                    />
-                    <Button type="submit" size="icon">
-                        <SendIcon className="w-5 h-5" />
+            <div className="bg-[#f0f4f8] py-4 px-6 relative bottom-0 left-0">
+                <div className="flex items-center gap-3 justify-center">
+                    <Button variant="ghost" size="icon" type="button" onClick={() => setShowEmojiPicker((prev) => !prev)}>
+                        <ShowEmoji onEmojiSelect={(emoji) => handleEmojiSelect(emoji, setMessage)} />
                     </Button>
-                </form>
-
+                    <form
+                        className="flex items-center gap-3"
+                        style={{ width: "90%" }}
+                        onSubmit={(e) => handleSubmit(e, message, socket, user, setMessage)}
+                    >
+                        <Input
+                            id="message"
+                            placeholder="Type your message..."
+                            className="flex-1"
+                            autoComplete="off"
+                            value={message}
+                            onChange={(e) => setMessage(e.target.value)}
+                            onKeyPress={(e) => handleKeyPress(e, message, socket, user, setMessage)}
+                        />
+                        <Button type="submit" size="icon">
+                            <SendIcon className="w-5 h-5" />
+                        </Button>
+                    </form>
+                </div>
+                {showEmojiPicker && <Emoji onEmojiClick={(emoji) => handleEmojiSelect(emoji, setMessage)} />}
             </div>
         </div>
     );
 }
+
+
+
 
 
 function Emoji({ onEmojiClick }) {

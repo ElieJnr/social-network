@@ -7,7 +7,6 @@ import (
 
 func LikeHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("LikeHandler here we GOOOOOOOOOOO")
 		Like(w, r)
 	}
 }

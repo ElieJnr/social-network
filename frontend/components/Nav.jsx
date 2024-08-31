@@ -56,7 +56,7 @@ export default function NavBar({ socket }) {
             placeholder="Search"
             className="pl-9 pr-4 focus:outline-none focus:ring-1 focus:ring-primary" />
         </div>
-        <Notifications />
+        <Notifications socket={socket} />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="relative">

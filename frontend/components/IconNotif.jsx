@@ -126,7 +126,7 @@ function XIcon(props) {
     )
 }
 
-function IconNotif({ type, ...props }) {
+function GetIcon({ type, ...props }) {
     switch (type) {
         case "follow"://color-blue
             return UserPlusIcon(props)
@@ -144,4 +144,4 @@ function IconNotif({ type, ...props }) {
     }
 }
 
-export { BellIcon, MessageCircleIcon, UserPlusIcon, UsersIcon, CalendarIcon, IconNotif, XIcon }
+export { BellIcon, MessageCircleIcon, UserPlusIcon, UsersIcon, CalendarIcon, GetIcon, XIcon }

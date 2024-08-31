@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"socialNetwork/pkg/models"
 	"socialNetwork/pkg/services"
-	"socialNetwork/utils"
 
 	"github.com/gorilla/websocket"
 )
@@ -69,23 +68,10 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error 
 				return err
 			}
 		case "notifications":
-			id, err := utils.GenerateUuid()
-			if err != nil {
-				fmt.Println(err)
-			}
-
-			notif := models.Notification{
-				Id:         id,
-				ReceiverID: msg.ReceiverId,
-				SenderID:   msg.SenderId,
-				Type:       "msg",
-				Message:    msg.Content,
-			}
-
-			er := NotifService.CreateNotification(&notif)
-			if er != nil {
-				fmt.Println(er)
-				continue
+			
+			if msg.SubType == "read" {
+				err := NotifService.MarkAsRead(msg.ReceiverId)
+				return fmt.Errorf("error read: %w", err)
 			}
 
 		case "sendMessage":

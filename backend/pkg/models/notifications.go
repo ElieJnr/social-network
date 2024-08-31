@@ -12,9 +12,7 @@ type Notification struct {
 }
 
 type MessageNotif struct {
-	Type       string
-	Content    string
-	SenderId   string
-	ReceiverId string
-	TypeOf     string
+	IdNotif         string
+	Desc    string
+	SubType     string
 }

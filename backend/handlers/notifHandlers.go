@@ -18,7 +18,7 @@ func NotifHandler() http.HandlerFunc {
 			return
 		}
 		fmt.Println(user.UserId)
-		notis, err := NotifService.GetNotifications(user.UserId)
+		notis, err := NotifService.GetAllNotifications(user.UserId)
 		fmt.Println(notis)
 		if err != nil {
 			fmt.Println("2", err)

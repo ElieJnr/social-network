@@ -10,7 +10,8 @@ import NavBar from "@/components/Nav";
 
 export default function HomePage() {
   const socket = useWebSocket('ws://localhost:8080/ws');
-
+  console.log(socket);
+  
   return (
 
     <div className="flex flex-col h-screen">

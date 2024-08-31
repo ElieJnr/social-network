@@ -7,18 +7,18 @@
 import { Button } from "@/components/ui/button"
 import { fetchNotifs } from "../actions/notifications"
 import { useEffect, useState } from "react"
-import { XIcon, IconNotif } from "@/components/IconNotif"
+import { GetIcon, XIcon } from "@/components/IconNotif"
 import { useRouter } from "next/navigation"
 
 export default function AllNotifs() {
     const router = useRouter()
-    const [Len, setLen] = useState(0)
     const [isMounted, setIsMounted] = useState(false);
     const [notifications, setNotifications] = useState([]);
+    const unreadCount = notifications.filter(n => !n.read).length
 
     useEffect(() => {
         setIsMounted(true)
-        fetchNotifs(setLen, setNotifications);
+        fetchNotifs(setNotifications);
     }, []);
 
     const Home = () => {
@@ -38,7 +38,7 @@ export default function AllNotifs() {
                 <div className="space-y-4">
                     {notifications.map((n) => (
                         <div className="flex items-start gap-3" key={n.Id}>
-                            <IconNotif type={n.Type} className="h-5 w-5" />
+                            <GetIcon type={n.Type} className="h-5 w-5" />
                             <div>
                                 <p className="font-medium">{n.Message}</p>
                                 <p className="text-sm text-muted-foreground">Hey, I just wanted to say hi and see how you're doing.</p>

@@ -23,4 +23,5 @@ type Message struct {
 	Content    string
 	ReceiverId string
 	SenderId   string
+	SubType    string
 }

@@ -1,4 +1,4 @@
-export async function fetchNotifs(setLen,setNotifications) {
+export async function fetchNotifs(setNotifications) {
     try {
         const response = await fetch("http://localhost:8080/notifications", {
             method: "GET",
@@ -11,7 +11,6 @@ export async function fetchNotifs(setLen,setNotifications) {
 
         if (data) {
             console.log(data);
-            setLen(data.length)
             setNotifications(data)
         }
     } catch (error) {

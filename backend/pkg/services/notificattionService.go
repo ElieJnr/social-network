@@ -42,7 +42,7 @@ func (n *NotifService) CreateNotification(notif *models.Notification) error {
 }
 
 // Au cas ou une notification sera lu
-func (n *NotifService) ReadNotification(idNotif string) error {
+func (n *NotifService) MarkAsRead(idNotif string) error {
 
 	query := `UPDATE Notifications SET is_read = 1 WHERE id = ? `
 
@@ -54,7 +54,7 @@ func (n *NotifService) ReadNotification(idNotif string) error {
 }
 
 // Recupere l'ensemble des notifications de l'utilisateur
-func (n *NotifService) GetNotifications(ReceiverId string) ([]models.Notification, error) {
+func (n *NotifService) GetAllNotifications(ReceiverId string) ([]models.Notification, error) {
 
 	query := `
 	SELECT * FROM Notifications 

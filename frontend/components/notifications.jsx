@@ -23,40 +23,60 @@ import { useEffect, useState } from "react"
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button"
 import { fetchNotifs } from "@/app/actions/notifications";
+import { X, Check } from 'lucide-react'
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
-import { BellIcon, IconNotif } from "./IconNotif";
+import { BellIcon, GetIcon } from "./IconNotif";
 
 export function Notifications({ socket }) {
     const router = useRouter()
     const [isOpen, setIsOpen] = useState(false)
     const [isMounted, setIsMounted] = useState(false);
-    const [Len, setLen] = useState(0)
     const [notifications, setNotifications] = useState([]);
+    const unreadCount = notifications.filter(n => !n.IsRead).length
 
     useEffect(() => {
         setIsMounted(true);
-        fetchNotifs(setLen, setNotifications);
+        fetchNotifs( setNotifications);
     }, []);
 
     const toggleDropdown = () => {
         setIsOpen(true)
     }
-    const DisplayAllNotifs = () => {
+    const getAllNotifs = () => {
         if (isMounted) {
             router.push("/notifications")
         }
     }
+    console.log(notifications);
+
+    const markAsRead = (id) => {
+        const Message = {
+            Type: "notifications",
+            ReceiverId: id,
+            SubType: "read"
+        }
+        
+        if(socket && socket.readyState === WebSocket.OPEN){
+            console.log("readddddddddd");
+            
+            socket.send(JSON.stringify(Message))
+        }
+        setNotifications(notifications.map(n => n.Id === id ? { ...n, IsRead: true } : n))
+        
+    }
+
+
 
     return (
 
         (<Popover>
             <PopoverTrigger asChild>
                 <Button variant="ghost" size="icon" className="relative" onClick={toggleDropdown}>
-                    <BellIcon className={cn("h-6 w-6 text-muted-foreground", { 'animate-bounce': Len > 0 })} />
-                    {Len > 0 && <span
+                    <BellIcon className={cn("h-6 w-6 text-muted-foreground", { 'animate-bounce': unreadCount > 0 })} />
+                    {unreadCount> 0 && <span
                         className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full px-1.5 py-0.5 text-xs font-medium">
-                        {Len}
+                        {unreadCount}
                     </span>}
                 </Button>
             </PopoverTrigger>
@@ -64,28 +84,36 @@ export function Notifications({ socket }) {
                 <PopoverContent align="end" className="w-80 p-4 rounded-lg shadow-lg" >
                     <div className="text-lg font-semibold">Notifications</div>
                     <div />
-                    {notifications.map((n) => (
+                    {notifications.map((n) => (!n.IsRead &&(
                         <div className="space-y-4 mb-2" key={n.Id}>
                             <div className="flex items-start gap-3">
-                                <IconNotif type={n.Type} className="h-5 w-5" />
-                                <div>
+                                <GetIcon type={n.Type} className="h-5 w-5" />
+                                <div className="text-sm">
                                     <p className="font-medium">{n.Message}</p>
                                     <p className="text-sm text-muted-foreground">Hey, I just wanted to say hi and see how you're doing {n.Type}.</p>
                                     <p className="text-xs text-muted-foreground">{n.CreateAt}</p>
                                     {(n.Type == "follow" || n.Type == "invitation") && (<div className="flex gap-2 mt-2">
-                                        <Button variant="outline" size="sm" id={n.Id}>
+                                        <Button variant="outline" size="sm" >
                                             Accept
                                         </Button>
-                                        <Button variant="outline" size="sm" id={n.Id}>
+                                        <Button variant="outline" size="sm" >
                                             Decline
                                         </Button>
                                     </div>)}
                                 </div>
+                                <div className="flex items-center space-x-2">
+                                    { (
+                                        <Button size="icon" variant="ghost" onClick={() => markAsRead(n.Id)}>
+                                            <Check className="h-4 w-4" />
+                                            <span className="sr-only">Marquer comme lu</span>
+                                        </Button>
+                                    )}
+                                </div>
                             </div>
                         </div>
-                    ))}
+                    )))}
                     <div className="text-center">
-                        <Button variant="link" className="text-primary" onClick={DisplayAllNotifs}>
+                        <Button variant="link" className="text-primary" onClick={getAllNotifs}>
                             View all notifications
                         </Button>
                     </div>

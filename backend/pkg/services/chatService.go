@@ -103,9 +103,9 @@ func (c *ChatService) RegisterMsg(msg models.Message) error {
 	return nil
 }
 
-func (c *ChatService) FetchUser() ([]byte, error) {
-	query := "SELECT id, firstname, lastname FROM Users"
-	rows, err := c.GetDB().Query(query)
+func (c *ChatService) FetchUser(actualuser string) ([]byte, error) {
+	query := "SELECT id, firstname, lastname FROM Users WHERE id != ?"
+	rows, err := c.GetDB().Query(query, actualuser)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch users: %w", err)
 	}

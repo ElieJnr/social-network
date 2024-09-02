@@ -104,13 +104,21 @@ func (c *ChatService) RegisterMsg(msg models.Message) error {
 }
 
 func (c *ChatService) FetchUser(actualuser string) ([]byte, error) {
-	query := "SELECT id, firstname, lastname FROM Users WHERE id != ?"
-	rows, err := c.GetDB().Query(query, actualuser)
+	// Filtrer les utilisateurs suivis ou qui suivent l'utilisateur connecté
+	query := `
+		SELECT u.id, u.firstname, u.lastname 
+		FROM Users u
+		JOIN Followers f 
+		ON (u.id = f.followedId OR u.id = f.userId)
+		WHERE (f.userId = ? OR f.followedId = ?) AND u.id != ?
+	`
+	rows, err := c.GetDB().Query(query, actualuser, actualuser, actualuser)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch users: %w", err)
 	}
 	defer rows.Close()
 
+	// Structure pour les utilisateurs
 	type User struct {
 		Id        string
 		Firstname string
@@ -137,11 +145,13 @@ func (c *ChatService) FetchUser(actualuser string) ([]byte, error) {
 		}
 		users = append(users, user)
 	}
+
 	sendUsers := sendUser{
 		Type:  "sendUser",
 		Users: users,
 	}
 
+	// Convertir en JSON
 	jsonUsers, err := json.Marshal(sendUsers)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal users: %w", err)

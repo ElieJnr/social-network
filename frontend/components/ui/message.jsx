@@ -34,20 +34,37 @@ export function ClickMessageApp({ socket }) {
 }
 
 export function MessageComponent({ onNameClick, setSelectedUser, socket }) {
-    const { user, setUser } = useStore()
+    const { user, setUser } = useStore();
+
+    // Vérifier que `user` est un tableau avant d'essayer d'accéder à sa longueur
+    if (!user || !Array.isArray(user)) {
+        return (
+            <div className="w-full max-w-md mx-auto bg-card text-foreground rounded-lg shadow-lg">
+                <div onClick={onNameClick} className="px-4 py-6">
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-xl font-bold">Messages</h2>
+                    </div>
+                    <div className="space-y-4">
+                        <div>
+                            For start chatting please follow someone
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     const handleClick = (user) => {
         setSelectedUser({
             Id: user.Id,
             Firstname: user.Firstname,
-            Lastname: user.Lastname
+            Lastname: user.Lastname,
         });
         if (socket && socket.readyState === WebSocket.OPEN) {
-            console.log("selected user", user)
+            console.log("selected user", user);
             socket.send(JSON.stringify({ Type: "clickOnUser", ReceiverId: user.Id }));
         }
     };
-
 
     return (
         <div className="w-full max-w-md mx-auto bg-card text-foreground rounded-lg shadow-lg">
@@ -55,21 +72,36 @@ export function MessageComponent({ onNameClick, setSelectedUser, socket }) {
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="text-xl font-bold">Messages</h2>
                 </div>
-                <div className="space-y-4">
-                    {user.map(user => (
-                        <div key={user.Id} className="flex items-center justify-between" onClick={() => handleClick(user)}>
-                            <UserList id={user.Id} name={capitalize(user.Firstname) + " " + capitalize(user.Lastname)} lastMessage={`Salut ${user.Firstname}`} />
-                            <div className="flex items-center space-x-2">
-                                <time className="text-sm text-muted-foreground">2:34 PM</time>
-                                <div className="w-2 h-2 bg-primary rounded-full" />
+                {user.length > 0 ? (
+                    <div className="space-y-4">
+                        {user.map((user) => (
+                            <div
+                                key={user.Id}
+                                className="flex items-center justify-between"
+                                onClick={() => handleClick(user)}
+                            >
+                                <UserList
+                                    id={user.Id}
+                                    name={capitalize(user.Firstname) + " " + capitalize(user.Lastname)}
+                                    lastMessage={`Salut ${user.Firstname}`}
+                                />
+                                <div className="flex items-center space-x-2">
+                                    <time className="text-sm text-muted-foreground">2:34 PM</time>
+                                    <div className="w-2 h-2 bg-primary rounded-full" />
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center text-sm text-muted-foreground">
+                        Loading...
+                    </div>
+                )}
             </div>
         </div>
     );
 }
+
 
 function capitalize(str) {
     if (!str) return '';

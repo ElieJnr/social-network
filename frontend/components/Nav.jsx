@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Notifications } from "./notifications"
 import { MsgNotif } from "./MsgNotig";
-
+import LogoutButton from "./buttonlogout";
 
 export default function NavBar({ socket }) {
   const [userOnLine, setUserOnLine] = useState(null)
@@ -33,7 +33,6 @@ export default function NavBar({ socket }) {
       className="flex items-center justify-between bg-card px-4 py-3 shadow-sm sm:px-6">
       <div className="flex items-center gap-4">
         <Link href="/" className="flex items-center gap-2" prefetch={false}>
-          <MountainIcon className="h-6 w-6" />
           <span className="text-lg font-semibold">Acme Social</span>
         </Link>
         <nav className="hidden gap-4 text-sm font-medium sm:flex">
@@ -90,10 +89,7 @@ export default function NavBar({ socket }) {
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link href="#" className="flex items-center gap-2" prefetch={false}>
-                <LogOutIcon className="h-4 w-4" />
-                Logout
-              </Link>
+                <LogoutButton/>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

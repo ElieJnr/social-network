@@ -57,6 +57,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
+	
 }
 
 // se charge de vérifier si les données du post sont correctes
@@ -64,6 +65,8 @@ func CheckPost(w http.ResponseWriter, r *http.Request) models.CheckResult {
 	content := strings.TrimSpace(r.FormValue("thread"))
 	privacy := r.FormValue("privacy")
 	photoURL, err := utils.UploadImage(w, r, "post")
+	fmt.Println("err",err)
+
 	if err != nil {
 		return models.CheckResult{
 			Success: false,

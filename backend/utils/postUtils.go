@@ -133,13 +133,14 @@ func UploadImage(w http.ResponseWriter, r *http.Request, origin string) (string,
 		return "", fmt.Errorf("failed to parse multipart form: %w", err)
 	}
 
+	// Récupère le fichier, mais ne renvoie pas d'erreur si aucun fichier n'est fourni (image optionnelle)
 	file, handler, err := r.FormFile(fileOrAvatar)
-	if err != nil {
+	if err != nil && err != http.ErrMissingFile {
 		return "", fmt.Errorf("failed to retrieve form file: %w", err)
 	}
-	defer file.Close()
-
 	if file != nil {
+		defer file.Close()
+
 		if !IsValidImage(file, handler) {
 			return "", fmt.Errorf("invalid image file")
 		}
@@ -147,7 +148,7 @@ func UploadImage(w http.ResponseWriter, r *http.Request, origin string) (string,
 			return "", fmt.Errorf("file size exceeds the 1MB limit")
 		}
 
-		// Temporary path
+		// Chemin temporaire
 		dirPath := "../frontend/public/uploads/"
 		if _, err := os.Stat(dirPath); os.IsNotExist(err) {
 			err := os.MkdirAll(dirPath, 0755)
@@ -170,12 +171,9 @@ func UploadImage(w http.ResponseWriter, r *http.Request, origin string) (string,
 		photoURL = filepath.Base(tempFile.Name())
 	}
 
-	if origin == "login" && photoURL == "" {
-		return "lien_avatar_par_defaut_en_attendant_qu'on_trouve_image.jpg", nil
-	}
-
 	return photoURL, nil
 }
+
 
 func GenerateUuid() (string, error) {
 	id, err := uuid.NewV4()

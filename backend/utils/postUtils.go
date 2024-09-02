@@ -143,8 +143,8 @@ func UploadImage(w http.ResponseWriter, r *http.Request, origin string) (string,
 		if !IsValidImage(file, handler) {
 			return "", fmt.Errorf("invalid image file")
 		}
-		if handler.Size > 20<<20 {
-			return "", fmt.Errorf("file size exceeds the 20MB limit")
+		if handler.Size > 1<<20 {
+			return "", fmt.Errorf("file size exceeds the 1MB limit")
 		}
 
 		// Temporary path

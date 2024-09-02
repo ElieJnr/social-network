@@ -1,7 +1,9 @@
 import { useEffect, useRef } from 'react';
 import useStore from '../store/useStore';
 import { ClickMessageApp } from '@/components/ui/message';
-
+import { fetchNotifs } from './notifications';
+import { setMsgNotif } from '@/components/MsgNotig';
+import { setNotifs } from '@/components/notifications';
 export const useWebSocket = (url) => {
     let socket = useRef(null);
     let { user, setUser } = useStore()
@@ -11,7 +13,6 @@ export const useWebSocket = (url) => {
 
     useEffect(() => {
         socket.current = new WebSocket(url);
-
         socket.current.addEventListener('open', (event) => {
             // console.log('WebSocket connection opened');
             const message = { Type: "userSender" };
@@ -21,14 +22,18 @@ export const useWebSocket = (url) => {
         socket.current.addEventListener('message', (event) => {
             let message = JSON.parse(event.data)
             if (message.Type === "sendUser") {
+                console.log("iciiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii");
+                
                 setUser(message.Users)
             } else if (message.Type === "clickOnUser") {
+
                 if (message.Message) {
                     setgetMessage(message.Message)
-                    console.log("parsing part: ", message.Message);
+                    console.log("parsing part: ", message);
                 } else {
                     console.log("no message between two users");
                 }
+                fetchNotifs(setMsgNotif,"msg")
             } else if (message.Type === "messageService") {
                 console.log('message: ', event.data)
             } else if ("simpleChat") {

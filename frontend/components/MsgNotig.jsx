@@ -22,51 +22,52 @@ To read more about using these font, please visit the Next.js documentation:
 import { useEffect, useState } from "react"
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button"
-import { fetchNotifs } from "@/app/actions/notifications";
+import { fetchNotifs, OnMessage } from "@/app/actions/notifications";
 import { Check, MessageCircle } from 'lucide-react'
 import { cn } from "@/lib/utils";
 import { useRouter, usePathname } from "next/navigation";
 import { BellIcon, GetIcon } from "./IconNotif";
+import { socketGlobal } from "@/app/page";
 
+export let setMsgNotif
 export function MsgNotif({ socket }) {
     const router = useRouter()
     const [isOpen, setIsOpen] = useState(false)
     const [isMounted, setIsMounted] = useState(false);
     const [notifications, setNotifications] = useState([]);
-    const unreadCount = notifications.filter(n => !n.IsRead && n.Type == "msg").length
-   
+
+
+    setMsgNotif = setNotifications
     useEffect(() => {
         setIsMounted(true);
-        fetchNotifs(setNotifications);
+        fetchNotifs(setNotifications, "msg");
     }, []);
+    // console.log(socket);
+    const unreadCount = notifications.length
     const pathname = usePathname();
+
     const toggleDropdown = () => {
         setIsOpen(true)
     }
-    const getAllMsg = () => {
-        if (isMounted) {
-            router.push("/")
-        }
-    }
+
 
     console.log(pathname);
 
     const markAsRead = (id) => {
-
-        const Message = {
-            Type: "notifications",
-            ReceiverId: id,
-            SubType: "read"
-        }
+        console.log(id);
 
         if (socket && socket.readyState === WebSocket.OPEN) {
-            console.log("readddddddddd");
-
+            const Message = {
+                Type: "notifications",
+                ReceiverId: id,
+                SubType: "read"
+            }
             socket.send(JSON.stringify(Message))
-        }
-        setNotifications(notifications.map(n => n.Id === id ? { ...n, IsRead: true } : n))
 
+        }
+        fetchNotifs(setNotifications, "msg");
     }
+
 
     return (
 
@@ -84,28 +85,26 @@ export function MsgNotif({ socket }) {
                 <PopoverContent align="end" className="w-80 p-4 rounded-lg shadow-lg" >
                     <div className="text-lg font-semibold">Notifications</div>
                     <div />
-                    {notifications.map((n) => ((n.Type == "msg") && (
+                    {notifications.map((n) => (!n.IsRead && (
                         <div className="space-y-4 mb-2" key={n.Id}>
                             <div className="flex items-start gap-3">
                                 <GetIcon type={n.Type} className="h-5 w-5" />
                                 <div className="text-sm">
                                     <p className="font-medium">{"New message from @" + (n.SenderInfo.Email)} </p>
-                                    <p className="text-sm text-muted-foreground">Hey, I just wanted to say hi and see how you're doing {n.Type}.</p>
+                                    <p className="text-sm text-muted-foreground">{n.Message}.</p>
                                     <p className="text-xs text-muted-foreground">{n.CreateAt.slice(0, 10) + "----/----" + n.CreateAt.slice(11).slice(0, 8)}</p>
-                                    {(pathname == "/") && (<div className="flex gap-2 mt-2">
-                                        <Button variant="outline" size="sm" onClick={() => markAsRead(n.Id)}>
-                                            View
-                                        </Button>
-                                    </div>)}
                                 </div>
+                                {(pathname == "/") && (<div className="flex items-center space-x-2">
+
+                                    <Button size="icon" variant="ghost" onClick={() => markAsRead(n.Id)}>
+                                        <Check className="h-4 w-4" />
+                                        <span className="sr-only">Marquer comme lu</span>
+                                    </Button>
+
+                                </div>)}
                             </div>
                         </div>
                     )))}
-                    <div className="text-center">
-                        <Button variant="link" className="text-primary" onClick={getAllMsg}>
-                            View all messages
-                        </Button>
-                    </div>
                 </PopoverContent>
             )}
         </Popover>)

@@ -19,7 +19,7 @@ func NotifHandler() http.HandlerFunc {
 		}
 		fmt.Println(user.UserId)
 		notis, err := NotifService.GetAllNotifications(user.UserId)
-		fmt.Println(notis)
+		// fmt.Println(notis)
 		if err != nil {
 			fmt.Println("2", err)
 			services.SendFront(w, models.Errors["500"], 500)

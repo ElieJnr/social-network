@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"socialNetwork/pkg/models"
 	"socialNetwork/pkg/services"
+	"socialNetwork/utils"
 
 	"github.com/gorilla/websocket"
 )
@@ -51,7 +52,7 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error 
 		if err != nil {
 			return fmt.Errorf("json error %w", err)
 		}
-
+		fmt.Println(msg)
 		switch msg.Type { // les fonction qui utiliseront la base de donnee doivent etre des services
 		case "groupeChat":
 			//fonction qui gere groupChat:
@@ -68,13 +69,16 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error 
 				return err
 			}
 		case "notifications":
-			
 			if msg.SubType == "read" {
-				err := NotifService.MarkAsRead(msg.ReceiverId)
-				return fmt.Errorf("error read: %w", err)
+				err := NotifService.MarkAsRead(msg.ReceiverId)//id of notif
+				if err != nil{
+					return fmt.Errorf("error read: %w", err)
+				}
+				
 			}
-
+			
 		case "sendMessage":
+
 			messageService := services.NewChatService()
 			sender, sendErr := ChatService.GetConnectedUserId(r)
 			if sendErr != nil {
@@ -82,6 +86,23 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error 
 			}
 			msg.SenderId = sender
 
+			idNotif, er := utils.GenerateUuid()
+			if er != nil {
+				return fmt.Errorf("error read: %w", err)
+			}
+			notif := models.Notification{
+				Id:         idNotif,
+				ReceiverID: msg.ReceiverId,
+				SenderID:   msg.SenderId,
+				Type:       "msg",
+				Message:    msg.Content,
+			}
+			e := NotifService.CreateNotification(&notif)
+
+			if e != nil {
+				return fmt.Errorf("error read: %w", err)
+			}
+			
 			err := messageService.RegisterMsg(msg)
 			if err != nil {
 				fmt.Println("error: ", err)

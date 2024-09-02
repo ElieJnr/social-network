@@ -76,7 +76,7 @@ func (s *SessionService) CheckSession(token string) (*models.Session, error) {
 
 // update the session time each time the user navigates to the page
 func (s *SessionService) RefreshSession(token string) error {
-	ExpiresAT := time.Now().UTC().Add(time.Hour)
+	ExpiresAT := time.Now().UTC().Add(time.Hour*24)
 	expired_at := ExpiresAT.Format("2006-01-02 15:04:05")
 	_, err := s.GetDB().Exec("UPDATE sessions SET expired_at = ? WHERE sessionId = ? ", expired_at, token)
 	if err != nil {

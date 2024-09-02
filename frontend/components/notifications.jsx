@@ -27,13 +27,14 @@ import { Check } from 'lucide-react'
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { BellIcon, GetIcon } from "./IconNotif";
-
+export let setNotifs
 export function Notifications({ socket }) {
     const router = useRouter()
     const [isOpen, setIsOpen] = useState(false)
     const [isMounted, setIsMounted] = useState(false);
     const [notifications, setNotifications] = useState([]);
-    const unreadCount = notifications.filter(n => !n.IsRead).length
+    const unreadCount = notifications.filter(n => !n.IsRead && n.Type != "msg").length
+    setNotifs = setNotifications
     const TitleNotif = {
         event: "Upcoming event",
         follow: "New following request",
@@ -47,11 +48,7 @@ export function Notifications({ socket }) {
     const toggleDropdown = () => {
         setIsOpen(true)
     }
-    const getAllNotifs = () => {
-        if (isMounted) {
-            router.push("/notifications")
-        }
-    }
+   
     console.log(notifications);
 
     const markAsRead = (id) => {
@@ -66,10 +63,9 @@ export function Notifications({ socket }) {
 
             socket.send(JSON.stringify(Message))
         }
-        setNotifications(notifications.map(n => n.Id === id ? { ...n, IsRead: true } : n))
+        fetchNotifs(setNotifications);
 
     }
-
 
 
     return (
@@ -94,10 +90,10 @@ export function Notifications({ socket }) {
                                 <GetIcon type={n.Type} className="h-5 w-5" />
                                 <div className="text-sm">
                                     <p className="font-medium">{TitleNotif[n.Type]}</p>
-                                    <p className="text-sm text-muted-foreground">Hey, I just wanted to say hi and see how you're doing {n.Type}.</p>
+                                    <p className="text-sm text-muted-foreground">{n.Message}.</p>
                                     <p className="text-xs text-muted-foreground">{n.CreateAt.slice(0, 10) + "----/----" + n.CreateAt.slice(11).slice(0, 8)}</p>
                                     {(n.Type == "follow" || n.Type == "invitation") && (<div className="flex gap-2 mt-2">
-                                        <Button variant="outline" size="sm" >
+                                        <Button variant="outline" size="sm" onClick={() => markAsRead(n.Id)}>
                                             Accept
                                         </Button>
                                         <Button variant="outline" size="sm" >
@@ -106,7 +102,7 @@ export function Notifications({ socket }) {
                                     </div>)}
                                 </div>
                                 <div className="flex items-center space-x-2">
-                                    {(n.Type != "follow" && n.Type != "invitation") && (
+                                    {(n.Type == "event") && (
                                         <Button size="icon" variant="ghost" onClick={() => markAsRead(n.Id)}>
                                             <Check className="h-4 w-4" />
                                             <span className="sr-only">Marquer comme lu</span>
@@ -116,11 +112,6 @@ export function Notifications({ socket }) {
                             </div>
                         </div>
                     )))}
-                    <div className="text-center">
-                        <Button variant="link" className="text-primary" onClick={getAllNotifs}>
-                            View all notifications
-                        </Button>
-                    </div>
                 </PopoverContent>
             )}
         </Popover>)

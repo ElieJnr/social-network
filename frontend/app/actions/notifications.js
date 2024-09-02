@@ -1,4 +1,4 @@
-export async function fetchNotifs(setNotifications) {
+export async function fetchNotifs(setNotifications, type) {
     try {
         const response = await fetch("http://localhost:8080/notifications", {
             method: "GET",
@@ -10,6 +10,10 @@ export async function fetchNotifs(setNotifications) {
         let data = await response.json();
 
         if (data) {
+            if (type) {
+                data = data.filter((n) => n.Type == "msg")
+            }
+            data = data.filter((n) => !n.IsRead)
             console.log(data);
             setNotifications(data)
         }
@@ -18,3 +22,6 @@ export async function fetchNotifs(setNotifications) {
     }
 }
 
+export function OnMessage(socket) {
+
+}

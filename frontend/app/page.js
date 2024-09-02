@@ -7,11 +7,9 @@ import SuggestionsCard from "@/components/SuggestionsCard";
 import { ClickMessageApp } from "@/components/ui/message";
 import { useWebSocket } from "./actions/message";
 import NavBar from "@/components/Nav";
-
+export let socketGlobal
 export default function HomePage() {
   const socket = useWebSocket('ws://localhost:8080/ws');
-  console.log(socket);
-  
   return (
     <div className="flex flex-col h-screen">
       <NavBar socket={socket} />

@@ -93,8 +93,33 @@ export function MessageComponent({ onNameClick, setSelectedUser, socket }) {
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center text-sm text-muted-foreground">
-                        Loading...
+                    <div className="space-y-4 animate-pulse">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-4">
+                                <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
+                                <div>
+                                    <div className="h-4 bg-gray-300 rounded w-24 mb-1"></div>
+                                    <div className="h-3 bg-gray-300 rounded w-32"></div>
+                                </div>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <div className="h-4 bg-gray-300 rounded w-10"></div>
+                                <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-4">
+                                <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
+                                <div>
+                                    <div className="h-4 bg-gray-300 rounded w-24 mb-1"></div>
+                                    <div className="h-3 bg-gray-300 rounded w-32"></div>
+                                </div>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <div className="h-4 bg-gray-300 rounded w-10"></div>
+                                <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
+                            </div>
+                        </div>
                     </div>
                 )}
             </div>

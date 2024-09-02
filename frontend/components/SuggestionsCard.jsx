@@ -52,7 +52,48 @@ export default function SuggestionsCard() {
     follow(userOnLine.id, user.id, statut, true)
   }
   if (!users || !userOnLine) {
-    return <div>Loading...</div>;
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Suggestions</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Skeleton for loading suggestions */}
+          <div className="space-y-4 animate-pulse">
+            {/* Skeleton user suggestion 1 */}
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
+              <div className="space-y-1 flex-1">
+                <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+                <div className="h-3 bg-gray-300 rounded w-1/2"></div>
+              </div>
+              <div className="w-20 h-8 bg-gray-300 rounded ml-auto"></div>
+            </div>
+
+            {/* Skeleton user suggestion 2 */}
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
+              <div className="space-y-1 flex-1">
+                <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+                <div className="h-3 bg-gray-300 rounded w-1/2"></div>
+              </div>
+              <div className="w-20 h-8 bg-gray-300 rounded ml-auto"></div>
+            </div>
+
+            {/* Skeleton user suggestion 3 */}
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
+              <div className="space-y-1 flex-1">
+                <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+                <div className="h-3 bg-gray-300 rounded w-1/2"></div>
+              </div>
+              <div className="w-20 h-8 bg-gray-300 rounded ml-auto"></div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+    )
   }
 
 

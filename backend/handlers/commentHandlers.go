@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"socialNetwork/pkg/models"
+	"socialNetwork/pkg/services"
 	"socialNetwork/utils"
 	"strings"
 )
@@ -13,6 +14,23 @@ func CreateCommentHandler() http.HandlerFunc {
 		CreateComment(w, r)
 	}
 }
+
+func CommentHandler() http.HandlerFunc {
+    return func(w http.ResponseWriter, r *http.Request) {
+        postId := r.URL.Query().Get("postId") 
+
+        comments, err := CommentService.GetComments(postId)
+        if err != nil {
+            fmt.Println("Error getting comments:", err)
+            services.SendFront(w, map[string]string{"error": "Error getting comments"}, http.StatusInternalServerError)
+            return
+        }
+        if err := services.SendFront(w, comments, http.StatusOK); err != nil {
+            fmt.Println("Failed to send comments as JSON:", err)
+        }
+    }
+}
+
 
 func CreateComment(w http.ResponseWriter, r *http.Request) {
 	commentValue := CheckComment(w, r)
@@ -29,7 +47,6 @@ func CreateComment(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	http.Redirect(w, r, "/post", http.StatusSeeOther)
 }
 
 func CheckComment(w http.ResponseWriter, r *http.Request) models.CheckResult {

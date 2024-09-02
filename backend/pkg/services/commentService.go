@@ -49,9 +49,9 @@ func (c *CommentService) InsertComment(commentValue models.CheckResult, w http.R
 	return nil
 }
 
-func GetComments(db *sql.DB, postId string) ([]models.Comment, error) {
+func (c *CommentService) GetComments(postId string) ([]models.Comment, error) {
 	query := `SELECT id, userId, content, imageUrl, creatdate FROM Comments WHERE postId = ? ORDER BY creatdate DESC`
-	rows, err := db.Query(query, postId)
+	rows, err := c.db.Query(query, postId)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func GetComments(db *sql.DB, postId string) ([]models.Comment, error) {
 			return nil, fmt.Errorf("failed to scan comment row: %w", err)
 		}
 
-		author, err := utils.GetAuthor(db, comment.UserID)
+		author, err := utils.GetAuthor(c.db, comment.UserID)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get post author: %w", err)
 		}

@@ -182,10 +182,10 @@ func postDetails(db *sql.DB, post *models.Posts, w http.ResponseWriter, r *http.
 		return fmt.Errorf("failed to get like/dislike status: %w", err)
 	}
 
-	allComments, err := GetComments(db, post.PostID)
-	if err != nil {
-		return fmt.Errorf("failed to get comments: %w", err)
-	}
+	// allComments, err := GetComments(db, post.PostID)
+	// if err != nil {
+	// 	return fmt.Errorf("failed to get comments: %w", err)
+	// }
 
 	isFollowing, err := IsFollowing(db, post.UserID, currentUser.UserId)
 	if err != nil {
@@ -195,7 +195,7 @@ func postDetails(db *sql.DB, post *models.Posts, w http.ResponseWriter, r *http.
 	post.Author = author
 	post.Formated_date = utils.FormatTimeAgo(post.Creation_date)
 	post.Can_see = isVisible
-	post.Comments = allComments
+	// post.Comments = allComments
 	post.Like_nbr = nbrLike
 	post.Comments_nbr = nbrComment
 	post.Like_status = likeStatus

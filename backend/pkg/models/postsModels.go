@@ -24,26 +24,11 @@ type Posts struct {
 	HasImage      bool
 	Can_see       bool
 	Like_nbr      int
-	// Dislike_nbr    int
 	Comments_nbr   int
 	IsFollower     bool
-	Comments       []Comment
 	Like_status    bool
 	Dislike_status bool
 }
-
-// type OwnPosts struct {
-// 	PostID        string
-// 	UserID        string
-// 	Content       string
-// 	Image_url     string
-// 	Post_status   string
-// 	Creation_date time.Time
-// 	Formated_date string
-// 	Author        Author
-// 	Can_see       bool
-// 	Comments      []Comment
-// }
 
 type CheckResult struct {
 	Success      bool

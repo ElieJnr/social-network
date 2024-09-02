@@ -1,13 +1,15 @@
 "use client";
 
+import { useToast } from "@/components/ui/use-toast";
+import { fetchLike } from '@/app/actions/post';
+import CommentCard from './CommentCard';
+import useSWR, { mutate } from 'swr';
+
 const {HeartIcon, MessageCircleIcon} = require("lucide-react");
 const { AvatarFallback, AvatarImage, Avatar } = require("./ui/avatar");
 const { CardContent, Card, CardFooter } = require("./ui/card");
-import { fetchLike } from '@/app/actions/post';
 const { Button } = require("./ui/button");
-import CommentCard from './CommentCard';
 const { useState } = require('react');
-import useSWR, { mutate } from 'swr';
 
 const fetcher = (url) => fetch(url, { credentials: 'include' }).then((res) => res.json());
 
@@ -35,6 +37,7 @@ export default function Posts() {
 
 function PostCard({ post }) {
   const [showComments, setShowComments] = useState(false);
+  const { toast } = useToast();
 
   const handleToggleComments = () => {
     setShowComments(!showComments);
@@ -48,16 +51,18 @@ function PostCard({ post }) {
     try {
       await fetchLike(formData);
       mutate('http://localhost:8080/posts');
-      // window.location.href = "/";
     } catch (error) {
-      console.error("Error liking post:", error);
+      toast({
+        title: "Error liking post",
+        description: error,
+      });
     }
   };
 
   return (
     <Card>
       <CardContent className="space-y-4">
-        <div className="flex items-center gap-4 mt-2"> {/* Ajout d'une marge en bas */}
+        <div className="flex items-center gap-4 mt-2"> 
           <Avatar className="w-10 h-10">
             <AvatarImage src={post.Author.Avatar || "/placeholder-user.jpg"} alt={post.Author.Username} />
             <AvatarFallback>{post.Author.Username ? post.Author.Username[0].toUpperCase() : 'U'}</AvatarFallback>
@@ -106,7 +111,7 @@ function PostCard({ post }) {
             </div>
           </div>
         </CardFooter>
-        {showComments && <CommentCard postId={post.PostID} commentData={post.Comments} />}
+        {showComments && <CommentCard postId={post.PostID} />}
       </CardContent>
     </Card>
 

@@ -1,25 +1,18 @@
 "use client";
 
-const { AvatarFallback, AvatarImage, Avatar } = require("./ui/avatar");
-import { fetchPostComments } from '@/app/actions/post';
-const { useState } = require('react');
-const { Textarea } = require("./ui/textarea");
-const { Button } = require("./ui/button");
-import { mutate } from 'swr';
+import { useState } from 'react';
+import useSWR, { mutate } from 'swr';
+import { fetchPostCreateComments, fetchAllPostComments } from '@/app/actions/post';
+import { AvatarFallback, AvatarImage, Avatar } from "./ui/avatar";
+import { Textarea } from "./ui/textarea";
+import { Button } from "./ui/button";
 
-export default function CommentCard({ postId, commentData }) {
-    console.log('Received commentData:', commentData);
+export default function CommentCard({ postId }) {
+    const { data: comments = [], mutate: mutateComments } = useSWR(
+        `http://localhost:8080/comments?postId=${postId}`,
+        () => fetchAllPostComments(postId)
+    );
 
-    const comments = commentData ? commentData.map(comment => ({
-        name: comment.Author.Firstname + ' ' + comment.Author.Lastname,
-        timeAgo: comment.Formated_date,
-        text: comment.Content,
-        hasImage: !!comment.Image_url,
-        imageUrl: comment.Image_url ? `/uploads/${comment.Image_url}` : null,
-    })) : [];
-
-    console.log('Formatted comments:', comments);
-    
     return (
         <div className="mx-auto px-4 md:px-6">
             <hr className="flex-grow" />
@@ -30,28 +23,24 @@ export default function CommentCard({ postId, commentData }) {
     );
 }
 
-export function CommentList({ comments }) {
-    console.log('Comments in CommentList:', comments);
-    
+function CommentList({ comments }) {
     return (
         <div className="grid gap-6">
             {comments.map((comment, index) => (
                 <Comment
                     key={index}
-                    name={comment.name}
-                    timeAgo={comment.timeAgo}
-                    text={comment.text}
-                    hasImage={comment.hasImage}
-                    imageUrl={comment.imageUrl}
+                    name={`${comment.Author.Firstname} ${comment.Author.Lastname}`}
+                    timeAgo={comment.Formated_date}
+                    text={comment.Content}
+                    hasImage={comment.HasImage}
+                    imageUrl={comment.Image_url ? `/uploads/${comment.Image_url}` : null}
                 />
             ))}
         </div>
     );
 }
 
-export function Comment({ name, timeAgo, text, hasImage, imageUrl }) {
-    console.log('Rendering Comment:', { name, timeAgo, text, hasImage, imageUrl });
-
+function Comment({ name, timeAgo, text, hasImage, imageUrl }) {
     return (
         <div className="flex items-start gap-4">
             <Avatar className="w-10 h-10 border">
@@ -71,7 +60,7 @@ export function Comment({ name, timeAgo, text, hasImage, imageUrl }) {
                             src={imageUrl}
                             width={800}
                             height={450}
-                            alt="Project preview"
+                            alt="Comment preview"
                             className="rounded-lg object-cover"
                             style={{ aspectRatio: "800/450", objectFit: "cover" }}
                         />
@@ -82,7 +71,7 @@ export function Comment({ name, timeAgo, text, hasImage, imageUrl }) {
     );
 }
 
-export function CommentForm({ postId }) {
+function CommentForm({ postId }) {
     const [commentContent, setCommentContent] = useState('');
     const [file, setFile] = useState(null);
 
@@ -96,12 +85,14 @@ export function CommentForm({ postId }) {
         }
 
         try {
-            const data = await fetchPostComments(formData);
-            // console.log('Comment created:', data);
-            mutate('http://localhost:8080/posts');
+            await fetchPostCreateComments(formData);
 
-            setCommentContent('');
+            // Effacer le champ de commentaire et le fichier sélectionné
+            setCommentContent(''); 
             setFile(null);
+
+            // Actualiser les commentaires
+            mutate(`http://localhost:8080/comments?postId=${postId}`);
         } catch (error) {
             console.error('Error creating comment:', error);
         }
@@ -166,5 +157,5 @@ function ImageIcon(props) {
             <circle cx="9" cy="9" r="2" />
             <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
         </svg>
-    )
+    );
 }

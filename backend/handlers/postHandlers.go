@@ -65,7 +65,6 @@ func CheckPost(w http.ResponseWriter, r *http.Request) models.CheckResult {
 	content := strings.TrimSpace(r.FormValue("thread"))
 	privacy := r.FormValue("privacy")
 	photoURL, err := utils.UploadImage(w, r, "post")
-	fmt.Println("err",err)
 
 	if err != nil {
 		return models.CheckResult{
@@ -73,8 +72,7 @@ func CheckPost(w http.ResponseWriter, r *http.Request) models.CheckResult {
 			Error:   err.Error(),
 		}
 	}
-	// fmt.Println("check post values", content, privacy, photoURL)
-
+	
 	var allowedUsers []string
 	if privacy == "almost_private" {
 		allowedUsers = r.Form["allowedUsers"] // doit contenir les Userid des utilisateurs autorisés à voir le post

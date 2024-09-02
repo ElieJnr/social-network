@@ -46,6 +46,7 @@ func WebsocketHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error {
+	sender, _ := ChatService.GetConnectedUserId(r)
 	for {
 		var msg models.Message
 		err := conn.ReadJSON(&msg)
@@ -54,36 +55,50 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error 
 		}
 		fmt.Println(msg)
 		switch msg.Type { // les fonction qui utiliseront la base de donnee doivent etre des services
+
 		case "groupeChat":
 			//fonction qui gere groupChat:
 		case "clickOnUser":
-			messageService := services.NewChatService()
-			sender, sendErr := messageService.GetConnectedUserId(r)
-			// fmt.Println("senderId :", msg.SenderId, "sender: ", sender, "receiver: ", msg.ReceiverId)
-			if sendErr != nil {
-				return sendErr
-			}
-			err := messageService.SendStockedMessage(conn, sender, msg.ReceiverId, false)
+			err := ChatService.SendStockedMessage(conn, sender, msg.ReceiverId, false)
 			if err != nil {
 				fmt.Println("erreur :", err)
 				return err
 			}
 		case "notifications":
 			if msg.SubType == "read" {
-				err := NotifService.MarkAsRead(msg.ReceiverId)//id of notif
-				if err != nil{
+				err := NotifService.MarkAsRead(msg.ReceiverId) //id of notif
+				if err != nil {
 					return fmt.Errorf("error read: %w", err)
 				}
-				
+
 			}
-			
+			if msg.SubType == "sendFollow" {
+
+				idNotif, er := utils.GenerateUuid()
+				if er != nil {
+					return fmt.Errorf("error read: %w", err)
+				}
+
+				notif := models.Notification{
+					Id:         idNotif,
+					ReceiverID: msg.ReceiverId,
+					SenderID:   sender,
+					Type:       "follow",
+					Message:    msg.Content,
+				}
+				e := NotifService.CreateNotification(&notif)
+
+				if e != nil {
+					return fmt.Errorf("error read: %w", err)
+				}
+				fmt.Println(msg.ReceiverId)
+				receiverConn := ClientWebSocketConnections[msg.ReceiverId]
+				if er := receiverConn.WriteJSON(msg); er != nil {
+					return fmt.Errorf("error writting: %w", er)
+				}
+			}
 		case "sendMessage":
 
-			messageService := services.NewChatService()
-			sender, sendErr := ChatService.GetConnectedUserId(r)
-			if sendErr != nil {
-				return sendErr
-			}
 			msg.SenderId = sender
 
 			idNotif, er := utils.GenerateUuid()
@@ -102,37 +117,31 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error 
 			if e != nil {
 				return fmt.Errorf("error read: %w", err)
 			}
-			
-			err := messageService.RegisterMsg(msg)
+
+			err := ChatService.RegisterMsg(msg)
 			if err != nil {
 				fmt.Println("error: ", err)
 				return err
 			}
 
-			errToSender := messageService.SendStockedMessage(conn, sender, msg.ReceiverId, true)
+			errToSender := ChatService.SendStockedMessage(conn, sender, msg.ReceiverId, true)
 			if errToSender != nil {
 				return errToSender
 			}
 
 			if receiverConn, ok := ClientWebSocketConnections[msg.ReceiverId]; ok {
-				errtoreceiver := messageService.SendStockedMessage(receiverConn, sender, msg.ReceiverId, true)
+				errtoreceiver := ChatService.SendStockedMessage(receiverConn, sender, msg.ReceiverId, true)
 				if errtoreceiver != nil {
 					return errtoreceiver
 				}
 			}
 
 		case "userSender":
-			messageService := services.NewChatService()
-			sender, sendErr := messageService.GetConnectedUserId(r)
 			// fmt.Println("senderId :", msg.SenderId, "sender: ", sender, "receiver: ", msg.ReceiverId)
-			if sendErr != nil {
-				return sendErr
-			}
-			ChatService := services.NewChatService()
 			user, err := ChatService.FetchUser(sender)
 			if err != nil {
 				fmt.Println("err: ", err)
-				return fmt.Errorf(err.Error())
+				return fmt.Errorf("error : %w", err)
 			}
 			conn.WriteMessage(websocket.TextMessage, []byte(user))
 		}

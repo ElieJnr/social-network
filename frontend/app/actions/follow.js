@@ -15,3 +15,4 @@ export async function follow(userId, followedId, statut, followU) {
 	  console.error("Error following user:", error);
 	}
 }
+

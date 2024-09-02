@@ -10,7 +10,7 @@ const { Card, CardHeader, CardTitle, CardContent } = require("./ui/card");
 const { Avatar, AvatarImage, AvatarFallback } = require("./ui/avatar");
 const { Button } = require("./ui/button");
 
-export default function SuggestionsCard() {
+export default function SuggestionsCard({ socket }) {
   const [users, setUsers] = useState(null)
   const [userOnLine, setUserOnLine] = useState(null)
   const [hiddenUsers, setHiddenUsers] = useState([]);
@@ -50,6 +50,17 @@ export default function SuggestionsCard() {
     console.log(user.id);
     setHiddenUsers(prev => [...prev, user]);
     follow(userOnLine.id, user.id, statut, true)
+    const Message = {
+      Type: "notifications",
+      ReceiverId: user.id,
+      SubType: "sendFollow",
+      Content: "wants to follow you"
+    }
+
+    if (socket && socket.readyState === WebSocket.OPEN) {
+
+      socket.send(JSON.stringify(Message))
+    }
   }
   if (!users || !userOnLine) {
     return (

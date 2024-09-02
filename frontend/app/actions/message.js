@@ -21,11 +21,13 @@ export const useWebSocket = (url) => {
 
         socket.current.addEventListener('message', (event) => {
             let message = JSON.parse(event.data)
+            console.log(message);
+
             if (message.Type === "sendUser") {
-                console.log("iciiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii");
-                
                 setUser(message.Users)
-            } else if (message.Type === "clickOnUser") {
+            } 
+            
+            if (message.Type === "clickOnUser") {
 
                 if (message.Message) {
                     setgetMessage(message.Message)
@@ -33,10 +35,20 @@ export const useWebSocket = (url) => {
                 } else {
                     console.log("no message between two users");
                 }
-                fetchNotifs(setMsgNotif,"msg")
-            } else if (message.Type === "messageService") {
+                fetchNotifs(setMsgNotif, "msg")
+            } 
+            
+            if (message.Type === "messageService") {
                 console.log('message: ', event.data)
-            } else if ("simpleChat") {
+            } 
+            
+            if (message.Type === "notifications") {
+                console.log("c bon");
+
+                fetchNotifs(setNotifs)
+            } 
+            
+            if (message.Type === "simpleChat") {
                 setNewMessage(message.message)
                 console.log(message.message);
             }

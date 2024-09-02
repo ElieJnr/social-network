@@ -16,7 +16,7 @@ export default function HomePage() {
       <div className="flex-1 grid grid-cols-[350px_1fr_400px] gap-6 p-6">
         <div className="space-y-6">
           <ProfileCard />
-          <SuggestionsCard />
+          <SuggestionsCard socket={socket}/>
         </div>
         <div className="space-y-6">
           <div className="w-full p-2">

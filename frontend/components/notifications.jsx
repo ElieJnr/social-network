@@ -49,8 +49,6 @@ export function Notifications({ socket }) {
         setIsOpen(true)
     }
    
-    console.log(notifications);
-
     const markAsRead = (id) => {
         const Message = {
             Type: "notifications",
@@ -90,7 +88,7 @@ export function Notifications({ socket }) {
                                 <GetIcon type={n.Type} className="h-5 w-5" />
                                 <div className="text-sm">
                                     <p className="font-medium">{TitleNotif[n.Type]}</p>
-                                    <p className="text-sm text-muted-foreground">{n.Message}.</p>
+                                    <p className="text-sm text-muted-foreground">{n.SenderInfo.Email+" "+n.Message}.</p>
                                     <p className="text-xs text-muted-foreground">{n.CreateAt.slice(0, 10) + "----/----" + n.CreateAt.slice(11).slice(0, 8)}</p>
                                     {(n.Type == "follow" || n.Type == "invitation") && (<div className="flex gap-2 mt-2">
                                         <Button variant="outline" size="sm" onClick={() => markAsRead(n.Id)}>

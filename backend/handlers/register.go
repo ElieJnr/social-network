@@ -35,7 +35,7 @@ func RegistrationHandler() http.HandlerFunc {
 		err := r.ParseMultipartForm(10 << 20) // 10MB
 		if err != nil {
 			fmt.Println("Could not parse form:", err)
-			w.Header().Set("Content-Type", "application/json")
+			// w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusBadRequest)
 			json.NewEncoder(w).Encode(Response{
 				Status:  http.StatusBadRequest,
@@ -43,7 +43,7 @@ func RegistrationHandler() http.HandlerFunc {
 			})
 			return
 		}
- 
+
 		var newUser models.User
 		newUser.Email = r.FormValue("email")
 		newUser.Password = r.FormValue("password")
@@ -53,7 +53,15 @@ func RegistrationHandler() http.HandlerFunc {
 		newUser.Bio = r.FormValue("bio")
 		newUser.DateOfBirth = r.FormValue("dateOfBirth")
 
-		imgPath := utils.UploadImage(w, r, "register")
+		imgPath, err := utils.UploadImage(w, r, "register")
+		if err != nil {
+			json.NewEncoder(w).Encode(Response{
+				Status:  http.StatusInternalServerError,
+				Message: err.Error(),
+			})
+			return
+		}
+		fmt.Println("image", imgPath)
 		newUser.Avatar = imgPath
 
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newUser.Password), bcrypt.DefaultCost)

@@ -35,7 +35,13 @@ func CreateComment(w http.ResponseWriter, r *http.Request) {
 func CheckComment(w http.ResponseWriter, r *http.Request) models.CheckResult {
 	content := strings.TrimSpace(r.FormValue("commentContent"))
 	postId := r.FormValue("postId")
-	photoURL := utils.UploadImage(w, r, "comment")
+	photoURL, errIMage := utils.UploadImage(w, r, "comment")
+	if errIMage != nil {
+		return models.CheckResult{
+			Success: false,
+			Error:   errIMage.Error(),
+		}
+	}
 
 	success, err := utils.IsValidComment(content, photoURL, postId)
 	if !success {

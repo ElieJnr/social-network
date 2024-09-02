@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"github.com/gofrs/uuid/v5"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -9,7 +10,6 @@ import (
 	"path/filepath"
 	"time"
 	"unicode/utf8"
-	"github.com/gofrs/uuid/v5"
 )
 
 // ______________________fonction utilitaire
@@ -120,7 +120,7 @@ func IsValidImage(file multipart.File, handler *multipart.FileHeader) bool {
 	return true
 }
 
-func UploadImage(w http.ResponseWriter, r *http.Request, origin string) string {
+func UploadImage(w http.ResponseWriter, r *http.Request, origin string) (string, error) {
 	var photoURL string
 
 	fileOrAvatar := "file"
@@ -130,43 +130,51 @@ func UploadImage(w http.ResponseWriter, r *http.Request, origin string) string {
 
 	err := r.ParseMultipartForm(10 << 10)
 	if err != nil {
-		return "err400"
+		return "", fmt.Errorf("failed to parse multipart form: %w", err)
 	}
+
 	file, handler, err := r.FormFile(fileOrAvatar)
+	if err != nil {
+		return "", fmt.Errorf("failed to retrieve form file: %w", err)
+	}
+	defer file.Close()
+
 	if file != nil {
-		if err != nil {
-			return "err400"
-		}
-		defer file.Close()
 		if !IsValidImage(file, handler) {
-			return "err400"
+			return "", fmt.Errorf("invalid image file")
 		}
 		if handler.Size > 20<<20 {
-			return "err408"
+			return "", fmt.Errorf("file size exceeds the 20MB limit")
 		}
-		// temporary path
+
+		// Temporary path
 		dirPath := "../frontend/public/uploads/"
 		if _, err := os.Stat(dirPath); os.IsNotExist(err) {
 			err := os.MkdirAll(dirPath, 0755)
 			if err != nil {
-				return "err500"
+				return "", fmt.Errorf("failed to create directory: %w", err)
 			}
 		}
+
 		tempFile, err := os.CreateTemp(dirPath, "upload-*"+filepath.Ext(handler.Filename))
 		if err != nil {
-			return "err500"
+			return "", fmt.Errorf("failed to create temporary file: %w", err)
 		}
 		defer tempFile.Close()
+
 		_, err = io.Copy(tempFile, file)
 		if err != nil {
-			return "err500"
+			return "", fmt.Errorf("failed to copy file: %w", err)
 		}
+
 		photoURL = filepath.Base(tempFile.Name())
 	}
+
 	if origin == "login" && photoURL == "" {
-		return "lien_avatar_par_defaut_en_attendant_qu'on_trouve_image.jpg"
+		return "lien_avatar_par_defaut_en_attendant_qu'on_trouve_image.jpg", nil
 	}
-	return photoURL
+
+	return photoURL, nil
 }
 
 func GenerateUuid() (string, error) {

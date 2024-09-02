@@ -63,7 +63,13 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 func CheckPost(w http.ResponseWriter, r *http.Request) models.CheckResult {
 	content := strings.TrimSpace(r.FormValue("thread"))
 	privacy := r.FormValue("privacy")
-	photoURL := utils.UploadImage(w, r, "post")
+	photoURL, err := utils.UploadImage(w, r, "post")
+	if err != nil {
+		return models.CheckResult{
+			Success: false,
+			Error:   err.Error(),
+		}
+	}
 	// fmt.Println("check post values", content, privacy, photoURL)
 
 	var allowedUsers []string

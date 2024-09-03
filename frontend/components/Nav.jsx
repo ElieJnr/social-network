@@ -36,7 +36,7 @@ export default function NavBar({ socket }) {
           <span className="text-lg font-semibold">Acme Social</span>
         </Link>
         <nav className="hidden gap-4 text-sm font-medium sm:flex">
-          <Link href="#" className="hover:underline" prefetch={false}>
+          <Link href="#" className="hover:underline " prefetch={false}>
             Feed
           </Link>
           <Link href="#" className="hover:underline" prefetch={false}>
@@ -48,14 +48,6 @@ export default function NavBar({ socket }) {
         </nav>
       </div>
       <div className="flex items-center gap-4">
-        <div className="relative hidden sm:block">
-          <SearchIcon
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Search"
-            className="pl-9 pr-4 focus:outline-none focus:ring-1 focus:ring-primary" />
-        </div>
         <MsgNotif socket={socket}  />
         <Notifications socket={socket} />
         <DropdownMenu>

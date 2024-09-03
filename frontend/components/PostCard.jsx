@@ -69,9 +69,9 @@ function PostCard({ post }) {
           </Avatar>
 
           <div className="flex items-center gap-2">
-            <span className="font-semibold">{post.Author.Firstname + " " + post.Author.Lastname || "Anonymous"}</span>
+            <span className="text-lg font-semibold">{post.Author.Firstname + " " + post.Author.Lastname || "Anonymous"}</span>
             <span className="text-muted-foreground">@{post.Author.Username || ""}</span>
-            <span className="text-muted-foreground">•</span>
+            <span className="text-muted-foreground text-lg">•</span>
             <span className="text-muted-foreground">{post.Formated_date || "just now"}</span>
           </div>
 
@@ -80,7 +80,7 @@ function PostCard({ post }) {
           </Button>}
         </div>
 
-        <div className="text-sm grid gap-2 p-4">
+        <div className="text-lg grid gap-2 p-4">
           {post.Content || "No content available."}
         </div>
         {post.HasImage && (

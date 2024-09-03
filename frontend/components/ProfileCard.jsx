@@ -35,9 +35,9 @@ export default function ProfileCard() {
             <div className="text-muted-foreground">{user ? user.email : ""}</div>
           </div>
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1 text-muted-foreground">
-              <CalendarDaysIcon className="h-4 w-4" />
-              <span>Joined June 2023</span>
+          <div className="flex items-center gap-1 text-muted-foreground">
+              <UsersIcon className="h-4 w-4" />
+              <span>100 following</span>
             </div>
             <div className="flex items-center gap-1 text-muted-foreground">
               <UsersIcon className="h-4 w-4" />

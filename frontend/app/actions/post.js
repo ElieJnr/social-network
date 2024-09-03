@@ -69,25 +69,25 @@ export async function fetchPostCreateComments(formData) {
   }
 }
 
-export async function fetchAllPostComments(postId) {
-  try {
-      const response = await fetch(`http://localhost:8080/comments?postId=${postId}`, {
-          method: 'GET',
-          credentials: 'include',
-          cache: "no-store",
-      });
+// export async function fetchAllPostComments(postId) {
+//   try {
+//       const response = await fetch(`http://localhost:8080/comments?postId=${postId}`, {
+//           method: 'GET',
+//           credentials: 'include',
+//           cache: "no-store",
+//       });
 
-      if (!response.ok) {
-          throw new Error('Network response was not ok');
-      }
+//       if (!response.ok) {
+//           throw new Error('Network response was not ok');
+//       }
 
-      const data = await response.json();
-      return data; // Retourner les commentaires
-  } catch (error) {
-      console.error('Error fetching comments:', error);
-      throw error;
-  }
-}
+//       const data = await response.json();
+//       return data; // Retourner les commentaires
+//   } catch (error) {
+//       console.error('Error fetching comments:', error);
+//       throw error;
+//   }
+// }
 
 export async function fetchAllPostComments(postId) {
   try {

@@ -34,6 +34,8 @@ func InitializeRoutes() *mux.Router {
 	// group
 	router.Handle("group/posts", middlewares.AuthMiddleware(handlers.PostHandler("allPost"))).Methods("GET")
 	router.Handle("group/post/create", middlewares.AuthMiddleware(handlers.CreatePostHandler())).Methods("POST")
+	router.Handle("/group/createGroup", handlers.CreateGroups()).Methods("POST")
+	router.Handle("/group/addNewMemberToGroup", handlers.AddNewMember()).Methods("POST")
 
 	// Reactions
 	router.Handle("/like", middlewares.AuthMiddleware(handlers.LikeHandler())).Methods("POST")

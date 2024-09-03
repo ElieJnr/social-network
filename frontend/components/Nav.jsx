@@ -42,7 +42,7 @@ export default function NavBar({ socket }) {
           <Link href="#" className="hover:underline" prefetch={false}>
             Profile
           </Link>
-          <Link href="#" className="hover:underline" prefetch={false}>
+          <Link href="/groups" className="hover:underline" prefetch={false}>
             Groups
           </Link>
         </nav>

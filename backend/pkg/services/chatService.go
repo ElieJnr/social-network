@@ -106,7 +106,7 @@ func (c *ChatService) RegisterMsg(msg models.Message) error {
 func (c *ChatService) FetchUser(actualuser string) ([]byte, error) {
 	// Filtrer les utilisateurs suivis ou qui suivent l'utilisateur connecté
 	query := `
-		SELECT u.id, u.firstname, u.lastname 
+		SELECT DISTINCT u.id, u.firstname, u.lastname 
 		FROM Users u
 		JOIN Followers f 
 		ON (u.id = f.followedId OR u.id = f.userId)
@@ -120,9 +120,11 @@ func (c *ChatService) FetchUser(actualuser string) ([]byte, error) {
 
 	// Structure pour les utilisateurs
 	type User struct {
-		Id        string
-		Firstname string
-		Lastname  string
+		Id              string
+		Firstname       string
+		Lastname        string
+		Lastmessage     string
+		LastmessageHour time.Time
 	}
 	type sendUser struct {
 		Type  string
@@ -139,9 +141,11 @@ func (c *ChatService) FetchUser(actualuser string) ([]byte, error) {
 		}
 
 		user := User{
-			Id:        id,
-			Firstname: firstname,
-			Lastname:  lastname,
+			Id:              id,
+			Firstname:       firstname,
+			Lastname:        lastname,
+			Lastmessage:     "hello there",
+			LastmessageHour: time.Now(),
 		}
 		users = append(users, user)
 	}

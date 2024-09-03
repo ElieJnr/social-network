@@ -83,10 +83,10 @@ export function MessageComponent({ onNameClick, setSelectedUser, socket }) {
                                 <UserList
                                     id={user.Id}
                                     name={capitalize(user.Firstname) + " " + capitalize(user.Lastname)}
-                                    lastMessage={`Salut ${user.Firstname}`}
+                                    lastMessage={user.Lastmessage}
                                 />
                                 <div className="flex items-center space-x-2">
-                                    <time className="text-sm text-muted-foreground">2:34 PM</time>
+                                    <time className="text-sm text-muted-foreground">{user.LastmessageHour}</time>
                                     <div className="w-2 h-2 bg-primary rounded-full" />
                                 </div>
                             </div>

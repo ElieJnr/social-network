@@ -83,12 +83,21 @@ export function MessageComponent({ onNameClick, setSelectedUser, socket }) {
                                 <UserList
                                     id={user.Id}
                                     name={capitalize(user.Firstname) + " " + capitalize(user.Lastname)}
-                                    lastMessage={user.Lastmessage}
+                                    lastMessage={user.Lastmessage || `No messages with ${capitalize(user.Firstname) + " " + capitalize(user.Lastname)}`}
                                 />
                                 <div className="flex items-center space-x-2">
-                                    <time className="text-sm text-muted-foreground">{user.LastmessageHour}</time>
-                                    <div className="w-2 h-2 bg-primary rounded-full" />
+                                    {user.LastmessageHour !== "292 years ago" ? (
+                                        <>
+                                            <time className="text-sm text-muted-foreground">
+                                                {user.LastmessageHour}
+                                            </time>
+                                            <div className="w-2 h-2 bg-primary rounded-full" />
+                                        </>
+                                    ) : (
+                                        <time className="text-sm text-muted-foreground">no message</time>
+                                    )}
                                 </div>
+
                             </div>
                         ))}
                     </div>

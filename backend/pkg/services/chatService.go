@@ -104,7 +104,6 @@ func (c *ChatService) RegisterMsg(msg models.Message) error {
 }
 
 func (c *ChatService) FetchUser(actualuser string) ([]byte, error) {
-	// Filtrer les utilisateurs suivis ou qui suivent l'utilisateur connecté
 	query := `
 		SELECT DISTINCT u.id, u.firstname, u.lastname 
 		FROM Users u
@@ -118,13 +117,12 @@ func (c *ChatService) FetchUser(actualuser string) ([]byte, error) {
 	}
 	defer rows.Close()
 
-	// Structure pour les utilisateurs
 	type User struct {
 		Id              string
 		Firstname       string
 		Lastname        string
 		Lastmessage     string
-		LastmessageHour time.Time
+		LastmessageHour string
 	}
 	type sendUser struct {
 		Type  string
@@ -139,13 +137,26 @@ func (c *ChatService) FetchUser(actualuser string) ([]byte, error) {
 			fmt.Println("Failed to scan user:", err)
 			continue
 		}
+		query := "SELECT content, sendAt FROM Chats WHERE (senderId = ? AND receverId = ?) OR (receverId = ? AND senderId = ?) ORDER BY sendAt DESC LIMIT 1"
+		lastMessageRow := c.GetDB().QueryRow(query, actualuser, id, actualuser, id)
+
+		var lastMessage string
+		var lastMessageHour time.Time
+		err = lastMessageRow.Scan(&lastMessage, &lastMessageHour)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				// lastMessage = fmt.Sprintf("No message between %s and %s", actualuser, id)
+			} else {
+				fmt.Println("Failed to retrieve last message:", err)
+			}
+		}
 
 		user := User{
 			Id:              id,
 			Firstname:       firstname,
 			Lastname:        lastname,
-			Lastmessage:     "hello there",
-			LastmessageHour: time.Now(),
+			Lastmessage:     lastMessage,
+			LastmessageHour: utils.FormatTimeAgo(lastMessageHour),
 		}
 		users = append(users, user)
 	}
@@ -155,7 +166,6 @@ func (c *ChatService) FetchUser(actualuser string) ([]byte, error) {
 		Users: users,
 	}
 
-	// Convertir en JSON
 	jsonUsers, err := json.Marshal(sendUsers)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal users: %w", err)

@@ -1,3 +1,5 @@
+import { useToast } from "@/components/ui/use-toast";
+
 
 export async function fetchCreatePost(formData) {
   try {
@@ -12,7 +14,6 @@ export async function fetchCreatePost(formData) {
     if (!response.ok) {
       throw new Error("Échec de la création du post");
     }
-    fetchAllPosts();
     return;
   } catch (error) {
     console.error("Erreur lors de la création du post :", error);
@@ -20,7 +21,7 @@ export async function fetchCreatePost(formData) {
   }
 }
 
-export async function fetchAllPosts(setPosts) {
+export async function fetchAllPosts() {
   try {
     const response = await fetch('http://localhost:8080/posts', {
       method: 'GET',
@@ -57,37 +58,15 @@ export async function fetchPostCreateComments(formData) {
     
     if (!response.ok) {
       throw new Error("Échec de la création du comment");
-      throw new Error("Échec de la création du comment");
+      // throw new Error("Échec de la création du comment");
     }
 
-    // fetchAllPosts();
-    // fetchAllPosts();
     return;
   } catch (error) {
     console.error("Erreur lors de la création du comment :", error);
     throw error;
   }
 }
-
-// export async function fetchAllPostComments(postId) {
-//   try {
-//       const response = await fetch(`http://localhost:8080/comments?postId=${postId}`, {
-//           method: 'GET',
-//           credentials: 'include',
-//           cache: "no-store",
-//       });
-
-//       if (!response.ok) {
-//           throw new Error('Network response was not ok');
-//       }
-
-//       const data = await response.json();
-//       return data; // Retourner les commentaires
-//   } catch (error) {
-//       console.error('Error fetching comments:', error);
-//       throw error;
-//   }
-// }
 
 export async function fetchAllPostComments(postId) {
   try {

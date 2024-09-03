@@ -4,6 +4,7 @@ import { useState } from 'react';
 import useSWR, { mutate } from 'swr';
 import { fetchPostCreateComments, fetchAllPostComments } from '@/app/actions/post';
 import { AvatarFallback, AvatarImage, Avatar } from "./ui/avatar";
+import { useToast } from "@/components/ui/use-toast";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
 
@@ -74,6 +75,7 @@ function Comment({ name, timeAgo, text, hasImage, imageUrl }) {
 function CommentForm({ postId }) {
     const [commentContent, setCommentContent] = useState('');
     const [file, setFile] = useState(null);
+    const { toast } = useToast();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -84,17 +86,22 @@ function CommentForm({ postId }) {
             formData.append('file', file);
         }
 
+        if (!checkComment(commentContent, file, toast)) {
+            return;
+        }
+
         try {
             await fetchPostCreateComments(formData);
 
-            // Effacer le champ de commentaire et le fichier sélectionné
-            setCommentContent(''); 
+            setCommentContent('');
             setFile(null);
 
-            // Actualiser les commentaires
             mutate(`http://localhost:8080/comments?postId=${postId}`);
         } catch (error) {
-            console.error('Error creating comment:', error);
+            toast({
+                title: "Error creating comment",
+                description: error,
+            });
         }
     }
 
@@ -139,7 +146,6 @@ function CommentForm({ postId }) {
     );
 }
 
-
 function ImageIcon(props) {
     return (
         <svg
@@ -159,4 +165,45 @@ function ImageIcon(props) {
             <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
         </svg>
     );
+}
+
+function checkComment(commentContent, file, toast) {
+    if (!commentContent) {
+        toast({
+            title: "Error creating Comment",
+            description: "Thread must not be empty and must not exceed 500 characters.",
+        });
+        return false;
+    }
+    if (file) {
+        if (!file.type.includes('image')) {
+            toast({
+                title: "Error creating Comment",
+                description: "File must be an image.",
+            });
+            return false;
+        }
+
+        const validExtensions = ["jpg", "jpeg", "png", "gif"];
+        const fileExtension = file.name.split('.').pop().toLowerCase();
+        if (!validExtensions.includes(fileExtension)) {
+            toast({
+                title: "Error creating Comment",
+                description: "File must be in jpg, png, or gif format.",
+            });
+            return false;
+        }
+
+
+        const maxSizeMB = 5;
+        const maxSizeBytes = maxSizeMB * 1024 * 1024;
+        if (file.size > maxSizeBytes) {
+            toast({
+                title: "Error creating Comment",
+                description: `File size must not exceed ${maxSizeMB} MB.`,
+            });
+            return false;
+        }
+    }
+    return true;
 }

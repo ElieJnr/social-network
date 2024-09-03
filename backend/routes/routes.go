@@ -5,8 +5,6 @@ import (
 	"socialNetwork/middlewares"
 
 	"github.com/gorilla/mux"
-	// "database/sql"
-	// "net/http"
 )
 
 func InitializeRoutes() *mux.Router {

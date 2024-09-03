@@ -73,7 +73,7 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error 
 
 			}
 			if msg.SubType == "sendFollow" {
-
+				
 				idNotif, er := utils.GenerateUuid()
 				if er != nil {
 					return fmt.Errorf("error read: %w", err)
@@ -92,10 +92,10 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error 
 					return fmt.Errorf("error read: %w", err)
 				}
 				fmt.Println(msg.ReceiverId)
-				receiverConn := ClientWebSocketConnections[msg.ReceiverId]
-				if er := receiverConn.WriteJSON(msg); er != nil {
-					return fmt.Errorf("error writting: %w", er)
+				if receiverConn, ok := ClientWebSocketConnections[msg.ReceiverId]; ok {
+					receiverConn.WriteJSON(msg)
 				}
+
 			}
 		case "sendMessage":
 

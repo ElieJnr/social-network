@@ -18,7 +18,7 @@ export async function fetchNotifs(setNotifications, type) {
             setNotifications(data)
         }
     } catch (error) {
-        console.error('Error fetching posts:', error);
+        console.error('Error fetching notif:', error);
     }
 }
 

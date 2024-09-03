@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type Notification struct {
 	Id         string
 	ReceiverID string
@@ -7,7 +9,8 @@ type Notification struct {
 	Type       string
 	Message    string
 	IsRead     bool
-	CreateAt   string
+	CreateAt   time.Time
+	Formated_date string
 	SenderInfo Author
 }
 

@@ -48,7 +48,7 @@ export function Notifications({ socket }) {
     const toggleDropdown = () => {
         setIsOpen(true)
     }
-   
+
     const markAsRead = (id) => {
         const Message = {
             Type: "notifications",
@@ -88,9 +88,9 @@ export function Notifications({ socket }) {
                                 <GetIcon type={n.Type} className="h-5 w-5" />
                                 <div className="text-sm">
                                     <p className="font-medium">{TitleNotif[n.Type]}</p>
-                                    <p className="text-sm text-muted-foreground">{n.SenderInfo.Email+" "+n.Message}.</p>
-                                    <p className="text-xs text-muted-foreground">{n.CreateAt.slice(0, 10) + "----/----" + n.CreateAt.slice(11).slice(0, 8)}</p>
-                                    {(n.Type == "follow" || n.Type == "invitation") && (<div className="flex gap-2 mt-2">
+                                    <p className="text-sm text-muted-foreground">{n.SenderInfo.Email + " " + n.Message}.</p>
+                                    <p className="text-xs text-muted-foreground">{n.Formated_date}</p>
+                                    {(n.Type == "follow" || n.Type == "invitation") && (n.SenderInfo.IsPrivate) && (<div className="flex gap-2 mt-2">
                                         <Button variant="outline" size="sm" onClick={() => markAsRead(n.Id)}>
                                             Accept
                                         </Button>
@@ -100,7 +100,7 @@ export function Notifications({ socket }) {
                                     </div>)}
                                 </div>
                                 <div className="flex items-center space-x-2">
-                                    {(n.Type == "event") && (
+                                    {((n.Type == "event") || ((n.Type == "follow" || n.Type == "invitation") && (!n.SenderInfo.IsPrivate))) && (
                                         <Button size="icon" variant="ghost" onClick={() => markAsRead(n.Id)}>
                                             <Check className="h-4 w-4" />
                                             <span className="sr-only">Marquer comme lu</span>

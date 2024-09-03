@@ -27,7 +27,7 @@ func GetAuthor(db *sql.DB, userId string) (models.Author, error) {
 
 	var author models.Author
 	query := `
-        SELECT firstname, lastname, username, avatar,SUBSTR(email, 1, INSTR(email, '@') - 1) AS email_username
+        SELECT firstname, lastname, username, avatar,isPrivate,SUBSTR(email, 1, INSTR(email, '@') - 1) AS email_username
 
         FROM Users
         WHERE id = ?
@@ -38,6 +38,7 @@ func GetAuthor(db *sql.DB, userId string) (models.Author, error) {
 		&author.Lastname,
 		&author.Username,
 		&author.Avatar,
+		&author.IsPrivate,
 		&author.Email,
 	)
 

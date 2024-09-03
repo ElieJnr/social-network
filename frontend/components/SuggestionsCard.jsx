@@ -48,13 +48,15 @@ export default function SuggestionsCard({ socket }) {
   }, [users, userOnLine]);
   const handleClick = (user, statut) => {
     console.log(user.id);
+   
     setHiddenUsers(prev => [...prev, user]);
     follow(userOnLine.id, user.id, statut, true)
     const Message = {
       Type: "notifications",
       ReceiverId: user.id,
       SubType: "sendFollow",
-      Content: "wants to follow you"
+      Content: "wants to follow you",
+      IsPrivate:  user.IsPrivate
     }
 
     if (socket && socket.readyState === WebSocket.OPEN) {

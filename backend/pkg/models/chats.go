@@ -24,4 +24,5 @@ type Message struct {
 	ReceiverId string
 	SenderId   string
 	SubType    string
+	IsPrivate     bool
 }

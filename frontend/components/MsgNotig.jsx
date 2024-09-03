@@ -92,7 +92,7 @@ export function MsgNotif({ socket }) {
                                 <div className="text-sm">
                                     <p className="font-medium">{"New message from @" + (n.SenderInfo.Email)} </p>
                                     <p className="text-sm text-muted-foreground">{n.Message}.</p>
-                                    <p className="text-xs text-muted-foreground">{n.CreateAt.slice(0, 10) + "----/----" + n.CreateAt.slice(11).slice(0, 8)}</p>
+                                    <p className="text-xs text-muted-foreground">{n.Formated_date}</p>
                                 </div>
                                 {(pathname == "/") && (<div className="flex items-center space-x-2">
 

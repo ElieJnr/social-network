@@ -1,15 +1,16 @@
 package models
 
 type Group struct {
-	Id          string
+	Id          string `json:"id"`
 	Title       string `json:"title"`
 	Description string `json:"description"`
-	UserId      string
-	CreateAt    string
+	UserId      string `json:"userId"`
+	CreateAt    string `json:"createAt"`
+	IsMember bool `json:"isMember"`
 }
 
 type NewMember struct {
 	UserId  string `json:"userId"`
 	GroupId string `json:"groupID"`
-	Status string
+	Status string `json:"status"`
 }

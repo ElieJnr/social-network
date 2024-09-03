@@ -75,7 +75,7 @@ func (g *GroupeService) AddNewMember(newMember models.NewMember) error {
 }
 
 
-func (g *GroupeService) GetGroups() ([]models.Group, error) {
+func (g *GroupeService) GetGroups(userID string) ([]models.Group, error) {
 	query := `SELECT * FROM Groups ORDER BY created_at DESC`
 	fmt.Println("ici")
 	rows, err := g.GetDB().Query(query)
@@ -90,8 +90,30 @@ func (g *GroupeService) GetGroups() ([]models.Group, error) {
 		if err = rows.Scan(&group.Id, &group.Title, &group.Description, &group.UserId, &group.CreateAt); err != nil {
 			return nil, fmt.Errorf("failed to scan group: %w", err)
 		}
+
+		isMember,err:= g.IsUserInGroup(userID, group.Id)
+
+		if err != nil{
+			return nil, fmt.Errorf("impossible to found if the user is in the group: %w", err)
+		}
+
+		group.IsMember=isMember
+
 		fmt.Println(group)
 		groups = append(groups, group)
 	}
 	return groups, nil
+}
+
+
+func (g *GroupeService) IsUserInGroup(userId, groupId string) (bool, error) {
+	var exists bool
+	query := `SELECT EXISTS(SELECT 1 FROM Membership WHERE userId = ? AND groupId = ?)`
+
+	err := g.GetDB().QueryRow(query, userId, groupId).Scan(&exists)
+	if err != nil {
+		return false, fmt.Errorf("failed to check membership: %w", err)
+	}
+
+	return exists, nil
 }

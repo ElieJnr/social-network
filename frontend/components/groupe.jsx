@@ -1,33 +1,47 @@
 'use client'
 
-import { useState } from 'react'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { useState, useEffect } from 'react'
 import { GroupCards } from './group-cards'
-// import {}
 
 export default function AllGroupsComponent() {
-  // État pour stocker les groupes (normalement, cela viendrait d'une API)
-  const [groupes, setGroupes] = useState([
-    { id: '1', nom: 'Groupe A', description: 'Description du groupe A', estMembre: true },
-    { id: '2', nom: 'Groupe B', description: 'Description du groupe B', estMembre: false },
-    { id: '3', nom: 'Groupe C', description: 'Description du groupe C', estMembre: true },
-    { id: '4', nom: 'Groupe D', description: 'Description du groupe D', estMembre: false },
-    
-  ])
+  const [groupes, setGroupes] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  // Fonction pour rejoindre un groupe
+  useEffect(() => {
+    const fetchGroupes = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/group/getGroups')
+        if (!response.ok) {
+          throw new Error('Erreur lors de la récupération des groupes')
+        }
+        const data = await response.json()
+
+        console.log('Données récupérées:', data) // Log the fetched data
+
+        setGroupes(data)
+      } catch (error) {
+        setError(error.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchGroupes()
+  }, [])
+
   const rejoindreGroupe = (id) => {
     setGroupes(groupes.map(groupe => 
       groupe.id === id ? { ...groupe, estMembre: true } : groupe
     ))
   }
 
-  // Fonction pour entrer dans un groupe (à implémenter selon vos besoins)
   const entrerGroupe = (id) => {
     console.log(`Entrer dans le groupe ${id}`)
-    // Implémentez ici la logique pour entrer dans le groupe
   }
+
+  if (loading) return <p>Chargement...</p>
+  if (error) return <p>Erreur: {error}</p>
 
   return (
     <div className="container mx-auto p-4">
@@ -35,10 +49,10 @@ export default function AllGroupsComponent() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {groupes.map((groupe) => (
           <GroupCards
-            key={groupe.id}
-            nom={groupe.nom}
+            key={groupe.id} // Ensure groupe.id is unique and defined
+            nom={groupe.title}
             description={groupe.description}
-            estMembre={groupe.estMembre}
+            estMembre={groupe.isMember}
             onEntrer={() => entrerGroupe(groupe.id)}
             onRejoindre={() => rejoindreGroupe(groupe.id)}
           />
@@ -47,34 +61,3 @@ export default function AllGroupsComponent() {
     </div>
   )
 }
-
-// ancien composant groups
-// return (
-//   <div className="container mx-auto p-4">
-//     <h1 className="text-2xl font-bold mb-6">Groupes disponibles</h1>
-//     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-//       {groupes.map((groupe) => (
-//         // GroupCards()
-//         <Card key={groupe.id} className="flex flex-col">
-//           <CardHeader>
-//             <CardTitle>{groupe.nom}</CardTitle>
-//           </CardHeader>
-//           <CardContent className="flex-grow">
-//             <p>{groupe.description}</p>
-//           </CardContent>
-//           <CardFooter>
-//             {groupe.estMembre ? (
-//               <Button className="w-full" onClick={() => entrerGroupe(groupe.id)}>
-//                 Entrer
-//               </Button>
-//             ) : (
-//               <Button className="w-full" onClick={() => rejoindreGroupe(groupe.id)}>
-//                 Rejoindre
-//               </Button>
-//             )}
-//           </CardFooter>
-//         </Card>
-//       ))}
-//     </div>
-//   </div>
-// )

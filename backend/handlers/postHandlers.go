@@ -62,6 +62,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 
 // se charge de vérifier si les données du post sont correctes
 func CheckPost(w http.ResponseWriter, r *http.Request) models.CheckResult {
+	fmt.Println("----check post-----")
 	content := strings.TrimSpace(r.FormValue("thread"))
 	privacy := r.FormValue("privacy")
 	photoURL, err := utils.UploadImage(w, r, "post")

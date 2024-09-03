@@ -112,6 +112,7 @@ function PostCard({ post }) {
           </div>
         </CardFooter>
         {showComments && <CommentCard postId={post.PostID} />}
+        {showComments && <CommentCard postId={post.PostID} />}
       </CardContent>
     </Card>
 

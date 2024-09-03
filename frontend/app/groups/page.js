@@ -6,10 +6,10 @@ import { useWebSocket } from "@/app/actions/message";
 import AllGroupsComponent from "@/components/groupe";
 import ProfileCard from "@/components/ProfileCard";
 import NavBar from "@/components/Nav";
+import { GroupHomePage } from "@/components/group-home-page";
 export let socketGlobal
 export default function AllGroup() {
     const socket = useWebSocket('ws://localhost:8080/ws');
-    
     return (
         <div className="flex flex-col h-screen">
             <NavBar socket={socket} />
@@ -21,6 +21,18 @@ export default function AllGroup() {
                 <div className="space-y-6">
                     <AllGroupsComponent />
                 </div>
+            </div>
+        </div>
+    );
+}
+
+export function SeeGroup() {
+    const socket = useWebSocket('ws://localhost:8080/ws');
+    return (
+        <div className="flex flex-col h-screen">
+            <NavBar socket={socket} />
+            <div className="flex-1 ">
+                <GroupHomePage />
             </div>
         </div>
     );

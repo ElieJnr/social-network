@@ -73,7 +73,7 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error 
 
 			}
 			if msg.SubType == "sendFollow" {
-				
+
 				idNotif, er := utils.GenerateUuid()
 				if er != nil {
 					return fmt.Errorf("error read: %w", err)
@@ -138,7 +138,7 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error 
 
 		case "userSender":
 			// fmt.Println("senderId :", msg.SenderId, "sender: ", sender, "receiver: ", msg.ReceiverId)
-			user, err := ChatService.FetchUser(sender)
+			user, err := ChatService.FetchUser(ClientWebSocketConnections, sender)
 			if err != nil {
 				fmt.Println("err: ", err)
 				return fmt.Errorf("error : %w", err)

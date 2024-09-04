@@ -20,12 +20,12 @@ Social Network App:
             ☐ Développer la logique des profils utilisateurs @started(24-08-28 13:42)  @fakeita
             ✔ Implémenter l'option profil public/privé @done(24-08-26 21:22)
             ✔ Implémenter le système de followers @done(24-08-28 13:35)
-            ☐ Gérer les demandes de suivi pour les profils privés @started(24-08-28 13:42)
+            ✔ Gérer les demandes de suivi pour les profils privés @started(24-08-28 13:42) @done(24-09-04 16:33) @lasted(1w2h51m22s)
         Frontend :
             ✔ Créer le formulaire d'inscription @done(24-08-26 21:22)
             ✔ Créer le formulaire de connexion @done(24-08-26 21:22)
-            ☐ Développer l'interface du profil utilisateur @started(24-08-28 13:41)
-            ☐ Implémenter l'affichage des followers et des utilisateurs suivis @started(24-08-28 13:42)
+            ✔ Développer l'interface du profil utilisateur @started(24-08-28 13:41) @done(24-09-04 16:33) @lasted(1w2h52m43s)
+            ✔ Implémenter l'affichage des followers et des utilisateurs suivis @started(24-08-28 13:42) @done(24-09-04 16:33) @lasted(1w2h51m49s)
     Posts et Commentaires :
         Backend :
             ✔ Développer la logique de création de posts @done(24-08-19 14:50)
@@ -45,7 +45,7 @@ Social Network App:
             ✔ suggest to follow @done(24-08-31 00:37)
     ☐ Groupes et Événements :
         Backend :
-            ☐ Implémenter la création de groupes
+            ✔ Implémenter la création de groupes @done(24-09-04 16:33)
             ☐ Développer la gestion des groupes
             ☐ Créer le système d'invitations pour les groupes
             ☐ Gérer les requêtes pour rejoindre un groupe

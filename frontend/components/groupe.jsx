@@ -1,9 +1,10 @@
 'use client'
-
+import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { GroupCards } from './group-cards'
 
 export default function AllGroupsComponent() {
+  const router = useRouter()
   const [groupes, setGroupes] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -37,7 +38,8 @@ export default function AllGroupsComponent() {
   }
 
   const entrerGroupe = (id) => {
-    console.log(`Entrer dans le groupe ${id}`)
+    router.push(`/groups/${id}`)
+    
   }
 
   if (loading) return <p>Chargement...</p>

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"socialNetwork/pkg/models"
+	"socialNetwork/utils"
 )
 
 // Fonction pour créer des groupes
@@ -26,9 +27,16 @@ func CreateGroups() http.HandlerFunc {
 
 		// Insère les données dans la base de données
 
-		group.UserId = "646d75c8-3ce8-4483-92e5-3c670f7d3c0a"
+		user, err := utils.CurrentUser(w, r)
 
-		if (group.Title == "" || group.Description == "" || group.UserId == "") {
+		if err != nil {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		group.UserId = user.UserId
+
+		if group.Title == "" || group.Description == "" || group.UserId == "" {
 			fmt.Println("mboldé")
 			http.Error(w, "Invalid request payload", http.StatusBadRequest)
 			return
@@ -41,10 +49,10 @@ func CreateGroups() http.HandlerFunc {
 			return
 		}
 
-		newMember:= models.NewMember{
-			UserId: group.UserId,
+		newMember := models.NewMember{
+			UserId:  group.UserId,
 			GroupId: group.Id,
-			Status: "admin",
+			Status:  "admin",
 		}
 
 		err = GroupeService.AddNewMember(newMember)

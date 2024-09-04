@@ -57,6 +57,8 @@ export function MsgNotif({ socket }) {
         console.log(id);
 
         if (socket && socket.readyState === WebSocket.OPEN) {
+            console.log("redddd");
+            
             const Message = {
                 Type: "notifications",
                 ReceiverId: id,
@@ -94,7 +96,7 @@ export function MsgNotif({ socket }) {
                                     <p className="text-sm text-muted-foreground">{n.Message}.</p>
                                     <p className="text-xs text-muted-foreground">{n.Formated_date}</p>
                                 </div>
-                                {(pathname == "/") && (<div className="flex items-center space-x-2">
+                                {(<div className="flex items-center space-x-2">
 
                                     <Button size="icon" variant="ghost" onClick={() => markAsRead(n.Id)}>
                                         <Check className="h-4 w-4" />

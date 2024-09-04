@@ -47,6 +47,7 @@ func WebsocketHandler(w http.ResponseWriter, r *http.Request) {
 
 func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error {
 	sender, _ := ChatService.GetConnectedUserId(r)
+	
 	for {
 		var msg models.Message
 		err := conn.ReadJSON(&msg)

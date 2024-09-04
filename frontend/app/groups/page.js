@@ -2,14 +2,14 @@
 
 
 import { CreateGroupCard } from "@/components/create-group-card";
-import { useWebSocket } from "@/app/actions/message";
 import AllGroupsComponent from "@/components/groupe";
+import { useWebSocket } from "../actions/message";
 import ProfileCard from "@/components/ProfileCard";
 import NavBar from "@/components/Nav";
 import { GroupHomePage } from "@/components/group-home-page";
-export let socketGlobal
 export default function AllGroup() {
-    const socket = useWebSocket('ws://localhost:8080/ws');
+   const socket = useWebSocket('ws://localhost:8080/ws');
+    
     return (
         <div className="flex flex-col h-screen">
             <NavBar socket={socket} />
@@ -27,7 +27,6 @@ export default function AllGroup() {
 }
 
 export function SeeGroup() {
-    const socket = useWebSocket('ws://localhost:8080/ws');
     return (
         <div className="flex flex-col h-screen">
             <NavBar socket={socket} />

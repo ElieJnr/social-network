@@ -7,8 +7,9 @@ import NavBar from "@/components/Nav";
 import UserListModal from "./popup";
 import Image from "next/image";
 import { follow } from "../actions/follow";
-
+import { useWebSocket } from "../actions/message";
 export default function Profil() {
+    const socket = useWebSocket('ws://localhost:8080/ws');
     const [userId, setUserId] = useState(null);
     const [user, setUser] = useState(null);
     const [userOnLine, setUserOnLine] = useState(null)
@@ -50,7 +51,7 @@ export default function Profil() {
 
         fetchUserData();
     }, [userId, refreshTrigger]);
-   
+
     if (!user || !userOnLine) {
         return <div>Loading...</div>;
     }
@@ -58,13 +59,13 @@ export default function Profil() {
         console.log(user.id);
         follow(userOnLine.id, user.id, statut, false);
         setRefreshTrigger(prev => !prev);
-       
+
     };
 
 
     return (
         <>
-            <NavBar />
+            <NavBar socket={socket} />
             <div className="bg-background text-foreground min-h-screen flex flex-col">
                 <div className="flex-1 grid gap-6 p-6">
                     <div className="grid gap-4">
@@ -78,7 +79,7 @@ export default function Profil() {
                             <div className="flex items-center gap-4">
                                 {userOnLine.id !== user.id && (
                                     <Button onClick={() => handleClick(user, !user.isPrivate)} variant="outline" size="sm">
-                                       {(search([user], userOnLine?.follows || [])).length === 0 ? "UnFollow" : "Follow"}
+                                        {(search([user], userOnLine?.follows || [])).length === 0 ? "UnFollow" : "Follow"}
                                     </Button>
                                 )}
                                 <Button variant="ghost" size="icon" className="rounded-full">

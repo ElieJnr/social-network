@@ -20,7 +20,8 @@ export function Notifications({ socket }) {
     const TitleNotif = {
         event: "Upcoming event",
         follow: "New following request",
-        invitation: "New group invitation"
+        invitation: "New group invitation",
+        addGroupe: "Request to join a group"
     }
     useEffect(() => {
         setIsMounted(true);
@@ -71,7 +72,7 @@ export function Notifications({ socket }) {
                                     <p className="font-medium">{TitleNotif[n.Type]}</p>
                                     <p className="text-sm text-muted-foreground">{n.SenderInfo.Email + " " + n.Message}.</p>
                                     <p className="text-xs text-muted-foreground">{n.Formated_date}</p>
-                                    {(n.Type == "follow" || n.Type == "invitation") && (n.SenderInfo.IsPrivate) && (<div className="flex gap-2 mt-2">
+                                    {((n.Type == "follow" && (n.SenderInfo.IsPrivate)) || n.Type == "invitation" || n.Type == "addGroupe") && (<div className="flex gap-2 mt-2">
                                         <Button variant="outline" size="sm" onClick={() => markAsRead(n.Id)}>
                                             Accept
                                         </Button>

@@ -23,6 +23,7 @@ type Message struct {
 	Content    string
 	ReceiverId string
 	SenderId   string
+	GroupeId   string
 	SubType    string
-	IsPrivate     bool
+	IsPrivate  bool
 }

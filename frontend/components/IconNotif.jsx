@@ -140,6 +140,9 @@ function GetIcon({ type, ...props }) {
         case "invitation"://color-
             return UsersIcon(props)
             break
+        case "addGroupe"://color-
+            return UsersIcon(props)
+            break
 
     }
 }

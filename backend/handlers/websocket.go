@@ -47,7 +47,7 @@ func WebsocketHandler(w http.ResponseWriter, r *http.Request) {
 
 func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error {
 	sender, _ := ChatService.GetConnectedUserId(r)
-	
+
 	for {
 		var msg models.Message
 		err := conn.ReadJSON(&msg)
@@ -93,6 +93,35 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error 
 					return fmt.Errorf("error read: %w", err)
 				}
 				fmt.Println(msg.ReceiverId)
+				if receiverConn, ok := ClientWebSocketConnections[msg.ReceiverId]; ok {
+					receiverConn.WriteJSON(msg)
+				}
+
+			}
+			if msg.SubType == "addGroupe" {
+				idNotif, er := utils.GenerateUuid()
+				if er != nil {
+					return fmt.Errorf("error read: %w", err)
+				}
+
+				author, err := utils.GetAuthor(NotifService.GetDB(), sender)
+				title := msg.Content
+				msg.Content = author.Firstname + " " + author.Lastname + " veut rejoindre le groupe " + title
+				if err != nil {
+					return fmt.Errorf("error read: %w", err)
+				}
+
+				notif := models.Notification{
+					Id:         idNotif,
+					ReceiverID: msg.ReceiverId,
+					SenderID:   sender,
+					Type:       "addGroupe",
+					Message:    title,
+				}
+				e := NotifService.CreateNotification(&notif)
+				if e != nil {
+					return fmt.Errorf("error read: %w", err)
+				}
 				if receiverConn, ok := ClientWebSocketConnections[msg.ReceiverId]; ok {
 					receiverConn.WriteJSON(msg)
 				}

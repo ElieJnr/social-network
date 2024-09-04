@@ -18,7 +18,7 @@ export default function AllGroup() {
                     <CreateGroupCard />
                 </div>
                 <div className="space-y-6">
-                    <AllGroupsComponent />
+                    <AllGroupsComponent socket={socket} />
                 </div>
             </div>
         </div>

@@ -2,8 +2,9 @@
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { GroupCards } from './group-cards'
+import { Content } from 'next/font/google'
 
-export default function AllGroupsComponent() {
+export default function AllGroupsComponent({ socket }) {
   const router = useRouter()
   const [groupes, setGroupes] = useState([])
   const [loading, setLoading] = useState(true)
@@ -31,15 +32,28 @@ export default function AllGroupsComponent() {
     fetchGroupes()
   }, [])
 
-  const rejoindreGroupe = (id) => {
-    setGroupes(groupes.map(groupe => 
-      groupe.id === id ? { ...groupe, estMembre: true } : groupe
-    ))
+  const rejoindreGroupe = (id, UserId, title) => {
+    const Message = {
+      Type: "notifications",
+      ReceiverId: UserId,
+      GroupeId: id,
+      SubType: "addGroupe",
+      Content: title,
+    }
+    console.log(UserId);
+    
+
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      console.log("readddddddddd");
+
+      socket.send(JSON.stringify(Message))
+    }
+
   }
 
   const entrerGroupe = (id) => {
     router.push(`/groups/${id}`)
-    
+
   }
 
   if (loading) return <p>Chargement...</p>
@@ -56,7 +70,7 @@ export default function AllGroupsComponent() {
             description={groupe.description}
             estMembre={groupe.isMember}
             onEntrer={() => entrerGroupe(groupe.id)}
-            onRejoindre={() => rejoindreGroupe(groupe.id)}
+            onRejoindre={() => rejoindreGroupe(groupe.id, groupe.userId,groupe.title)}
           />
         ))}
       </div>

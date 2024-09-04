@@ -85,6 +85,7 @@ func (g *GroupeService) GetGroups(userID string) ([]models.Group, error) {
 	defer rows.Close()
 
 	var groups []models.Group
+	
 	for rows.Next() {
 		var group models.Group
 		if err = rows.Scan(&group.Id, &group.Title, &group.Description, &group.UserId, &group.CreateAt); err != nil {
@@ -96,7 +97,6 @@ func (g *GroupeService) GetGroups(userID string) ([]models.Group, error) {
 		if err != nil{
 			return nil, fmt.Errorf("impossible to found if the user is in the group: %w", err)
 		}
-
 		group.IsMember=isMember
 
 		fmt.Println(group)

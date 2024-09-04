@@ -14,7 +14,8 @@ export function ClickMessageApp({ socket }) {
     const [selectedUser, setSelectedUser] = useState({
         Id: "",
         Firstname: "",
-        Lastname: ""
+        Lastname: "",
+        Online: ""
     });
     const handleNameClick = () => {
         if (socket && socket.readyState === WebSocket.OPEN) {
@@ -59,9 +60,10 @@ export function MessageComponent({ onNameClick, setSelectedUser, socket }) {
             Id: user.Id,
             Firstname: user.Firstname,
             Lastname: user.Lastname,
+            Online: user.Online
         });
         if (socket && socket.readyState === WebSocket.OPEN) {
-            console.log("selected user", user);
+            // console.log("selected user", user);
             socket.send(JSON.stringify({ Type: "clickOnUser", ReceiverId: user.Id }));
         }
     };
@@ -91,7 +93,7 @@ export function MessageComponent({ onNameClick, setSelectedUser, socket }) {
                                             <time className="text-sm text-muted-foreground">
                                                 {user.LastmessageHour}
                                             </time>
-                                            <div className="w-2 h-2 bg-primary rounded-full" />
+                                            <div className={`w-2 h-2 rounded-full ${user.Online === "yes" ? "bg-green-500" : "bg-red-400"}`} />
                                         </>
                                     ) : (
                                         <time className="text-sm text-muted-foreground">no message</time>
@@ -204,7 +206,12 @@ export function MessageApp({ backClick, user, socket }) {
                     </Avatar>
                     <div>
                         <p className="font-medium">{`${capitalize(user.Firstname)} ${capitalize(user.Lastname)}`}</p>
-                        <p className="text-sm text-muted-foreground">Online</p>
+                        {user.Online === "yes" ? (
+                            <p style={{ color: "green" }}>Online</p>
+                        ) : (
+                            <p style={{ color: "red" }}>Offline</p>
+                        )}
+
                     </div>
                 </div>
             </header>

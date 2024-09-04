@@ -103,7 +103,7 @@ func (c *ChatService) RegisterMsg(msg models.Message) error {
 	return nil
 }
 
-func (c *ChatService) FetchUser(actualuser string) ([]byte, error) {
+func (c *ChatService) FetchUser(connTab map[string]*websocket.Conn, actualuser string) ([]byte, error) {
 	query := `
 		SELECT DISTINCT u.id, u.firstname, u.lastname 
 		FROM Users u
@@ -123,6 +123,7 @@ func (c *ChatService) FetchUser(actualuser string) ([]byte, error) {
 		Lastname        string
 		Lastmessage     string
 		LastmessageHour string
+		Online          string
 	}
 	type sendUser struct {
 		Type  string
@@ -137,6 +138,13 @@ func (c *ChatService) FetchUser(actualuser string) ([]byte, error) {
 			fmt.Println("Failed to scan user:", err)
 			continue
 		}
+
+		// Vérifier si l'utilisateur est connecté
+		onlineStatus := "no"
+		if _, ok := connTab[id]; ok {
+			onlineStatus = "yes"
+		}
+
 		query := "SELECT content, sendAt FROM Chats WHERE (senderId = ? AND receverId = ?) OR (receverId = ? AND senderId = ?) ORDER BY sendAt DESC LIMIT 1"
 		lastMessageRow := c.GetDB().QueryRow(query, actualuser, id, actualuser, id)
 
@@ -157,6 +165,7 @@ func (c *ChatService) FetchUser(actualuser string) ([]byte, error) {
 			Lastname:        lastname,
 			Lastmessage:     lastMessage,
 			LastmessageHour: utils.FormatTimeAgo(lastMessageHour),
+			Online:          onlineStatus, // Assigner le statut en ligne
 		}
 		users = append(users, user)
 	}

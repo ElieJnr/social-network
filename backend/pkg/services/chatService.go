@@ -118,12 +118,13 @@ func (c *ChatService) FetchUser(connTab map[string]*websocket.Conn, actualuser s
 	defer rows.Close()
 
 	type User struct {
-		Id              string
-		Firstname       string
-		Lastname        string
-		Lastmessage     string
-		LastmessageHour string
-		Online          string
+		Id                string
+		Firstname         string
+		Lastname          string
+		Lastmessage       string
+		LastmessageHour   string
+		Online            string
+		FollowCurrentUser string
 	}
 	type sendUser struct {
 		Type  string
@@ -139,10 +140,22 @@ func (c *ChatService) FetchUser(connTab map[string]*websocket.Conn, actualuser s
 			continue
 		}
 
-		// Vérifier si l'utilisateur est connecté
 		onlineStatus := "no"
 		if _, ok := connTab[id]; ok {
 			onlineStatus = "yes"
+		}
+
+		var followCurrentUser string
+		followQuery := "SELECT COUNT(*) FROM Followers WHERE userId = ? AND followedId = ?"
+		var count int
+		err = c.GetDB().QueryRow(followQuery, id, actualuser).Scan(&count)
+		if err != nil {
+			fmt.Println("Failed to check follow status:", err)
+			followCurrentUser = "no"
+		} else if count > 0 {
+			followCurrentUser = "yes"
+		} else {
+			followCurrentUser = "no"
 		}
 
 		query := "SELECT content, sendAt FROM Chats WHERE (senderId = ? AND receverId = ?) OR (receverId = ? AND senderId = ?) ORDER BY sendAt DESC LIMIT 1"
@@ -153,19 +166,19 @@ func (c *ChatService) FetchUser(connTab map[string]*websocket.Conn, actualuser s
 		err = lastMessageRow.Scan(&lastMessage, &lastMessageHour)
 		if err != nil {
 			if err == sql.ErrNoRows {
-				// lastMessage = fmt.Sprintf("No message between %s and %s", actualuser, id)
 			} else {
 				fmt.Println("Failed to retrieve last message:", err)
 			}
 		}
 
 		user := User{
-			Id:              id,
-			Firstname:       firstname,
-			Lastname:        lastname,
-			Lastmessage:     lastMessage,
-			LastmessageHour: utils.FormatTimeAgo(lastMessageHour),
-			Online:          onlineStatus, // Assigner le statut en ligne
+			Id:                id,
+			Firstname:         firstname,
+			Lastname:          lastname,
+			Lastmessage:       lastMessage,
+			LastmessageHour:   utils.FormatTimeAgo(lastMessageHour),
+			Online:            onlineStatus,
+			FollowCurrentUser: followCurrentUser,
 		}
 		users = append(users, user)
 	}

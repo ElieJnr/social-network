@@ -1,23 +1,26 @@
-import { Button } from "@/components/ui/button";
+import { useState } from 'react';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
-import NavBar from "./Nav";
-import ProfileCard from "./ProfileCard";
-import { CreateGroupCard } from "./create-group-card";
+import { Button } from "@/components/ui/button";
+import { CreateEventCard } from './create-event-card';
+import { useWebSocket } from '@/app/actions/message';
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+const { ImageIcon } = require("lucide-react");
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
+import { EventsCards } from './events-cards';
 import PostCard from "@/components/PostCard";
-import AllGroupsComponent from "./groupe";
-import { useWebSocket } from "@/app/actions/message";
-import { ClickMessageApp } from "./ui/message";
-import { EventsCards } from "./events-cards";
+import { ClickMessageApp } from './ui/message';
 
-function Sidebar({ socket }) {
+
+function Sidebar({ setActiveComponent, socket }) {
   return (
     <aside className="w-full space-y-4">
       <Card className="flex flex-col w-full">
         <CardHeader>
           <div className="flex justify-between items-center">
-            <p className="text-lg text-muted-foreground">Ceci est une description de groupe.
-            </p>
+            <p className="text-lg text-muted-foreground">Ceci est une description de groupe.</p>
           </div>
         </CardHeader>
         <CardContent className="mt-2">
@@ -43,21 +46,22 @@ function Sidebar({ socket }) {
 
       <Card className="w-full max-w">
         <div className="w-full flex space-x-3">
-          <Button className="flex-1">Create Event</Button>
-          <Button className="flex-1">Create Post</Button>
+          <Button className="flex-1" onClick={() => setActiveComponent('event')}>Create Event</Button>
+          <Button className="flex-1" onClick={() => setActiveComponent('post')}>Create Post</Button>
         </div>
       </Card>
 
       <div className="space-y-6">
         <ClickMessageApp socket={socket} />
       </div>
-
     </aside>
   );
 }
 
 export function GroupHomePage() {
+  const [activeComponent, setActiveComponent] = useState('post');
   const socket = useWebSocket('ws://localhost:8080/ws');
+
   return (
     <div className="flex flex-col h-screen">
       <div className="flex-1 grid grid-cols-[1fr_2fr_1.5fr] gap-6 p-6">
@@ -66,10 +70,11 @@ export function GroupHomePage() {
           <SuggestionsGroupCard />
         </div>
         <div className="space-y-6">
+          {activeComponent === 'post' ? <CreatePostGroupCard /> : <CreateEventCard />}
           <PostCard />
         </div>
         <div className="space-y-6">
-          <Sidebar />
+          <Sidebar setActiveComponent={setActiveComponent} />
         </div>
       </div>
     </div>
@@ -109,6 +114,60 @@ export function SuggestionsGroupCard() {
             Invite
           </Button>
         </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+export function CreatePostGroupCard() {
+  const [thread, setThread] = useState('');
+  const [file, setFile] = useState(null);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append('thread', thread);
+    if (file) {
+      formData.append('file', file);
+    }
+
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Create a new post</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <form onSubmit={handleSubmit}>
+          <Textarea
+            placeholder="What's on your mind?"
+            className="w-full resize-none mb-4"
+            rows={3}
+            value={thread}
+            onChange={(e) => setThread(e.target.value)}
+            required
+          />
+          <div className="flex items-center gap-4 mb-4">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => document.getElementById('file-input').click()}
+            >
+              <ImageIcon className="h-5 w-5" />
+              <span className="sr-only">Add image</span>
+            </Button>
+            <Input
+              id="file-input"
+              type="file"
+              onChange={(e) => setFile(e.target.files[0])}
+              className="hidden"
+            />
+            {file && <span className="text-sm">{file.name}</span>}
+          </div>
+          <Button type="submit" className="w-full">Post</Button>
+        </form>
       </CardContent>
     </Card>
   );

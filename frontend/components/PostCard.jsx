@@ -5,7 +5,7 @@ import { fetchLike } from '@/app/actions/post';
 import CommentCard from './CommentCard';
 import useSWR, { mutate } from 'swr';
 
-const {HeartIcon, MessageCircleIcon} = require("lucide-react");
+const { HeartIcon, MessageCircleIcon } = require("lucide-react");
 const { AvatarFallback, AvatarImage, Avatar } = require("./ui/avatar");
 const { CardContent, Card, CardFooter } = require("./ui/card");
 const { Button } = require("./ui/button");
@@ -26,7 +26,7 @@ export default function Posts() {
         </>
       ) : (
         posts && posts.length > 0 ? (
-          posts.map(post => 
+          posts.map(post =>
             post.Can_see ? <PostCard key={post.PostID} post={post} /> : null
           )
         ) : null
@@ -38,6 +38,7 @@ export default function Posts() {
 function PostCard({ post }) {
   const [showComments, setShowComments] = useState(false);
   const { toast } = useToast();
+
 
   const handleToggleComments = () => {
     setShowComments(!showComments);
@@ -62,7 +63,7 @@ function PostCard({ post }) {
   return (
     <Card>
       <CardContent className="space-y-4">
-        <div className="flex items-center gap-4 mt-2"> 
+        <div className="flex items-center gap-4 mt-2">
           <Avatar className="w-10 h-10">
             <AvatarImage src={post.Author.Avatar || "/placeholder-user.jpg"} alt={post.Author.Username} />
             <AvatarFallback>{post.Author.Username ? post.Author.Username[0].toUpperCase() : 'U'}</AvatarFallback>
@@ -134,7 +135,7 @@ function SkeletonPostCard() {
           <div className="h-4 bg-gray-300 rounded w-full"></div>
           <div className="h-4 bg-gray-300 rounded w-5/6"></div>
         </div>
-        
+
         <div className="h-48 bg-gray-300 rounded"></div>
 
         <CardFooter className="grid gap-2 p-4">

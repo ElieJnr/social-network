@@ -11,6 +11,7 @@ const { Button } = require("./ui/button");
 const { Input } = require("./ui/input");
 const { Label } = require("./ui/label");
 import { mutate } from "swr";
+import useStore from "@/app/store/useStore";
 
 
 export default function CreatePostCard() {
@@ -18,6 +19,9 @@ export default function CreatePostCard() {
   const [thread, setThread] = useState('');
   const [privacy, setPrivacy] = useState('public');
   const [file, setFile] = useState(null);
+  const { user, setUser } = useStore();
+
+  // console.log("user user: ", user);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

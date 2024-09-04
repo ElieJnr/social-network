@@ -41,7 +41,7 @@ export function MessageComponent({ onNameClick, setSelectedUser, socket }) {
     if (!user || !Array.isArray(user)) {
         return (
             <div className="w-full max-w-md mx-auto bg-card text-foreground rounded-lg shadow-lg">
-                <div onClick={onNameClick} className="px-4 py-6">
+                <div className="px-4 py-6">
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="text-xl font-bold">Messages</h2>
                     </div>
@@ -70,12 +70,12 @@ export function MessageComponent({ onNameClick, setSelectedUser, socket }) {
 
     return (
         <div className="w-full max-w-md mx-auto bg-card text-foreground rounded-lg shadow-lg">
-            <div onClick={onNameClick} className="px-4 py-6">
+            <div className="px-4 py-6">
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="text-xl font-bold">Messages</h2>
                 </div>
                 {user.length > 0 ? (
-                    <div className="space-y-4">
+                    <div onClick={onNameClick} className="space-y-4">
                         {user.map((user) => (
                             <div
                                 key={user.Id}

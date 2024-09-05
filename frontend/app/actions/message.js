@@ -14,10 +14,12 @@ export const useWebSocket = (url) => {
     useEffect(() => {
         socket.current = new WebSocket(url);
         socket.current.addEventListener('open', (event) => {
-            // console.log('WebSocket connection opened');
-            const message = { Type: "userSender" };
-            socket.current.send(JSON.stringify(message));
+            if (socket.current.readyState === WebSocket.OPEN) {
+                const message = { Type: "userSender" };
+                socket.current.send(JSON.stringify(message));
+            }
         });
+
 
         socket.current.addEventListener('message', (event) => {
             let message = JSON.parse(event.data)
@@ -25,57 +27,55 @@ export const useWebSocket = (url) => {
 
             if (message.Type === "sendUser") {
                 setUser(message.Users)
-            } 
-            
+            }
+
             if (message.Type === "clickOnUser") {
 
                 if (message.Message) {
                     setgetMessage(message.Message)
                     console.log("parsing part: ", message);
-                } else {
-                    console.log("no message between two users");
                 }
                 fetchNotifs(setMsgNotif, "msg")
-            } 
-            
+            }
             if (message.Type === "messageService") {
                 console.log('message: ', event.data)
-            } 
-            
-            if (message.Type === "notifications") {
-                console.log("c bon");
+            }
 
+            if (message.Type === "notifications") {
                 fetchNotifs(setNotifs)
-            } 
-            
-            if (message.Type === "simpleChat") {
-                setNewMessage(message.message)
-                console.log(message.message);
+            }
+
+            if (message.Type === "sendMessage") {
+                setgetMessage(message.message)
             }
         });
 
         socket.current.addEventListener('close', (event) => {
-
+            console.log('WebSocket closed:', event.code, event.reason);
         });
+
 
         socket.current.addEventListener('error', (event) => {
             console.error('WebSocket error:', event);
         });
 
         return () => {
-            if (socket.current) {
-                socket.current.close();
-            }
+            return () => {
+                if (socket.current && socket.current.readyState === WebSocket.OPEN) {
+                    socket.current.close();
+                }
+            };
+
         };
     }, [url]);
 
     return socket.current;
 };
 
-export function socketSend(socket,message){
+export function socketSend(socket, message) {
     if (socket && socket.readyState === WebSocket.OPEN) {
         console.log("the msg is send to your socket");
-  
+
         socket.send(JSON.stringify(message))
-      }
+    }
 }

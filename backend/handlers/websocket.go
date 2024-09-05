@@ -60,7 +60,7 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error 
 		case "groupeChat":
 			//fonction qui gere groupChat:
 		case "clickOnUser":
-			err := ChatService.SendStockedMessage(conn, sender, msg.ReceiverId, false)
+			err := ChatService.SendStockedMessage(conn, sender, msg.ReceiverId, false, false)
 			if err != nil {
 				fmt.Println("erreur :", err)
 				return err
@@ -126,14 +126,14 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error 
 					receiverConn.WriteJSON(msg)
 				}
 
-				newMember:=models.NewMember{
-					UserId: sender,
+				newMember := models.NewMember{
+					UserId:  sender,
 					GroupId: msg.GroupeId,
-					Status: "waiting",
+					Status:  "waiting",
 				}
 
-				e=GroupeService.AddNewMember(newMember)
-				if e!= nil{
+				e = GroupeService.AddNewMember(newMember)
+				if e != nil {
 					return fmt.Errorf("error on the status waiting in ws: %w", err)
 				}
 
@@ -165,13 +165,13 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error 
 				return err
 			}
 
-			errToSender := ChatService.SendStockedMessage(conn, sender, msg.ReceiverId, true)
+			errToSender := ChatService.SendStockedMessage(conn, sender, msg.ReceiverId, true, false)
 			if errToSender != nil {
 				return errToSender
 			}
 
 			if receiverConn, ok := ClientWebSocketConnections[msg.ReceiverId]; ok {
-				errtoreceiver := ChatService.SendStockedMessage(receiverConn, sender, msg.ReceiverId, true)
+				errtoreceiver := ChatService.SendStockedMessage(receiverConn, sender, msg.ReceiverId, true, false)
 				if errtoreceiver != nil {
 					return errtoreceiver
 				}
@@ -185,6 +185,12 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error 
 				return fmt.Errorf("error : %w", err)
 			}
 			conn.WriteMessage(websocket.TextMessage, []byte(user))
+
+		case "enterGroupMessage":
+			err := ChatService.SendStockedMessage(conn, msg.SenderId, msg.ReceiverId, false, true)
+			if err != nil {
+				return err
+			}
 		}
 	}
 }

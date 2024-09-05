@@ -34,12 +34,16 @@ func (c *ChatService) SetDB(db *sql.DB) {
 }
 
 // les messages une fois recupere sont envoyes a l'utilisateur via sa connection websocket
-func (c *ChatService) SendStockedMessage(conn *websocket.Conn, senderId, receiverId string, newMessage bool) error {
+func (c *ChatService) SendStockedMessage(conn *websocket.Conn, senderId, receiverId string, newMessage bool, groupChat bool) error {
 	booleen := false
 	if newMessage {
 		booleen = true
 	}
-	messages, err := c.GetStoredMessages(senderId, receiverId, booleen)
+	if groupChat {
+		fmt.Println("ceci est censee fetch les messages de groupe")
+		return nil
+	}
+	messages, err := c.GetStoredMessages(senderId, receiverId, booleen, groupChat)
 	if err != nil {
 		return err
 	}
@@ -56,10 +60,15 @@ type sendMessage struct {
 	Message []models.Chat
 }
 
-func (c *ChatService) GetStoredMessages(sender, receiver string, newMessage bool) (sendMessage, error) {
+func (c *ChatService) GetStoredMessages(sender, receiver string, newMessage bool, groupChat bool) (sendMessage, error) {
 	var sendMessage sendMessage
+	var query string
+	query = "SELECT id, senderId, receverId, content, sendAt FROM Chats WHERE (senderId = ? AND receverId = ?) OR (receverId = ? AND senderId = ?)"
 
-	query := "SELECT id, senderId, receverId, content, sendAt FROM Chats WHERE (senderId = ? AND receverId = ?) OR (receverId = ? AND senderId = ?)"
+	if groupChat {
+		query = "SELECT id, senderId, content, sendAt FROM chats WHERE (receverId = ?)"
+	}
+
 	rows, err := c.GetDB().Query(query, sender, receiver, sender, receiver)
 	if err != nil {
 		return sendMessage, fmt.Errorf("failed to retrieve stored messages: %w", err)
@@ -77,11 +86,14 @@ func (c *ChatService) GetStoredMessages(sender, receiver string, newMessage bool
 		messages = append(messages, message)
 	}
 
-	fmt.Println("messages: ", messages)
+	// fmt.Println("messages: ", messages)
 	if newMessage {
 		sendMessage.Type = "sendMessage"
+	} else if groupChat {
+		sendMessage.Type = "groupChat"
+	} else {
+		sendMessage.Type = "clickOnUser"
 	}
-	sendMessage.Type = "clickOnUser"
 	sendMessage.Message = messages
 
 	return sendMessage, nil

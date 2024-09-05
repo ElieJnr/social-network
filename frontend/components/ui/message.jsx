@@ -74,65 +74,67 @@ export function MessageComponent({ onNameClick, setSelectedUser, socket }) {
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="text-xl font-bold">Messages</h2>
                 </div>
-                {user.length > 0 ? (
-                    <div onClick={onNameClick} className="space-y-4">
-                        {user.map((user) => (
-                            <div
-                                key={user.Id}
-                                className="flex items-center justify-between"
-                                onClick={() => handleClick(user)}
-                            >
-                                <UserList
-                                    id={user.Id}
-                                    name={capitalize(user.Firstname) + " " + capitalize(user.Lastname)}
-                                    lastMessage={user.Lastmessage || `No messages with ${capitalize(user.Firstname) + " " + capitalize(user.Lastname)}`}
-                                />
-                                <div className="flex items-center space-x-2">
-                                    {user.LastmessageHour !== "292 years ago" ? (
-                                        <>
-                                            <time className="text-sm text-muted-foreground">
-                                                {user.LastmessageHour}
-                                            </time>
-                                            <div className={`w-2 h-2 rounded-full ${user.Online === "yes" ? "bg-green-500" : "bg-red-400"}`} />
-                                        </>
-                                    ) : (
-                                        <time className="text-sm text-muted-foreground">no message</time>
-                                    )}
-                                </div>
+                {user.length > 0
+                    ? (
+                        <div onClick={onNameClick} className="space-y-4">
+                            {user.map((user) => (
+                                <div
+                                    key={user.Id}
+                                    className="flex items-center justify-between"
+                                    onClick={() => handleClick(user)}
+                                >
+                                    <UserList
+                                        id={user.Id}
+                                        name={capitalize(user.Firstname) + " " + capitalize(user.Lastname)}
+                                        lastMessage={user.Lastmessage || `No messages with ${capitalize(user.Firstname) + " " + capitalize(user.Lastname)}`}
+                                    />
+                                    <div className="flex items-center space-x-2">
+                                        {user.LastmessageHour !== "292 years ago" ? (
+                                            <>
+                                                <time className="text-sm text-muted-foreground">
+                                                    {user.LastmessageHour}
+                                                </time>
+                                                <div className={`w-2 h-2 rounded-full ${user.Online === "yes" ? "bg-green-500" : "bg-red-400"}`} />
+                                            </>
+                                        ) : (
+                                            <time className="text-sm text-muted-foreground">no message</time>
+                                        )}
+                                    </div>
 
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <div className="space-y-4 animate-pulse">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-4">
-                                <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
-                                <div>
-                                    <div className="h-4 bg-gray-300 rounded w-24 mb-1"></div>
-                                    <div className="h-3 bg-gray-300 rounded w-32"></div>
+                                </div>
+                            ))}
+                        </div>
+                    )
+                    : (
+                        <div className="space-y-4 animate-pulse">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-4">
+                                    <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
+                                    <div>
+                                        <div className="h-4 bg-gray-300 rounded w-24 mb-1"></div>
+                                        <div className="h-3 bg-gray-300 rounded w-32"></div>
+                                    </div>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <div className="h-4 bg-gray-300 rounded w-10"></div>
+                                    <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
                                 </div>
                             </div>
-                            <div className="flex items-center space-x-2">
-                                <div className="h-4 bg-gray-300 rounded w-10"></div>
-                                <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-                            </div>
-                        </div>
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-4">
-                                <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
-                                <div>
-                                    <div className="h-4 bg-gray-300 rounded w-24 mb-1"></div>
-                                    <div className="h-3 bg-gray-300 rounded w-32"></div>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-4">
+                                    <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
+                                    <div>
+                                        <div className="h-4 bg-gray-300 rounded w-24 mb-1"></div>
+                                        <div className="h-3 bg-gray-300 rounded w-32"></div>
+                                    </div>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <div className="h-4 bg-gray-300 rounded w-10"></div>
+                                    <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
                                 </div>
                             </div>
-                            <div className="flex items-center space-x-2">
-                                <div className="h-4 bg-gray-300 rounded w-10"></div>
-                                <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
             </div>
         </div>
     );
@@ -228,9 +230,9 @@ export function MessageApp({ backClick, user, socket }) {
             </div>
             <div className="bg-[#f0f4f8] py-4 px-6 relative bottom-0 left-0">
                 <div className="flex items-center gap-3 justify-center">
-                    <Button variant="ghost" size="icon" type="button" onClick={() => setShowEmojiPicker((prev) => !prev)}>
+                    <div variant="ghost" size="icon" type="button" onClick={() => setShowEmojiPicker((prev) => !prev)}>
                         <ShowEmoji onEmojiSelect={(emoji) => handleEmojiSelect(emoji, setMessage)} />
-                    </Button>
+                    </div>
                     <form
                         className="flex items-center gap-3"
                         style={{ width: "90%" }}

@@ -46,6 +46,8 @@ export const useWebSocket = (url) => {
             }
 
             if (message.Type === "sendMessage") {
+                console.log('je suis ici');
+
                 setgetMessage(message.message)
             }
         });

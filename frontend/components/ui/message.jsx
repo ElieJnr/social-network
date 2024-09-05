@@ -270,7 +270,7 @@ function Emoji({ onEmojiClick }) {
     );
 }
 
-function ShowEmoji({ onEmojiSelect }) {
+export function ShowEmoji({ onEmojiSelect }) {
     const [showEmojiPicker, setEmojiPicker] = useState(false);
 
     const handleClick = () => {
@@ -286,7 +286,7 @@ function ShowEmoji({ onEmojiSelect }) {
         </div>
     );
 }
-function ReceivedMessage({ mess }) {
+export function ReceivedMessage({ mess }) {
 
     return (
         <div className="flex justify-end">
@@ -297,8 +297,7 @@ function ReceivedMessage({ mess }) {
     );
 }
 
-function SendingMessage({ mess }) {
-    console.log("sending", mess);
+export function SendingMessage({ mess }) {
 
     return (
         <div className="flex">
@@ -311,7 +310,7 @@ function SendingMessage({ mess }) {
 
 
 
-function SendIcon(props) {
+export function SendIcon(props) {
     return (
         <svg
             {...props}
@@ -351,7 +350,7 @@ function ArrowLeftIcon(props) {
     )
 }
 
-function SmileIcon(props) {
+export function SmileIcon(props) {
     return (
         <svg
             {...props}

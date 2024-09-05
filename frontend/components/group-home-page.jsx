@@ -12,6 +12,7 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import { EventsCards } from './events-cards';
 import PostCard from "@/components/PostCard";
 import { ClickMessageApp } from './ui/message';
+import GroupChat from './MessageComponent/MessageApp';
 
 
 function Sidebar({ setActiveComponent, socket }) {
@@ -52,7 +53,7 @@ function Sidebar({ setActiveComponent, socket }) {
       </Card>
 
       <div className="space-y-6">
-        <ClickMessageApp socket={socket} />
+        <GroupChat socket={socket} />
       </div>
     </aside>
   );

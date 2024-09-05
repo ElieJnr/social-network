@@ -62,7 +62,9 @@ type sendMessage struct {
 
 func (c *ChatService) GetStoredMessages(sender, receiver string, newMessage bool, groupChat bool) (sendMessage, error) {
 	var sendMessage sendMessage
+
 	var query string
+
 	query = "SELECT id, senderId, receverId, content, sendAt FROM Chats WHERE (senderId = ? AND receverId = ?) OR (receverId = ? AND senderId = ?)"
 
 	if groupChat {
@@ -87,9 +89,10 @@ func (c *ChatService) GetStoredMessages(sender, receiver string, newMessage bool
 	}
 
 	// fmt.Println("messages: ", messages)
-	if newMessage {
-		sendMessage.Type = "sendMessage"
-	} else if groupChat {
+	// if newMessage {
+	// 	sendMessage.Type = "sendMessage"
+	// } else
+	if groupChat {
 		sendMessage.Type = "groupChat"
 	} else {
 		sendMessage.Type = "clickOnUser"

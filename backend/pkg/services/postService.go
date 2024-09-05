@@ -28,8 +28,8 @@ func (p *PostService) SetDB(db *sql.DB) {
 	p.db = db
 }
 
-// _______________________foonction d'insertion
-func (p *PostService) InsertPost(postValue models.CheckResult, w http.ResponseWriter, r *http.Request) error {
+// fonction d'insertion des posts
+func (p *PostService) InsertPost(postValue models.CheckResult, w http.ResponseWriter, r *http.Request, origin string) error {
 	user, err := utils.CurrentUser(w, r)
 	if err != nil {
 		fmt.Println("error getting current user")
@@ -49,52 +49,67 @@ func (p *PostService) InsertPost(postValue models.CheckResult, w http.ResponseWr
 
 	defer tx.Rollback()
 
+	var status string
+	if origin == "group" {
+		status = origin
+	} else {
+		status = postValue.Status
+	}
+
 	_, err = tx.Exec("INSERT INTO Posts (id, userId, content, imageUrl, statut) VALUES (?, ?, ?, ?, ?)",
-		postID, user.UserId, postValue.Content, postValue.PhotoURL, postValue.Status)
+		postID, user.UserId, postValue.Content, postValue.PhotoURL, status)
 	if err != nil {
 		fmt.Println("error inserting post")
 		return err
 	}
 
 	stmt, err := tx.Prepare("INSERT INTO UserPost (postId, userId, statut) VALUES (?, ?, ?)")
-
 	if err != nil {
 		fmt.Println("error preparing statement")
 		return err
 	}
-
 	defer stmt.Close()
 
-	if postValue.Status == "public" || postValue.Status == "private" {
-		_, err = stmt.Exec(postID, user.UserId, postValue.Status)
+	if origin == "group" {
+		// Pour les groupes, on insère simplement lid du group
+		_, err = stmt.Exec(postID, postValue.GroupId, status)
 		if err != nil {
-			fmt.Println("error executing statement")
+			fmt.Println("error executing statement for group")
 			return err
 		}
-	} else if postValue.Status == "almost-private" {
-		_, err = stmt.Exec(postID, user.UserId, postValue.Status)
-		if err != nil {
-			fmt.Println("error executing statement")
-			return err
-		}
-
-		for _, allowedUserID := range postValue.AllowedUsers {
-			_, err = stmt.Exec(postID, allowedUserID, postValue.Status)
+	} else {
+		// Logique existante pour les posts
+		if status == "public" || status == "private" {
+			_, err = stmt.Exec(postID, user.UserId, status)
 			if err != nil {
 				fmt.Println("error executing statement")
 				return err
 			}
+		} else if status == "almost-private" {
+			_, err = stmt.Exec(postID, user.UserId, status)
+			if err != nil {
+				fmt.Println("error executing statement")
+				return err
+			}
+
+			for _, allowedUserID := range postValue.AllowedUsers {
+				_, err = stmt.Exec(postID, allowedUserID, status)
+				if err != nil {
+					fmt.Println("error executing statement")
+					return err
+				}
+			}
 		}
 	}
 
-	fmt.Println("post inserted successfully")
+	fmt.Println("post/group inserted successfully")
 	return tx.Commit()
 }
 
 // se charge de récuperer les posts et de le partager au service de post
 func (p *PostService) GetAllPosts(w http.ResponseWriter, r *http.Request) ([]models.Posts, error) {
 	query := `SELECT id, userId, content, imageUrl, statut, createDate FROM Posts ORDER BY createDate DESC`
-	rows, err := p.db.Query(query) 
+	rows, err := p.db.Query(query)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query posts: %w", err)
 	}
@@ -108,7 +123,7 @@ func (p *PostService) GetAllPosts(w http.ResponseWriter, r *http.Request) ([]mod
 			continue
 		}
 
-		if err := postDetails(p.db, &post, w, r); err != nil {
+		if err := postDetails(p.db, &post, w, r, ""); err != nil {
 			fmt.Println("err: postDetails", err)
 			continue
 		}
@@ -125,19 +140,53 @@ func (p *PostService) GetAllPosts(w http.ResponseWriter, r *http.Request) ([]mod
 	return allPosts, nil
 }
 
-func (p *PostService) GetOwnPosts(w http.ResponseWriter, r *http.Request) ([]models.Posts, error) {
-	currentUser, err := utils.CurrentUser(w, r)
+// se charge de récuperer les posts d'un groupe et de le partager au service de post
+func (p *PostService) GetGroupPosts(w http.ResponseWriter, r *http.Request, groupId string) ([]models.Posts, error) {
+	query := `
+    SELECT p.id, p.userId, p.content, p.imageUrl, p.statut, p.createDate
+    FROM Posts p
+    INNER JOIN UserPost up ON p.id = up.postId
+    WHERE up.userId = ? AND up.statut = 'group'
+    ORDER BY p.createDate DESC`
+	rows, err := p.db.Query(query, groupId)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get current user: %w", err)
+		return nil, fmt.Errorf("failed to query posts: %w", err)
+	}
+	defer rows.Close()
+
+	var allPosts []models.Posts
+	for rows.Next() {
+		var post models.Posts
+		if err := rows.Scan(&post.PostID, &post.UserID, &post.Content, &post.Image_url, &post.Post_status, &post.Creation_date); err != nil {
+			fmt.Println("err: rowsScan", err)
+			continue
+		}
+
+		if err := postDetails(p.db, &post, w, r, groupId); err != nil {
+			fmt.Println("err: postDetails", err)
+			continue
+		}
+
+		allPosts = append(allPosts, post)
 	}
 
-	ownPosts, err := GetOwnPosts(p.db, currentUser.UserId)
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating over posts: %w", err)
+	}
+
+	fmt.Println("all posts/group retrieved successfully")
+
+	return allPosts, nil
+}
+
+func (p *PostService) GetPostsById(w http.ResponseWriter, r *http.Request, userId string) ([]models.Posts, error) {
+	ownPosts, err := utils.GetPostsById(p.db, userId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get own posts: %w", err)
 	}
 
 	for i := range ownPosts {
-		if err := postDetails(p.db, &ownPosts[i], w, r); err != nil {
+		if err := postDetails(p.db, &ownPosts[i], w, r, ""); err != nil {
 			return nil, fmt.Errorf("failed to get post details: %w", err)
 		}
 	}
@@ -146,7 +195,7 @@ func (p *PostService) GetOwnPosts(w http.ResponseWriter, r *http.Request) ([]mod
 }
 
 // se charge de récuperer les informations d'un post ie author, nbr de like, qui peut voir le post, nbr de commentaires...
-func postDetails(db *sql.DB, post *models.Posts, w http.ResponseWriter, r *http.Request) error {
+func postDetails(db *sql.DB, post *models.Posts, w http.ResponseWriter, r *http.Request, groupId string) error {
 	currentUser, err := utils.CurrentUser(w, r)
 	if err != nil {
 		return fmt.Errorf("failed to get current user: %w", err)
@@ -157,37 +206,27 @@ func postDetails(db *sql.DB, post *models.Posts, w http.ResponseWriter, r *http.
 		return fmt.Errorf("failed to get post author: %w", err)
 	}
 
-	nbrComment, err := GetNbrComment(db, post.PostID)
+	nbrComment, err := utils.GetNbrComment(db, post.PostID)
 	if err != nil {
 		return fmt.Errorf("failed to get number of comments: %w", err)
 	}
 
-	nbrLike, err := GetNbrLike(db, post.PostID)
+	nbrLike, err := utils.GetNbrLike(db, post.PostID)
 	if err != nil {
 		return fmt.Errorf("failed to get number of likes: %w", err)
 	}
 
-	// nbrDislike, err := GetNbrDislike(db, post.PostID)
-	// if err != nil {
-	// 	return fmt.Errorf("failed to get number of likes: %w", err)
-	// }
-
-	likeStatus, dislikeStatus, err := GetLikeDislikeStatus(db, post.PostID, currentUser.UserId)
+	likeStatus, dislikeStatus, err := utils.GetLikeDislikeStatus(db, post.PostID, currentUser.UserId)
 	if err != nil {
 		return fmt.Errorf("failed to get like/dislike status: %w", err)
 	}
 
-	isVisible, err := CheckVisibility(db, post.UserID, post.PostID, currentUser.UserId, post.Post_status)
+	isVisible, err := utils.CheckVisibility(db, post.UserID, post.PostID, currentUser.UserId, post.Post_status, groupId)
 	if err != nil {
 		return fmt.Errorf("failed to get like/dislike status: %w", err)
 	}
 
-	// allComments, err := GetComments(db, post.PostID)
-	// if err != nil {
-	// 	return fmt.Errorf("failed to get comments: %w", err)
-	// }
-
-	isFollowing, err := IsFollowing(db, post.UserID, currentUser.UserId)
+	isFollowing, err := utils.IsFollowing(db, post.UserID, currentUser.UserId)
 	if err != nil {
 		return fmt.Errorf("failed to check if user is following: %w", err)
 	}
@@ -195,146 +234,12 @@ func postDetails(db *sql.DB, post *models.Posts, w http.ResponseWriter, r *http.
 	post.Author = author
 	post.Formated_date = utils.FormatTimeAgo(post.Creation_date)
 	post.Can_see = isVisible
-	// post.Comments = allComments
 	post.Like_nbr = nbrLike
 	post.Comments_nbr = nbrComment
 	post.Like_status = likeStatus
 	post.IsFollower = isFollowing
 	post.HasImage = post.Image_url != ""
-	// post.Dislike_nbr = nbrDislike
 	post.Dislike_status = dislikeStatus
 
 	return nil
-}
-
-// se charge de vérifier si l'utiiateur peut voir le post
-func CheckVisibility(db *sql.DB, userId string, postId string, currentUserId string, postPrivacy string) (bool, error) {
-	// Si le post est public, il est visible pour tout le monde
-	if postPrivacy == "public" {
-		return true, nil
-	}
-
-	// Si le post est privé, vérifier si l'utilisateur est l'auteur du post ou un follower
-	if postPrivacy == "private" {
-		return IsFollowing(db, userId, currentUserId)
-	}
-
-	// Si le post est "almost_private", vérifier si l'utilisateur est autorisé à voir le post
-	if postPrivacy == "almost-private" {
-		query := `SELECT COUNT(*) FROM UserPost WHERE postId = ? AND userId = ?`
-		var count int
-		err := db.QueryRow(query, postId, currentUserId).Scan(&count)
-		if err != nil {
-			return false, fmt.Errorf("error checking almost_private access: %v", err)
-		}
-
-		// Si l'utilisateur est autorisé, retourner true
-		if count > 0 {
-			return true, nil
-		}
-
-		// Sinon, retourner false car l'utilisateur n'est pas autorisé
-		return false, nil
-	}
-
-	// Par défaut, retourner false (post non visible)
-	return false, nil
-}
-
-// Récupère le nombre de commentaires d'un post
-func GetNbrComment(db *sql.DB, postId string) (int, error) {
-	return getCountForPost(db, "Comments", "postid = ?", postId)
-}
-
-// Récupère le nombre de likes d'un post
-func GetNbrLike(db *sql.DB, postId string) (int, error) {
-	return getCountForPost(db, "LikesDislikes", "postid = ? AND liked = TRUE", postId)
-}
-
-// Récupère le nombre de dislikes d'un post
-func GetNbrDislike(db *sql.DB, postId string) (int, error) {
-	return getCountForPost(db, "LikesDislikes", "postid = ? AND disliked = TRUE", postId)
-}
-
-// Fonction utilitaire pour compter les enregistrements dans une table donnée avec une condition spécifique
-func getCountForPost(db *sql.DB, tableName string, condition string, postId string) (int, error) {
-	query := fmt.Sprintf(`SELECT COUNT(*) FROM %s WHERE %s`, tableName, condition)
-
-	var count int
-	err := db.QueryRow(query, postId).Scan(&count)
-	if err != nil {
-		return 0, fmt.Errorf("erreur lors de la requête SQL : %v", err)
-	}
-	return count, nil
-}
-
-// se charge de récuperer le status de like et dislike d'un post
-func GetLikeDislikeStatus(db *sql.DB, postId string, userId string) (bool, bool, error) {
-	query := `
-        SELECT liked, disliked 
-        FROM LikesDislikes 
-        WHERE postId = ? AND userId = ?
-    `
-
-	var liked, disliked bool
-	err := db.QueryRow(query, postId, userId).Scan(&liked, &disliked)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			// If no row is found, the user hasn't liked or disliked the post
-			return false, false, nil
-		}
-		return false, false, fmt.Errorf("error querying database: %v", err)
-	}
-
-	return liked, disliked, nil
-}
-
-// retourne tous les posts d'un user
-func GetOwnPosts(db *sql.DB, userId string) ([]models.Posts, error) {
-	query := `SELECT id, userId, content, imageUrl, statut, createDate FROM Posts WHERE userId = ? ORDER BY createDate DESC`
-	rows, err := db.Query(query, userId)
-	if err != nil {
-		return nil, fmt.Errorf("error querying database: %v", err)
-	}
-	defer rows.Close()
-
-	var ownPosts []models.Posts
-	for rows.Next() {
-		var post models.Posts
-		if err := rows.Scan(&post.PostID, &post.UserID, &post.Content, &post.Image_url, &post.Post_status, &post.Creation_date); err != nil {
-			return nil, fmt.Errorf("error scanning row: %v", err)
-		}
-
-		ownPosts = append(ownPosts, post)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("error iterating over rows: %v", err)
-	}
-
-	return ownPosts, nil
-}
-
-// verifie si l'utilisateur est un follower pour les posts
-func IsFollowing(db *sql.DB, userId string, currentUserId string) (bool, error) {
-	if currentUserId == userId {
-		return true, nil
-	}
-
-	// Vérifier si currentUserId est un follower de l'utilisateur
-	query := `SELECT COUNT(*) FROM Followers WHERE userId = ? AND followedId = ?`
-	var count int
-	err := db.QueryRow(query, userId, currentUserId).Scan(&count)
-	if err != nil {
-		fmt.Println("error checking follower status")
-		return false, err
-	}
-
-	// Si currentUserId est un follower, retourner true
-	if count > 0 {
-		return true, nil
-	}
-
-	// Sinon, retourner false car l'utilisateur n'est ni l'auteur ni un follower
-	return false, nil
 }

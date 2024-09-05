@@ -46,13 +46,8 @@ export default function CreatePostCard() {
 
     if (privacy === 'almost-private' && selectedUserIds.length > 0) {
       formData.append('allowedUsers', selectedUserIds);
-      // console.log("select user",selectedUserIds);
 
     }
-
-    // for (let [key, value] of formData.entries()) {
-    //   console.log(key, value);
-    // }
 
     if (!checkPost(thread, privacy, file, selectedUserIds, toast)) {
       return;

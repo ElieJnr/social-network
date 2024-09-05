@@ -38,5 +38,6 @@ type CheckResult struct {
 	PhotoURL     string
 	Status       string
 	PostId       string
+	GroupId      string
 	AllowedUsers []string
 }

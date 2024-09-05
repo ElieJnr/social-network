@@ -49,8 +49,8 @@ Social Network App:
             ☐ Développer la gestion des groupes
             ☐ Créer le système d'invitations pour les groupes
             ☐ Gérer les requêtes pour rejoindre un groupe
-            ☐ Développer la logique des posts spécifiques aux groupes
-            ☐ Implémenter les commentaires spécifiques aux groupes
+            ✔ Développer la logique des posts spécifiques aux groupes @done(24-09-05 20:03)
+            ✔ Implémenter les commentaires spécifiques aux groupes @done(24-09-05 20:03)
             ☐ Créer la fonctionnalité de création d'événements
             ☐ Gérer le système de RSVP pour les événements
         Frontend :

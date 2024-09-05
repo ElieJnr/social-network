@@ -1,19 +1,24 @@
-import { useState } from 'react';
+import { CardContent, Card, CardFooter , CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button";
+import { fetchGroupCreatePost } from "@/app/actions/post";
 import { CreateEventCard } from './create-event-card';
 import { useWebSocket } from '@/app/actions/message';
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
+import { useToast } from "@/components/ui/use-toast";
 import { Textarea } from "@/components/ui/textarea"
+import { Button } from "@/components/ui/button";
 const { ImageIcon } = require("lucide-react");
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
+import { Input } from "@/components/ui/input";
 import { EventsCards } from './events-cards';
-import PostCard from "@/components/PostCard";
-import { ClickMessageApp } from './ui/message';
-import GroupChat from './MessageComponent/MessageApp';
+import { useParams } from "next/navigation";
+import { fetchLike } from '@/app/actions/post';
+import CommentCard from './CommentCard';
+import useSWR, { mutate } from 'swr';
+import GroupChat from "./MessageComponent/MessageApp";
+const {HeartIcon, MessageCircleIcon} = require("lucide-react");
+const { useState } = require('react');
 
+const fetcher = (url) => fetch(url, { credentials: 'include' }).then((res) => res.json());
 
 function Sidebar({ setActiveComponent, socket }) {
   return (
@@ -72,7 +77,7 @@ export function GroupHomePage() {
         </div>
         <div className="space-y-6">
           {activeComponent === 'post' ? <CreatePostGroupCard /> : <CreateEventCard />}
-          <PostCard />
+          <PostGroupCard />
         </div>
         <div className="space-y-6">
           <Sidebar setActiveComponent={setActiveComponent} />
@@ -123,6 +128,8 @@ export function SuggestionsGroupCard() {
 export function CreatePostGroupCard() {
   const [thread, setThread] = useState('');
   const [file, setFile] = useState(null);
+  const { toast } = useToast();
+  const { id } = useParams()
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -130,6 +137,29 @@ export function CreatePostGroupCard() {
     formData.append('thread', thread);
     if (file) {
       formData.append('file', file);
+    }
+
+    formData.append('groupId', id);
+
+    if (!checkPosts(thread, file, toast)) {
+      return;
+    }
+
+    try {
+      await fetchGroupCreatePost(formData);
+      mutate(`http://localhost:8080/group/posts?groupId=${id}`);
+      setThread('');
+      setFile(null);
+      toast({
+        title: "Post created successfully",
+        description: "Your post has been created and shared.",
+      });
+    }
+    catch (error) {
+      toast({
+        title: "Error creating post",
+        description: error.message || "An unexpected error occurred",
+      });
     }
 
   };
@@ -172,4 +202,188 @@ export function CreatePostGroupCard() {
       </CardContent>
     </Card>
   );
+}
+
+export function PostGroupCard() {
+  const { id } = useParams();
+  const { data: posts, mutate, isValidating } = useSWR(`http://localhost:8080/group/posts?groupId=${id}`, fetcher);
+
+  return (
+    <div className="space-y-4">
+      {isValidating && !posts ? (
+        <>
+          <SkeletonPostCard />
+          <SkeletonPostCard />
+          <SkeletonPostCard />
+        </>
+      ) : (
+        posts && posts.length > 0 ? (
+          posts.map(post =>
+            post.Can_see ? <PostCard key={post.PostID} post={post} /> : null
+          )
+        ) : null
+      )}
+    </div>
+  );
+}
+
+function PostCard({ post }) {
+  const [showComments, setShowComments] = useState(false);
+  const { toast } = useToast();
+  const { id } = useParams()
+
+  const handleToggleComments = () => {
+    setShowComments(!showComments);
+  };
+
+  const handleLikeClick = async () => {
+    const formData = new FormData();
+    formData.append("like-postId", post.PostID);
+
+    try {
+      await fetchLike(formData);
+      mutate(`http://localhost:8080/group/posts?groupId=${id}`);
+    } catch (error) {
+      toast({
+        title: "Error liking post",
+        description: error,
+      });
+    }
+  };
+
+  return (
+    <Card>
+      <CardContent className="space-y-4">
+        <div className="flex items-center gap-4 mt-2">
+          <Avatar className="w-10 h-10">
+            <AvatarImage src={post.Author.Avatar || "/placeholder-user.jpg"} alt={post.Author.Username} />
+            <AvatarFallback>{post.Author.Username ? post.Author.Username[0].toUpperCase() : 'U'}</AvatarFallback>
+          </Avatar>
+
+          <div className="flex items-center gap-2">
+            <span className="text-lg font-semibold">{post.Author.Firstname + " " + post.Author.Lastname || "Anonymous"}</span>
+            <span className="text-muted-foreground">@{post.Author.Username || ""}</span>
+            <span className="text-muted-foreground text-lg">•</span>
+            <span className="text-muted-foreground">{post.Formated_date || "just now"}</span>
+          </div>
+
+          {post.IsFollower ? '' : <Button variant="outline" size="sm" className="ml-auto">
+            Follow
+          </Button>}
+        </div>
+
+        <div className="text-lg grid gap-2 p-4">
+          {post.Content || "No content available."}
+        </div>
+        {post.HasImage && (
+          <img
+            src={`/uploads/${post.Image_url}`}
+            width={800}
+            height={450}
+            alt="Project preview"
+            className="rounded-lg object-cover"
+            style={{ aspectRatio: "800/450", objectFit: "cover" }}
+          />
+        )}
+        <CardFooter className="grid gap-2 p-4">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              <Button variant="ghost" size="icon" onClick={handleLikeClick}>
+                <HeartIcon
+                  className={`h-5 w-5 ${post.Like_status ? 'text-red-500' : ''}`}
+                />
+              </Button>
+              <span>{post.Like_nbr || 0}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Button variant="ghost" size="icon" onClick={handleToggleComments}>
+                <MessageCircleIcon className="h-5 w-5" />
+              </Button>
+              <span>{post.Comments_nbr || 0}</span>
+            </div>
+          </div>
+        </CardFooter>
+        {showComments && <CommentCard postId={post.PostID} />}
+      </CardContent>
+    </Card>
+  );
+}
+
+function SkeletonPostCard() {
+  return (
+    <Card className="animate-pulse">
+      <CardContent className="space-y-4">
+        <div className="flex items-center gap-4 mt-2">
+          <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
+          <div className="flex-1 space-y-2">
+            <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+            <div className="h-4 bg-gray-300 rounded w-1/4"></div>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <div className="h-4 bg-gray-300 rounded w-full"></div>
+          <div className="h-4 bg-gray-300 rounded w-5/6"></div>
+        </div>
+
+        <div className="h-48 bg-gray-300 rounded"></div>
+
+        <CardFooter className="grid gap-2 p-4">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              <div className="w-5 h-5 bg-gray-300 rounded-full"></div>
+              <div className="h-4 bg-gray-300 rounded w-6"></div>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-5 h-5 bg-gray-300 rounded-full"></div>
+              <div className="h-4 bg-gray-300 rounded w-6"></div>
+            </div>
+          </div>
+        </CardFooter>
+      </CardContent>
+    </Card>
+  );
+}
+
+function checkPosts(thread, file, toast) {
+  if (thread.length === 0 || thread.length > 500) {
+    toast({
+      title: "Error creating post",
+      description: "Thread must not be empty and must not exceed 500 characters.",
+    });
+    return false;
+  }
+
+
+  if (file) {
+    if (!file.type.includes('image')) {
+      toast({
+        title: "Error creating post",
+        description: "File must be an image.",
+      });
+      return false;
+    }
+
+    const validExtensions = ["jpg", "jpeg", "png", "gif"];
+    const fileExtension = file.name.split('.').pop().toLowerCase();
+    if (!validExtensions.includes(fileExtension)) {
+      toast({
+        title: "Error creating post",
+        description: "File must be in jpg, png, or gif format.",
+      });
+      return false;
+    }
+
+    const maxSizeMB = 5;
+    const maxSizeBytes = maxSizeMB * 1024 * 1024;
+    if (file.size > maxSizeBytes) {
+      toast({
+        title: "Error creating post",
+        description: `File size must not exceed ${maxSizeMB} MB.`,
+      });
+      return false;
+    }
+  }
+
+  return true;
 }

@@ -14,7 +14,6 @@ const fetcher = (url) => fetch(url, { credentials: 'include' }).then((res) => re
 
 export default function Posts() {
 
-  
   const { data: posts, mutate, isValidating } = useSWR('http://localhost:8080/posts', fetcher);
   
   return (
@@ -39,13 +38,10 @@ export default function Posts() {
 function PostCard({ post }) {
   const [showComments, setShowComments] = useState(false);
   const { toast } = useToast();
-  
-  
 
   const handleToggleComments = () => {
     setShowComments(!showComments);
   };
-
 
   const handleLikeClick = async () => {
     const formData = new FormData();

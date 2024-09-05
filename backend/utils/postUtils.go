@@ -12,7 +12,7 @@ import (
 	"unicode/utf8"
 )
 
-// ______________________fonction utilitaire
+// fonction utilitaire
 func FormatTimeAgo(creationDate time.Time) string {
 	now := time.Now()
 	diff := now.Sub(creationDate)
@@ -74,28 +74,29 @@ func FormatTimeAgo(creationDate time.Time) string {
 	return res
 }
 
-func IsValidPost(content string, privacy string, photoURL string, allowedUsers []string) (bool, string) {
-	if len(content) == 0 || utf8.RuneCountInString(content) > 500 {
-		return false, "Bad Request: Invalid content length"
-	}
+func IsValidPost(content string, privacy string, photoURL string, allowedUsers []string, origin string) (bool, string) {
+    if len(content) == 0 || utf8.RuneCountInString(content) > 500 {
+        return false, "Bad Request: Invalid content length"
+    }
 
-	if privacy != "public" && privacy != "private" && privacy != "almost-private" {
-		return false, "Bad Request: Invalid privacy setting"
-	}
+    if origin == "post" {
+        if privacy != "public" && privacy != "private" && privacy != "almost-private" {
+            return false, "Bad Request: Invalid privacy setting"
+        }
+        if privacy == "almost-private" && len(allowedUsers) == 0 {
+            return false, "Bad Request: No users specified for almost_private post"
+        }
+    }
 
-	if privacy == "almost-private" && len(allowedUsers) == 0 {
-		return false, "Bad Request: No users specified for almost_private post"
-	}
+    if photoURL != "" {
+        if photoURL == "err400" {
+            return false, "Bad Request: Invalid image upload"
+        } else if photoURL == "err500" {
+            return false, "Internal Server Error: Image upload failed"
+        }
+    }
 
-	if photoURL != "" {
-		if photoURL == "err400" {
-			return false, "Bad Request: Invalid image upload"
-		} else if photoURL == "err500" {
-			return false, "Internal Server Error: Image upload failed"
-		}
-	}
-
-	return true, ""
+    return true, ""
 }
 
 func IsValidImage(file multipart.File, handler *multipart.FileHeader) bool {

@@ -20,21 +20,21 @@ func InitializeRoutes() *mux.Router {
 
 	// Authentification
 	router.Handle("/login", handlers.LoginHandler()).Methods("POST")
+	router.Handle("/validatecookie", handlers.ValidateCookieHandler())
 	router.Handle("/signin", handlers.RegistrationHandler()).Methods("POST")
 	router.Handle("/logout", middlewares.AuthMiddleware(handlers.Logout())).Methods("POST")
-	router.Handle("/validatecookie", handlers.ValidateCookieHandler())
 
 	// posts
 	router.Handle("/posts", middlewares.AuthMiddleware(handlers.PostHandler("allPost"))).Methods("GET")
 	router.Handle("/postUser", middlewares.AuthMiddleware(handlers.PostHandler("userPost"))).Methods("GET")
 	router.Handle("/post/create", middlewares.AuthMiddleware(handlers.CreatePostHandler())).Methods("POST")
 
-	// group
-	router.Handle("group/posts", middlewares.AuthMiddleware(handlers.PostHandler("allPost"))).Methods("GET")
-	router.Handle("group/post/create", middlewares.AuthMiddleware(handlers.CreatePostHandler())).Methods("POST")
-	router.Handle("/group/createGroup", middlewares.AuthMiddleware(handlers.CreateGroups())).Methods("POST")
+	// groups
 	router.Handle("/group/addNewMemberToGroup", handlers.AddNewMember()).Methods("POST")
 	router.Handle("/group/getGroups", middlewares.AuthMiddleware(handlers.GetGroups())).Methods("GET")
+	router.Handle("/group/posts", middlewares.AuthMiddleware(handlers.GroupPostHandler())).Methods("GET")
+	router.Handle("/group/createGroup", middlewares.AuthMiddleware(handlers.CreateGroups())).Methods("POST")
+	router.Handle("/group/post/create", middlewares.AuthMiddleware(handlers.GroupCreatePostHandler())).Methods("POST")
 
 	// Reactions
 	router.Handle("/like", middlewares.AuthMiddleware(handlers.LikeHandler())).Methods("POST")

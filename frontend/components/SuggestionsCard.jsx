@@ -5,6 +5,7 @@ import { allUsers, search, userConnect } from "@/app/actions/users";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link"
+import { socketSend } from "@/app/actions/message";
 
 const { Card, CardHeader, CardTitle, CardContent } = require("./ui/card");
 const { Avatar, AvatarImage, AvatarFallback } = require("./ui/avatar");
@@ -48,7 +49,7 @@ export default function SuggestionsCard({ socket }) {
   }, [users, userOnLine]);
   const handleClick = (user, statut) => {
     console.log(user.id);
-   
+
     setHiddenUsers(prev => [...prev, user]);
     follow(userOnLine.id, user.id, statut, true)
     const Message = {
@@ -56,13 +57,10 @@ export default function SuggestionsCard({ socket }) {
       ReceiverId: user.id,
       SubType: "sendFollow",
       Content: "wants to follow you",
-      IsPrivate:  user.IsPrivate
+      IsPrivate: user.IsPrivate
     }
 
-    if (socket && socket.readyState === WebSocket.OPEN) {
-
-      socket.send(JSON.stringify(Message))
-    }
+    socketSend(socket, Message)
   }
   if (!users || !userOnLine) {
     return (

@@ -9,6 +9,7 @@ import { Check } from 'lucide-react'
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { BellIcon, GetIcon } from "./IconNotif";
+import { socketSend } from "@/app/actions/message";
 export let setNotifs
 export function Notifications({ socket }) {
     const router = useRouter()
@@ -39,11 +40,7 @@ export function Notifications({ socket }) {
             SubType: "read"
         }
 
-        if (socket && socket.readyState === WebSocket.OPEN) {
-            console.log("readddddddddd");
-
-            socket.send(JSON.stringify(Message))
-        }
+       socketSend(socket,Message)
         fetchNotifs(setNotifications);
 
     }

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"socialNetwork/utils"
 )
 
 func GetGroups() http.HandlerFunc {
@@ -13,8 +14,16 @@ func GetGroups() http.HandlerFunc {
 			return
 		}
 
-		var userID = "56cec81e-e5b3-432d-8f3b-90d0cc29b09d"
-		groups, err := GroupeService.GetGroups(userID)
+		userInfo, err := utils.CurrentUser(w, r)
+		if err != nil {
+			fmt.Println(err)
+			http.Error(w, "User not found in context", http.StatusUnauthorized)
+			return
+		}
+
+		// var userID = "56cec81e-e5b3-432d-8f3b-90d0cc29b09d" nekal nitt boy mdrrrrrr
+		groups, err := GroupeService.GetGroups(userInfo.UserId)
+		fmt.Println("okkkkkk")
 
 		if err != nil {
 			fmt.Println("err", err)

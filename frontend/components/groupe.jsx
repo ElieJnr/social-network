@@ -3,7 +3,8 @@ import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { GroupCards } from './group-cards'
 import { Content } from 'next/font/google'
-
+import { fetchGroupes } from '@/app/actions/groupe'
+import { socketSend } from '@/app/actions/message'
 export default function AllGroupsComponent({ socket }) {
   const router = useRouter()
   const [groupes, setGroupes] = useState([])
@@ -11,25 +12,7 @@ export default function AllGroupsComponent({ socket }) {
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    const fetchGroupes = async () => {
-      try {
-        const response = await fetch('http://localhost:8080/group/getGroups')
-        if (!response.ok) {
-          throw new Error('Erreur lors de la récupération des groupes')
-        }
-        const data = await response.json()
-
-        console.log('Données récupérées:', data) // Log the fetched data
-
-        setGroupes(data)
-      } catch (error) {
-        setError(error.message)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchGroupes()
+    fetchGroupes(setGroupes,setLoading,setError)
   }, [])
 
   const rejoindreGroupe = (id, UserId, title) => {
@@ -40,15 +23,7 @@ export default function AllGroupsComponent({ socket }) {
       SubType: "addGroupe",
       Content: title,
     }
-    console.log(UserId);
-    
-
-    if (socket && socket.readyState === WebSocket.OPEN) {
-      console.log("readddddddddd");
-
-      socket.send(JSON.stringify(Message))
-    }
-
+    socketSend(socket,Message)
   }
 
   const entrerGroupe = (id) => {
@@ -70,7 +45,7 @@ export default function AllGroupsComponent({ socket }) {
             description={groupe.description}
             estMembre={groupe.isMember}
             onEntrer={() => entrerGroupe(groupe.id)}
-            onRejoindre={() => rejoindreGroupe(groupe.id, groupe.userId,groupe.title)}
+            onRejoindre={() => rejoindreGroupe(groupe.id, groupe.userId, groupe.title)}
           />
         ))}
       </div>

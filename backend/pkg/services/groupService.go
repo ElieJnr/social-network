@@ -99,7 +99,7 @@ func (g *GroupeService) GetGroups(userID string) ([]models.Group, error) {
 		}
 		group.IsMember=isMember
 
-		fmt.Println(group)
+		fmt.Println(group,"group")
 		groups = append(groups, group)
 	}
 	return groups, nil

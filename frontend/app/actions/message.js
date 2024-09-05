@@ -71,3 +71,11 @@ export const useWebSocket = (url) => {
 
     return socket.current;
 };
+
+export function socketSend(socket,message){
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        console.log("the msg is send to your socket");
+  
+        socket.send(JSON.stringify(message))
+      }
+}

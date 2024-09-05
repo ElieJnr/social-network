@@ -105,8 +105,8 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error 
 				}
 
 				author, err := utils.GetAuthor(NotifService.GetDB(), sender)
-				title := msg.Content
-				msg.Content = author.Firstname + " " + author.Lastname + " veut rejoindre le groupe " + title
+
+				mess := author.Firstname + " " + author.Lastname + " veut rejoindre le groupe " + msg.Content
 				if err != nil {
 					return fmt.Errorf("error read: %w", err)
 				}
@@ -116,7 +116,7 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error 
 					ReceiverID: msg.ReceiverId,
 					SenderID:   sender,
 					Type:       "addGroupe",
-					Message:    title,
+					Message:    mess,
 				}
 				e := NotifService.CreateNotification(&notif)
 				if e != nil {

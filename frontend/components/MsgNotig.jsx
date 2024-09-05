@@ -28,6 +28,7 @@ import { cn } from "@/lib/utils";
 import { useRouter, usePathname } from "next/navigation";
 import { BellIcon, GetIcon } from "./IconNotif";
 import { socketGlobal } from "@/app/page";
+import { socketSend } from "@/app/actions/message";
 
 export let setMsgNotif
 export function MsgNotif({ socket }) {
@@ -54,19 +55,12 @@ export function MsgNotif({ socket }) {
     console.log(pathname);
 
     const markAsRead = (id) => {
-        console.log(id);
-
-        if (socket && socket.readyState === WebSocket.OPEN) {
-            console.log("redddd");
-            
-            const Message = {
-                Type: "notifications",
-                ReceiverId: id,
-                SubType: "read"
-            }
-            socket.send(JSON.stringify(Message))
-
+        const Message = {
+            Type: "notifications",
+            ReceiverId: id,
+            SubType: "read"
         }
+        socketSend(socket, Message)
         fetchNotifs(setNotifications, "msg");
     }
 

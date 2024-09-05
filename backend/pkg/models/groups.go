@@ -6,7 +6,7 @@ type Group struct {
 	Description string `json:"description"`
 	UserId      string `json:"userId"`
 	CreateAt    string `json:"createAt"`
-	IsMember    bool   `json:"isMember"`
+	IsMember string `json:"isMember"`
 }
 
 type NewMember struct {

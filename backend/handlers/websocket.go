@@ -126,6 +126,17 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error 
 					receiverConn.WriteJSON(msg)
 				}
 
+				newMember:=models.NewMember{
+					UserId: sender,
+					GroupId: msg.GroupeId,
+					Status: "waiting",
+				}
+
+				e=GroupeService.AddNewMember(newMember)
+				if e!= nil{
+					return fmt.Errorf("error on the status waiting in ws: %w", err)
+				}
+
 			}
 		case "sendMessage":
 

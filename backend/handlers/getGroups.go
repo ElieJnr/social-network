@@ -21,10 +21,7 @@ func GetGroups() http.HandlerFunc {
 			return
 		}
 
-		// var userID = "56cec81e-e5b3-432d-8f3b-90d0cc29b09d" nekal nitt boy mdrrrrrr
-		groups, err := GroupeService.GetGroups(userInfo.UserId)
-		fmt.Println("okkkkkk")
-
+		groups, err := GroupeService.GetGroups(userInfo.UserId)		
 		if err != nil {
 			fmt.Println("err", err)
 			http.Error(w, "impossible to get all the group", http.StatusInternalServerError)

@@ -92,7 +92,7 @@ func (g *GroupeService) GetGroups(userID string) ([]models.Group, error) {
 			return nil, fmt.Errorf("failed to scan group: %w", err)
 		}
 
-		isMember,err:= g.IsUserInGroup(userID, group.Id)
+		isMember,err:= g.GetUserRoleInGroup(userID, group.Id)
 
 		if err != nil{
 			return nil, fmt.Errorf("impossible to found if the user is in the group: %w", err)
@@ -106,14 +106,48 @@ func (g *GroupeService) GetGroups(userID string) ([]models.Group, error) {
 }
 
 
-func (g *GroupeService) IsUserInGroup(userId, groupId string) (bool, error) {
-	var exists bool
-	query := `SELECT EXISTS(SELECT 1 FROM Membership WHERE userId = ? AND groupId = ?)`
+func (g *GroupeService) GetUserRoleInGroup(userId, groupId string) (string, error) {
+	var role string
+	query := `SELECT role FROM Membership WHERE userId = ? AND groupId = ?`
 
-	err := g.GetDB().QueryRow(query, userId, groupId).Scan(&exists)
+	err := g.GetDB().QueryRow(query, userId, groupId).Scan(&role)
 	if err != nil {
-		return false, fmt.Errorf("failed to check membership: %w", err)
+		if err == sql.ErrNoRows {
+			// Si aucun résultat n'est trouvé, retourner une chaîne vide
+			return "", nil
+		}
+		// Si une autre erreur s'est produite, retourner l'erreur
+		return "", fmt.Errorf("failed to get user role: %w", err)
 	}
 
-	return exists, nil
+	return role, nil
 }
+
+// func (g *GroupeService) UpdateMemberRoleToWaiting(userId, groupId string) error {
+// 	// Vérifier si le groupe existe
+// 	exists, err := g.GroupExists(groupId)
+// 	if err != nil {
+// 		return fmt.Errorf("failed to check if group exists: %w", err)
+// 	}
+// 	if !exists {
+// 		return fmt.Errorf("group with ID %s does not exist", groupId)
+// 	}
+
+// 	// Vérifier si le membre existe déjà dans le groupe
+// 	memberExists, err := g.IsUserInGroup(userId, groupId)
+// 	if err != nil {
+// 		return fmt.Errorf("failed to check if user is in group: %w", err)
+// 	}
+// 	if !memberExists {
+// 		return fmt.Errorf("user with ID %s is not a member of group with ID %s", userId, groupId)
+// 	}
+
+// 	// Mettre à jour le rôle du membre à "waiting"
+// 	query := `UPDATE Membership SET role = ? WHERE userId = ? AND groupId = ?`
+// 	_, err = g.GetDB().Exec(query, "waiting", userId, groupId)
+// 	if err != nil {
+// 		return fmt.Errorf("failed to update member role to 'waiting': %w", err)
+// 	}
+
+// 	return nil
+// }

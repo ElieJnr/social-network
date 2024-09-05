@@ -24,6 +24,7 @@ export default function AllGroupsComponent({ socket }) {
       Content: title,
     }
     socketSend(socket,Message)
+    window.location.reload()
   }
 
   const entrerGroupe = (id) => {

@@ -4,19 +4,30 @@ import { Button } from "@/components/ui/button"
 
 
 export function GroupCards({ nom, description, estMembre, onEntrer, onRejoindre }) {
+  const handleClick = (estMembre === "admin" || estMembre === "member") 
+    ? onEntrer 
+    : estMembre === "" 
+      ? onRejoindre 
+      : undefined;
+
+  const buttonText = (estMembre === "admin" || estMembre === "member") 
+    ? 'Voir' 
+    : estMembre === "" 
+      ? 'Rejoindre' 
+      : 'Waiting...';
+
   return (
     <Card className="flex flex-col">
       <CardHeader>
         <div className="flex justify-between items-center">
           <CardTitle className="text-xl">{nom}</CardTitle>
-          <Button className=" text-white" onClick={estMembre ? onEntrer : onRejoindre}>
-            {estMembre ? 'Voir' : 'Rejoindre'}
+          <Button className="text-white" onClick={handleClick}>
+            {buttonText}
           </Button>
         </div>
       </CardHeader>
       <CardContent className="mt-2">
-        <p className="text-sm text-muted-foreground">{description}
-        </p>
+        <p className="text-sm text-muted-foreground">{description}</p>
         <div className="flex justify-between mt-4">
           <div className="text-center">
             <p className="text-lg font-bold">989 k</p>
@@ -38,5 +49,6 @@ export function GroupCards({ nom, description, estMembre, onEntrer, onRejoindre 
     </Card>
   );
 }
+
 
 

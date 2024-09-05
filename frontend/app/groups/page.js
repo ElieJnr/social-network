@@ -8,9 +8,9 @@ import ProfileCard from "@/components/ProfileCard";
 import NavBar from "@/components/Nav";
 
 
-var socket = useWebSocket('ws://localhost:8080/ws');
 
 export default function AllGroup() {
+    const socket = useWebSocket('ws://localhost:8080/ws');
 
     return (
         <div className="flex flex-col h-screen">

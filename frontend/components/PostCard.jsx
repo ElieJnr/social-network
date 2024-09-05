@@ -4,8 +4,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { fetchLike } from '@/app/actions/post';
 import CommentCard from './CommentCard';
 import useSWR, { mutate } from 'swr';
-
-const { HeartIcon, MessageCircleIcon } = require("lucide-react");
+const {HeartIcon, MessageCircleIcon} = require("lucide-react");
 const { AvatarFallback, AvatarImage, Avatar } = require("./ui/avatar");
 const { CardContent, Card, CardFooter } = require("./ui/card");
 const { Button } = require("./ui/button");
@@ -14,8 +13,10 @@ const { useState } = require('react');
 const fetcher = (url) => fetch(url, { credentials: 'include' }).then((res) => res.json());
 
 export default function Posts() {
-  const { data: posts, mutate, isValidating } = useSWR('http://localhost:8080/posts', fetcher);
 
+  
+  const { data: posts, mutate, isValidating } = useSWR('http://localhost:8080/posts', fetcher);
+  
   return (
     <div className="space-y-4">
       {isValidating && !posts ? (
@@ -38,7 +39,8 @@ export default function Posts() {
 function PostCard({ post }) {
   const [showComments, setShowComments] = useState(false);
   const { toast } = useToast();
-
+  
+  
 
   const handleToggleComments = () => {
     setShowComments(!showComments);
@@ -59,6 +61,7 @@ function PostCard({ post }) {
       });
     }
   };
+
 
   return (
     <Card>

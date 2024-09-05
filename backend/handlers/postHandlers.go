@@ -62,36 +62,50 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 
 // se charge de vérifier si les données du post sont correctes
 func CheckPost(w http.ResponseWriter, r *http.Request) models.CheckResult {
-	fmt.Println("----check post-----")
-	content := strings.TrimSpace(r.FormValue("thread"))
-	privacy := r.FormValue("privacy")
-	photoURL, err := utils.UploadImage(w, r, "post")
+    r.ParseForm()
+    err := r.ParseMultipartForm(10 << 20) // 10 MB max memory
+    if err != nil {
+        return models.CheckResult{
+            Success: false,
+            Error:   "Failed to parse form data: " + err.Error(),
+        }
+    }
 
-	if err != nil {
-		return models.CheckResult{
-			Success: false,
-			Error:   err.Error(),
-		}
-	}
-	
-	var allowedUsers []string
-	if privacy == "almost_private" {
-		allowedUsers = r.Form["allowedUsers"] // doit contenir les Userid des utilisateurs autorisés à voir le post
-	}
+    content := strings.TrimSpace(r.FormValue("thread"))
+    privacy := r.FormValue("privacy")
+    photoURL, err := utils.UploadImage(w, r, "post")
 
-	isValid, validationError := utils.IsValidPost(content, privacy, photoURL, allowedUsers)
-	if !isValid {
-		return models.CheckResult{
-			Success: false,
-			Error:   validationError,
-		}
-	}
+    if err != nil {
+        fmt.Println("Error uploading image:", err)
+        return models.CheckResult{
+            Success: false,
+            Error:   err.Error(),
+        }
+    }
 
-	return models.CheckResult{
-		Success:      true,
-		PhotoURL:     photoURL,
-		Content:      content,
-		Status:       privacy,
-		AllowedUsers: allowedUsers,
-	}
+    var allowedUsers []string
+    if privacy == "almost-private" {
+        // Récupérer la chaîne séparée par des virgules et la convertir en tableau
+        allowedUsersStr := r.FormValue("allowedUsers")
+        allowedUsers = strings.Split(allowedUsersStr, ",")
+    }
+
+    // Validation du contenu, de la confidentialité et des utilisateurs autorisés
+    isValid, validationError := utils.IsValidPost(content, privacy, photoURL, allowedUsers)
+    if !isValid {
+        fmt.Println("Invalid post:", validationError)
+        return models.CheckResult{
+            Success: false,
+            Error:   validationError,
+        }
+    }
+
+    return models.CheckResult{
+        Success:      true,
+        PhotoURL:     photoURL,
+        Content:      content,
+        Status:       privacy,
+        AllowedUsers: allowedUsers,
+    }
 }
+

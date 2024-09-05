@@ -71,7 +71,7 @@ func (p *PostService) InsertPost(postValue models.CheckResult, w http.ResponseWr
 			fmt.Println("error executing statement")
 			return err
 		}
-	} else if postValue.Status == "almost_private" {
+	} else if postValue.Status == "almost-private" {
 		_, err = stmt.Exec(postID, user.UserId, postValue.Status)
 		if err != nil {
 			fmt.Println("error executing statement")
@@ -220,7 +220,7 @@ func CheckVisibility(db *sql.DB, userId string, postId string, currentUserId str
 	}
 
 	// Si le post est "almost_private", vérifier si l'utilisateur est autorisé à voir le post
-	if postPrivacy == "almost_private" {
+	if postPrivacy == "almost-private" {
 		query := `SELECT COUNT(*) FROM UserPost WHERE postId = ? AND userId = ?`
 		var count int
 		err := db.QueryRow(query, postId, currentUserId).Scan(&count)

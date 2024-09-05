@@ -1,5 +1,3 @@
-import { useToast } from "@/components/ui/use-toast";
-
 
 export async function fetchCreatePost(formData) {
   try {
@@ -7,7 +5,6 @@ export async function fetchCreatePost(formData) {
       method: "POST",
       body: formData,
       credentials: "include",
-      cache: "no-store",
       cache: "no-store",
     });
 
@@ -26,7 +23,6 @@ export async function fetchAllPosts() {
     const response = await fetch('http://localhost:8080/posts', {
       method: 'GET',
       credentials: 'include',
-      cache: "no-store",
       cache: "no-store",
     });
     if (!response.ok) {
@@ -47,7 +43,6 @@ export async function fetchPostCreateComments(formData) {
       method: "POST",
       body: formData,
       credentials: "include",
-      cache: "no-store",
       cache: "no-store",
     });
 
@@ -94,7 +89,6 @@ export async function fetchLike(formData) {
       method: "POST",
       body: formData,
       credentials: "include",
-      cache: "no-store",
       cache: "no-store",
     });
 

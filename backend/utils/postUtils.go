@@ -79,11 +79,11 @@ func IsValidPost(content string, privacy string, photoURL string, allowedUsers [
 		return false, "Bad Request: Invalid content length"
 	}
 
-	if privacy != "public" && privacy != "private" && privacy != "almost_private" {
+	if privacy != "public" && privacy != "private" && privacy != "almost-private" {
 		return false, "Bad Request: Invalid privacy setting"
 	}
 
-	if privacy == "almost_private" && len(allowedUsers) == 0 {
+	if privacy == "almost-private" && len(allowedUsers) == 0 {
 		return false, "Bad Request: No users specified for almost_private post"
 	}
 
@@ -173,7 +173,6 @@ func UploadImage(w http.ResponseWriter, r *http.Request, origin string) (string,
 
 	return photoURL, nil
 }
-
 
 func GenerateUuid() (string, error) {
 	id, err := uuid.NewV4()

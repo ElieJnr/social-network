@@ -1,9 +1,8 @@
 "use client";
 
 import { follow } from "@/app/actions/follow";
-import { allUsers, search, userConnect } from "@/app/actions/users";
+import { allUsers, search, searchUsers, userConnect } from "@/app/actions/users";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link"
 import { socketSend } from "@/app/actions/message";
 
@@ -16,6 +15,7 @@ export default function SuggestionsCard({ socket }) {
   const [userOnLine, setUserOnLine] = useState(null)
   const [hiddenUsers, setHiddenUsers] = useState([]);
   const [tabFilter, setTabFilter] = useState([])
+  const [tabRequest, setTabRequest] = useState([])
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -28,12 +28,26 @@ export default function SuggestionsCard({ socket }) {
     fetchUser();
   }, []);
   useEffect(() => {
+    if (userOnLine && userOnLine.requestF) {
+      const fetchRequests = async () => {
+        try {
+          const response = await searchUsers(userOnLine.requestF, "followedUser");
+          setTabRequest(response.map(item => item.user));
+
+        } catch (error) {
+          console.error("Error fetching requests:", error);
+        }
+      };
+      fetchRequests();
+    }
+  }, [userOnLine]);
+
+
+  useEffect(() => {
     const fetchUsers = async () => {
       try {
         const response = await allUsers();
         setUsers(response.users);
-
-
       } catch (error) {
         console.error("Error fetching user:", error);
       }
@@ -49,7 +63,6 @@ export default function SuggestionsCard({ socket }) {
   }, [users, userOnLine]);
   const handleClick = (user, statut) => {
     console.log(user.id);
-
     setHiddenUsers(prev => [...prev, user]);
     follow(userOnLine.id, user.id, statut, true)
     const Message = {
@@ -105,8 +118,7 @@ export default function SuggestionsCard({ socket }) {
       </Card>
 
     )
-  }
-
+  } 
 
   return (
     <Card>
@@ -114,7 +126,10 @@ export default function SuggestionsCard({ socket }) {
         <CardTitle>Suggestions</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {tabFilter?.filter(user => user.id !== userOnLine.id && !hiddenUsers.includes(user)).map(user => (
+        {tabFilter?.filter(user =>
+          (user.id !== userOnLine.id && !hiddenUsers.includes(user)) &&
+          !tabRequest.some(request => request.id === user.id)
+        ).map(user => (
           <div key={user.id} className="flex items-center gap-4">
             <Link href={user ? `/profil?userId=${user.id}` : "#"}
               prefetch={false} className="flex items-center gap-2">
@@ -123,7 +138,6 @@ export default function SuggestionsCard({ socket }) {
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
             </Link>
-
             <div className="space-y-1">
               <div className="font-semibold">{user ? user.firstname : "loading"} {user ? user.lastname : ""}</div>
               <div className="text-muted-foreground">{""}</div>
@@ -133,6 +147,26 @@ export default function SuggestionsCard({ socket }) {
             </Button>
           </div>
         ))}
+        {tabRequest.map((user) =>
+          <div key={user.id} className="flex items-center gap-4">
+            <Link href={user ? `/profil?userId=${user.id}` : "#"}
+              prefetch={false} className="flex items-center gap-2">
+              <Avatar className="w-10 cursor-pointer h-10">
+                <AvatarImage src="/placeholder-user.jpg" alt="@shadcn" />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+            </Link>
+            <div className="space-y-1">
+              <div className="font-semibold">{user ? user.firstname : "loading"} {user ? user.lastname : ""}</div>
+              <div className="text-muted-foreground">{""}</div>
+            </div>
+            <Button variant="outline" size="sm" className="ml-auto">
+              Demande
+            </Button>
+          </div>
+
+        )}
+
       </CardContent>
     </Card>
   );

@@ -37,11 +37,11 @@ export default function ProfileCard() {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1 text-muted-foreground">
             <UsersIcon className="h-4 w-4" />
-            <span>100 following</span>
+            <span>{user && user.follows ? user.follows.length : "0"} following</span>
           </div>
           <div className="flex items-center gap-1 text-muted-foreground">
             <UsersIcon className="h-4 w-4" />
-            <span>100 followers</span>
+            <span>{user?.followers ? user.followers.length : "0"} followers</span>
           </div>
         </div>
       </CardContent>

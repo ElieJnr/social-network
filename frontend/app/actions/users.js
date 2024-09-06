@@ -1,4 +1,4 @@
-import { makeGetFetchUsers, makeGetFetch } from ".";
+import { makeGetFetchUsers, makeGetFetch, fetchPost } from ".";
 
 export async function userConnect() {
     const data = await makeGetFetch("http://localhost:8080/getUser?key=userConnect&id=null");
@@ -22,6 +22,20 @@ export function search(users, follows) {
     return users.filter(user => 
         !follows.some(follow => follow.followedUser === user.id)
     );
+}
+
+export async function editProfil(userId, isPrivate){
+    let formData = {
+        userId: userId,
+        private: isPrivate,
+      };
+      
+      let url = "http://localhost:8080/update";
+      try {
+         await fetchPost(url, formData);
+      } catch (error) {
+        console.error("Error update user:", error);
+      }
 }
 
 

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"socialNetwork/pkg/services"
 
@@ -12,7 +13,7 @@ type FollowRequest struct {
 	UserId     string `json:"userId"`
 	FollowedId string `json:"followedId"`
 	Statut     bool   `json:"statut"`
-	followU     bool   `json:"followU"`
+	followU    bool   `json:"followU"`
 }
 
 func Follow() http.HandlerFunc {
@@ -43,13 +44,14 @@ func Follow() http.HandlerFunc {
 		}
 
 		followService := services.NewFollowerService()
-		if (req.followU) {
+		if req.followU {
 			err = followService.FollowUserOrUpdateStatus(userId, followedId, req.Statut)
 			if err != nil {
 				http.Error(w, "Cannot follow", http.StatusInternalServerError)
 				return
 			}
 		} else {
+			fmt.Println(req.Statut)
 			err = followService.UnfollowUser(userId, followedId, req.Statut)
 			if err != nil {
 				http.Error(w, "Cannot follow", http.StatusInternalServerError)

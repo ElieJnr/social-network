@@ -2,12 +2,21 @@
 
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
-import { GetAllInfoForUserById, search, userConnect } from "../actions/users";
+import { GetAllInfoForUserById, search, userConnect, searchUsers } from "../actions/users";
 import NavBar from "@/components/Nav";
 import UserListModal from "./popup";
 import Image from "next/image";
 import { follow } from "../actions/follow";
+import Edit from "./edit";
+import { MailIcon } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
+import { UserIcon } from "lucide-react";
+import { InfoIcon } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { UsersIcon } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useWebSocket } from "../actions/message";
+
 export default function Profil() {
     const socket = useWebSocket('ws://localhost:8080/ws');
     const [userId, setUserId] = useState(null);
@@ -17,7 +26,8 @@ export default function Profil() {
     const [posts, setPosts] = useState([])
     const [isFollowersOpen, setFollowersOpen] = useState(false);
     const [isFollowingOpen, setFollowingOpen] = useState(false);
-
+    const [edit, setEdit] = useState(false)
+    const [tabRequest, setTabRequest] = useState([])
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
         const userIdFromQuery = urlParams.get('userId');
@@ -38,6 +48,21 @@ export default function Profil() {
     }, [refreshTrigger]);
 
     useEffect(() => {
+        if (userOnLine && userOnLine.requestF) {
+            const fetchRequests = async () => {
+                try {
+                    const response = await searchUsers(userOnLine.requestF, "followedUser");
+                    setTabRequest(response.map(item => item.user));
+
+                } catch (error) {
+                    console.error("Error fetching requests:", error);
+                }
+            };
+            fetchRequests();
+        }
+    }, [userOnLine, refreshTrigger]);
+
+    useEffect(() => {
         const fetchUserData = async () => {
             if (userId) {
                 try {
@@ -54,110 +79,176 @@ export default function Profil() {
 
     if (!user || !userOnLine) {
         return <div>Loading...</div>;
+    } else {
+        console.log(userOnLine);
+        console.log(tabRequest);
     }
     const handleClick = (user, statut) => {
-        console.log(user.id);
+        console.log(statut);
         follow(userOnLine.id, user.id, statut, false);
         setRefreshTrigger(prev => !prev);
 
     };
+    const CanSee = (user) => {
+        return (search([user], userOnLine?.follows || [])).length === 0
+    };
+
 
 
     return (
         <>
-            <NavBar socket={socket} />
-            <div className="bg-background text-foreground min-h-screen flex flex-col">
-                <div className="flex-1 grid gap-6 p-6">
-                    <div className="grid gap-4">
-                        <div className="flex items-center justify-between">
-                            <div className="grid gap-1">
-                                <div className="font-medium text-2xl">
-                                    {user ? user.firstname : "loading"} {user ? user.lastname : ""}
-                                </div>
-                                <div className="text-muted-foreground">Software Engineer</div>
-                            </div>
-                            <div className="flex items-center gap-4">
-                                {userOnLine.id !== user.id && (
-                                    <Button onClick={() => handleClick(user, !user.isPrivate)} variant="outline" size="sm">
-                                        {(search([user], userOnLine?.follows || [])).length === 0 ? "UnFollow" : "Follow"}
-                                    </Button>
-                                )}
-                                <Button variant="ghost" size="icon" className="rounded-full">
-                                    <MoveHorizontalIcon className="w-5 h-5" />
-                                </Button>
-                            </div>
+            <NavBar />
+            <div className="flex justify-between">
 
-                        </div>
-                        <div className="text-sm leading-loose text-muted-foreground">
-                            {user ? user.bio : ""}
-                        </div>
-                    </div>
-                    <div className="grid sm:grid-cols-3 gap-4 text-center">
-                        <div className="bg-[#e2e1e1] rounded-lg p-4">
-                            <div className="font-medium">100</div>
-                            <div className="text-xs text-muted-foreground">Posts</div>
-                        </div>
-                        <div onClick={() => setFollowersOpen(true)} className="bg-[#e2e1e1] rounded-lg p-4 cursor-pointer">
-                            <div className="font-medium">{user?.followers ? user.followers.length : "0"}</div>
-                            <UserListModal
-                                isOpen={isFollowersOpen}
-                                onClose={() => setFollowersOpen(false)}
-                                title="Followers"
-                                users={user?.followers || []}
-                                statut="userId"
-                            />
-                        </div>
-                        <div className="bg-[#e2e1e1] rounded-lg p-4 cursor-pointer" onClick={() => setFollowingOpen(true)}>
-                            <div className="font-medium">{user && user.follows ? user.follows.length : "0"}</div>
-                            <UserListModal
-                                isOpen={isFollowingOpen}
-                                onClose={() => setFollowingOpen(false)}
-                                title="Following"
-                                users={user?.follows || []}
-                                statut="followedUser"
-                            />
-                        </div>
-                    </div>
-                    <div className="grid gap-6">
-                        <div className="flex items-center justify-between">
-                            <div className="font-medium">Posts</div>
-                            <div className="flex items-center gap-2">
-                                <Button variant="outline" size="sm">
-                                    <EyeIcon className="w-4 h-4 mr-2" />
-                                    Public
-                                </Button>
-                                <Button variant="outline" size="sm">
-                                    <LockIcon className="w-4 h-4 mr-2" />
-                                    Private
-                                </Button>
+                <div className="bg-background text-foreground w-[100%] min-h-screen flex flex-col overflow-x-auto">
+                    <div className="flex-1 grid gap-6 p-6">
+                        <div className="grid gap-4">
+                            <div className="flex items-center justify-between">
+                                <div className="flex flex-col">
+                                    <div className="flex ">
+                                        <Avatar className="w-[8rem] h-[8rem]">
+                                            <AvatarImage src="/placeholder-user.jpg" alt="@shadcn" />
+                                            <AvatarFallback>CN</AvatarFallback>
+                                        </Avatar>
+                                        <div className="flex flex-col">
+                                            <div className="font-medium text-2xl">
+                                                {user ? user.firstname : "loading"} {user ? user.lastname : ""}
+                                            </div>
+                                            {CanSee(user) || !user.isPrivate ?
+                                                <>
+                                                    <div className="flex items-center gap-2">
+                                                        <MailIcon className="h-4 w-4 text-muted-foreground" />
+                                                        <span className="text-muted-foreground">{user ? user.email : ""}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+                                                        <span className="text-muted-foreground">{user ? user.dateOfBirth : ""}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        {user && user.username ?
+                                                            <UserIcon className="h-4 w-4 text-muted-foreground" />
+                                                            : ""}
+                                                        <span className="text-muted-foreground">{user ? user.username : ""}</span>
+                                                    </div>
+                                                    <div className="flex items-start gap-2">
+                                                        {user && user.bio ?
+                                                            <InfoIcon className="h-4 w-4 text-muted-foreground" />
+                                                            : ""}
+                                                        <span className="text-muted-foreground">
+                                                            {user ? user.bio : ""}
+                                                        </span>
+                                                    </div>
+                                                </>
+                                                : ""}
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    {!tabRequest.some(request => request.id === user.id) ? (
+                                        userOnLine.id !== user.id && (
+                                            <Button onClick={() => handleClick(user, !user.isPrivate)} variant="outline" size="sm">
+                                                {CanSee(user)  ? "UnFollow" : "Follow"}
+                                            </Button>
+                                        )
+                                    ) : (
+                                        <Button variant="outline" size="sm">
+                                            Demande
+                                        </Button>
+                                    )}
+
+
+
+                                    {userOnLine.id === user.id && (
+                                        <>
+                                            <Button onClick={() => setEdit(!edit)} variant="outline" size="sm">
+                                                Edit Profil
+                                            </Button>
+                                            {edit && (
+                                                <Edit
+                                                    isOpen={edit}
+                                                    onClose={() => setEdit(false)}
+                                                    user={userOnLine}
+                                                />
+                                            )}
+                                        </>
+                                    )}
+
+
+                                    <Button variant="ghost" size="icon" className="rounded-full">
+                                        <MoveHorizontalIcon className="w-5 h-5" />
+                                    </Button>
+                                </div>
+
                             </div>
                         </div>
-                        <div className="flex justify-center items-center min-h-screen">
-                            <div className="w-[50%] flex flex-col justify-center items-center">
-                                <div className="bg-card rounded-lg overflow-hidden">
-                                    <Image
-                                        src="/placeholder.svg"
-                                        alt="Post Image"
-                                        width={600}
-                                        height={400}
-                                        className="w-full aspect-[3/2] object-cover"
-                                    />
-                                    <div className="p-4">
-                                        <div className="font-medium line-clamp-2">Introducing the new Vercel platform</div>
-                                        <div className="text-xs text-muted-foreground">2 days ago</div>
-                                    </div>
+                        <div className="grid sm:grid-cols-3 gap-4 text-center">
+                            <div className="bg-[#e2e1e1] rounded-lg p-4">
+                                <div className="font-medium">100</div>
+                                <div className="text-xs text-muted-foreground">Posts</div>
+                            </div>
+                            <div onClick={() => setFollowersOpen(true)} className="bg-[#e2e1e1] rounded-lg p-4 cursor-pointer">
+                                <div className="font-medium">{user?.followers ? user.followers.length : "0"}</div>
+                                <UserListModal
+                                    isOpen={isFollowersOpen}
+                                    onClose={() => setFollowersOpen(false)}
+                                    title="Followers"
+                                    users={user?.followers || []}
+                                    statut="userId"
+                                />
+                            </div>
+                            <div className="bg-[#e2e1e1] rounded-lg p-4 cursor-pointer" onClick={() => setFollowingOpen(true)}>
+                                <div className="font-medium">{user && user.follows ? user.follows.length : "0"}</div>
+                                <UserListModal
+                                    isOpen={isFollowingOpen}
+                                    onClose={() => setFollowingOpen(false)}
+                                    title="Following"
+                                    users={user?.follows || []}
+                                    statut="followedUser"
+                                />
+                            </div>
+                        </div>
+                        <div className="grid gap-6">
+                            <div className="flex items-center justify-between">
+                                <div className="font-medium">Posts</div>
+                                <div className="flex items-center gap-2">
+                                    <Button variant="outline" size="sm">
+                                        <EyeIcon className="w-4 h-4 mr-2" />
+                                        Public
+                                    </Button>
+                                    <Button variant="outline" size="sm">
+                                        <LockIcon className="w-4 h-4 mr-2" />
+                                        Private
+                                    </Button>
                                 </div>
-                                <div className="bg-card rounded-lg overflow-hidden">
-                                    <Image
-                                        src="/placeholder.svg"
-                                        alt="Post Image"
-                                        width={600}
-                                        height={400}
-                                        className="w-full aspect-[3/2] object-cover"
-                                    />
-                                    <div className="p-4">
-                                        <div className="font-medium line-clamp-2">Introducing the new Vercel platform</div>
-                                        <div className="text-xs text-muted-foreground">2 days ago</div>
+                            </div>
+                            <div className="flex justify-center items-center min-h-screen">
+                                <div className="w-[50%] flex flex-col justify-center items-center">
+                                    <div className="bg-card rounded-lg overflow-hidden">
+                                        <Image
+                                            src="/placeholder.svg"
+                                            alt="Post Image"
+                                            width={600}
+                                            height={400}
+                                            className="w-full aspect-[3/2] object-cover"
+                                        />
+                                        <div className="p-4">
+                                            <div className="font-medium line-clamp-2">Introducing the new Vercel platform</div>
+                                            <div className="text-xs text-muted-foreground">2 days ago</div>
+                                        </div>
+                                    </div>
+                                    <div className="bg-card rounded-lg overflow-hidden">
+                                        <Image
+                                            src="/placeholder.svg"
+                                            alt="Post Image"
+                                            width={600}
+                                            height={400}
+                                            className="w-full aspect-[3/2] object-cover"
+                                        />
+                                        <div className="p-4">
+                                            <div className="font-medium line-clamp-2">Introducing the new Vercel platform</div>
+                                            <div className="text-xs text-muted-foreground">2 days ago</div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -165,6 +256,7 @@ export default function Profil() {
                     </div>
                 </div>
             </div>
+
         </>
     );
 }
@@ -186,6 +278,52 @@ function EyeIcon(props) {
             <circle cx="12" cy="12" r="3" />
         </svg>
     );
+}
+
+function Information({ user }) {
+    return (
+        <div className="flex w-[100%] justify-center pt-[2%]">
+            <div className="flex flex-col items-center  p-6 w-[80%] h-[300px] bg-[#fcfcfc] rounded-xl border border-[#333] " >
+                <Avatar className="w-20 h-20">
+                    <AvatarImage src="/placeholder-user.jpg" alt="@shadcn" />
+                    <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+                <div className="text-center space-y-1">
+                    <div className="font-semibold">{user ? user.firstname : "loading"} {user ? user.lastname : ""}</div>
+                    <div className="text-muted-foreground">{user ? user.email : ""}</div>
+                </div>
+                <div className="flex items-center gap-2">
+                    <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-muted-foreground">{user ? user.dateOfBirth : ""}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                    {user && user.username ?
+                        <UserIcon className="h-4 w-4 text-muted-foreground" />
+                        : ""}
+                    <span className="text-muted-foreground">{user ? user.username : ""}</span>
+                </div>
+                <div className="flex items-start gap-2">
+                    {user && user.bio ?
+                        <InfoIcon className="h-4 w-4 text-muted-foreground" />
+                        : ""}
+                    <span className="text-muted-foreground">
+                        {user ? user.bio : ""}
+                    </span>
+                </div>
+                <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                        <UsersIcon className="h-4 w-4" />
+                        <span>100 following</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                        <UsersIcon className="h-4 w-4" />
+                        <span>100 followers</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    )
 }
 
 function LockIcon(props) {

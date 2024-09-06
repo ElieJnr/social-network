@@ -2,7 +2,6 @@ package middlewares
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"socialNetwork/pkg/services"
 	"socialNetwork/utils"
@@ -15,7 +14,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		c, user, err := sessService.Authenticated(w, r)
 		if err != nil || c == nil {
 			services.SendFront(w, http.StatusUnauthorized, 401)
-			fmt.Println("Error getting user:", err)
+			// fmt.Println("Error getting user:", err)
 			// Redirection vers la page d'authentification
 			return
 		}

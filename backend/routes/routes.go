@@ -14,6 +14,7 @@ func InitializeRoutes() *mux.Router {
 	router.Handle("/", middlewares.AuthMiddleware(handlers.HomeHandler())).Methods("GET")
 	router.Handle("/users", middlewares.AuthMiddleware(handlers.UsersHandler())).Methods("GET")
 	router.Handle("/getUser", middlewares.AuthMiddleware(handlers.GetUsertHandler())).Methods("GET")
+	router.Handle("/update", middlewares.AuthMiddleware(handlers.Edit())).Methods("POST")
 
 	//follower
 	router.Handle("/follow", middlewares.AuthMiddleware(handlers.Follow())).Methods("POST")

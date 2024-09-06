@@ -69,6 +69,33 @@ func (f *FollowerService) FollowUserOrUpdateStatus(userId uuid.UUID, followedUse
 	return nil
 }
 
+func (f *FollowerService) GetUserRequest(userId string) ([]models.Follower, error) {
+	var follows []models.Follower
+	query := `
+    SELECT f.id, f.userId, f.followedId, f.statut
+    FROM Followers f
+    INNER JOIN Users u ON f.userId = u.id
+    WHERE f.userId = ? AND statut = FALSE`
+	rows, err := f.GetDB().Query(query, userId)
+	if err != nil {
+		return nil, fmt.Errorf("could not execute query: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var follow models.Follower
+		if err := rows.Scan(&follow.Id, &follow.UserId, &follow.FollowedId, &follow.Statut); err != nil {
+			return nil, fmt.Errorf("could not scan row: %w", err)
+		}
+		follows = append(follows, follow)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("row iteration error: %w", err)
+	}
+	return follows, nil
+}
+
 func (f *FollowerService) GetUserFollow(userId string, ok bool) ([]models.Follower, error) {
 	var follows []models.Follower
 
@@ -103,10 +130,8 @@ func (f *FollowerService) GetUserFollow(userId string, ok bool) ([]models.Follow
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("row iteration error: %w", err)
 	}
-
 	return follows, nil
 }
-
 
 func (f *FollowerService) UnfollowUser(userId uuid.UUID, followedUser uuid.UUID, statut bool) error {
 	var existingId string
@@ -126,7 +151,7 @@ func (f *FollowerService) UnfollowUser(userId uuid.UUID, followedUser uuid.UUID,
 			}
 			queryInsert := `
 				INSERT INTO Followers (id, userId, followedId, statut) 
-				VALUES (?, ?, ?, true)
+				VALUES (?, ?, ?, ?)
 			`
 			_, err = f.GetDB().Exec(queryInsert, id, userId, followedUser, statut)
 			if err != nil {

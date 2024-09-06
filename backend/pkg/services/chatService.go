@@ -39,10 +39,10 @@ func (c *ChatService) SendStockedMessage(conn *websocket.Conn, senderId, receive
 	if newMessage {
 		booleen = true
 	}
-	if groupChat {
-		fmt.Println("ceci est censee fetch les messages de groupe")
-		return nil
-	}
+	// if groupChat {
+	// 	fmt.Println("ceci est censee fetch les messages de groupe")
+	// 	return nil
+	// }
 	messages, err := c.GetStoredMessages(senderId, receiverId, booleen, groupChat)
 	if err != nil {
 		return err
@@ -56,22 +56,26 @@ func (c *ChatService) SendStockedMessage(conn *websocket.Conn, senderId, receive
 
 // fonction de recuperation des messages enregistre dans la base de donnee
 type sendMessage struct {
-	Type    string
-	Message []models.Chat
+	Type        string
+	CurrentUser string
+	Message     []models.Chat
 }
 
 func (c *ChatService) GetStoredMessages(sender, receiver string, newMessage bool, groupChat bool) (sendMessage, error) {
 	var sendMessage sendMessage
 
 	var query string
-
-	query = "SELECT id, senderId, receverId, content, sendAt FROM Chats WHERE (senderId = ? AND receverId = ?) OR (receverId = ? AND senderId = ?)"
+	var rows *sql.Rows
+	var err error
 
 	if groupChat {
-		query = "SELECT id, senderId, content, sendAt FROM chats WHERE (receverId = ?)"
+		query = "SELECT id, senderId, receverId, content, sendAt FROM chats WHERE (receverId = ?)"
+		rows, err = c.GetDB().Query(query, receiver)
+	} else {
+		query = "SELECT id, senderId, receverId, content, sendAt FROM Chats WHERE (senderId = ? AND receverId = ?) OR (receverId = ? AND senderId = ?)"
+		rows, err = c.GetDB().Query(query, sender, receiver, sender, receiver)
 	}
 
-	rows, err := c.GetDB().Query(query, sender, receiver, sender, receiver)
 	if err != nil {
 		return sendMessage, fmt.Errorf("failed to retrieve stored messages: %w", err)
 	}
@@ -97,6 +101,8 @@ func (c *ChatService) GetStoredMessages(sender, receiver string, newMessage bool
 	} else {
 		sendMessage.Type = "clickOnUser"
 	}
+	fmt.Println("senderrrr: ", sender)
+	sendMessage.CurrentUser = sender
 	sendMessage.Message = messages
 
 	return sendMessage, nil

@@ -4,11 +4,15 @@ import { ClickMessageApp } from '@/components/ui/message';
 import { fetchNotifs } from './notifications';
 import { setMsgNotif } from '@/components/MsgNotig';
 import { setNotifs } from '@/components/notifications';
+
+
 export const useWebSocket = (url) => {
     let socket = useRef(null);
     let { user, setUser } = useStore()
     let { getMessage, setgetMessage } = useStore()
-    let { newMessage, setNewMessage } = useStore()
+    const { groupMessage, setGroupMessage } = useStore()
+    const { currentUser, setCurrenUser } = useStore()
+
 
 
     useEffect(() => {
@@ -27,6 +31,13 @@ export const useWebSocket = (url) => {
 
             if (message.Type === "sendUser") {
                 setUser(message.Users)
+            }
+            if (message.Type === "groupChat") {
+                console.log("in group message: ", message);
+                setGroupMessage(message.Message)
+                setCurrenUser(message.CurrentUser)
+                // console.log(message.CurrentUser);
+
             }
 
             if (message.Type === "clickOnUser") {
@@ -50,6 +61,7 @@ export const useWebSocket = (url) => {
 
                 setgetMessage(message.message)
             }
+
         });
 
         socket.current.addEventListener('close', (event) => {

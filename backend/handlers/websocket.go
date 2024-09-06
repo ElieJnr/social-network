@@ -54,7 +54,7 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error 
 		if err != nil {
 			return fmt.Errorf("json error %w", err)
 		}
-		fmt.Println(msg)
+		// fmt.Println("message", msg)
 		switch msg.Type { // les fonction qui utiliseront la base de donnee doivent etre des services
 
 		case "groupeChat":
@@ -187,8 +187,19 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error 
 			conn.WriteMessage(websocket.TextMessage, []byte(user))
 
 		case "enterGroupMessage":
-			err := ChatService.SendStockedMessage(conn, msg.SenderId, msg.ReceiverId, false, true)
+			err := ChatService.SendStockedMessage(conn, sender, msg.ReceiverId, false, true)
 			if err != nil {
+				return err
+			}
+		case "newGroupChat":
+			msg.SenderId = sender
+			err := ChatService.RegisterMsg(msg)
+			if err != nil {
+				fmt.Println("error: ", err)
+				return err
+			}
+			er := ChatService.SendStockedMessage(conn, msg.SenderId, msg.ReceiverId, false, true)
+			if er != nil {
 				return err
 			}
 		}

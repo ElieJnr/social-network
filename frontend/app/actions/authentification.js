@@ -48,6 +48,6 @@ export async function authentificationLogin(formData) {
     "emailOrUsername" : formData.get("emailOrUsername"),
     "password" : formData.get("password")
 });
-  const data = await makePostFetch(domain + "/login", parsedBody);
+  const data = await makePostFetch(domain + "/login", formData);
   return data;
 }

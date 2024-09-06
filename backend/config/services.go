@@ -15,4 +15,5 @@ func InitServices() {
 	handlers.CommentService = services.NewCommentService()
 	handlers.GroupeService = services.NewGroupeService()
 	handlers.MemberService = services.NewMemberService()
+	handlers.EventService = services.NewEventService()
 }

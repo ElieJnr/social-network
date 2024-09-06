@@ -21,7 +21,7 @@ export default function CreatePostCard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUserIds, setSelectedUserIds] = useState([]);
   const { user } = useStore();
-  const followedUsers = user.filter(u => u.FollowCurrentUser === "yes");
+  const followedUsers = user?.filter(u => u.FollowCurrentUser === "yes");
 
   useEffect(() => {
     if (privacy === 'almost-private') {
@@ -111,7 +111,7 @@ export default function CreatePostCard() {
               {file && <span className="text-sm">{file.name}</span>}
             </div>
             <div className="flex items-center gap-4 mb-4">
-              {['public', 'private', ...(followedUsers.length > 0 ? ['almost-private'] : [])].map((option) => (
+              {['public', 'private', ...(followedUsers?.length > 0 ? ['almost-private'] : [])].map((option) => (
                 <div key={option} className="flex items-center gap-2">
                   <Input
                     type="radio"

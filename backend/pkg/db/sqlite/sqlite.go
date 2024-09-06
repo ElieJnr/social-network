@@ -29,11 +29,7 @@ func NewDatabase() (*DB, error) {
 		fmt.Println("Error Open sqlite", err)
 		return nil, err
 	}
-	// err = db.Ping()
-	// if err != nil {
-	// 	db.Close() // Ensure the database connection is closed if Ping fails
-	// 	return nil, err
-	// }
+
 	err = upDatabase(db)
 	if err != nil {
 		fmt.Println("Migration error:", err)

@@ -56,7 +56,7 @@ export function AlmostPrivateUserCardModal({ isOpen, onClose, users, onSelectUse
           <div className="bg-card p-4 rounded-lg shadow-lg">
             <h2 className="text-xl font-bold mb-4">Followers</h2>
             <div className="grid gap-3">
-              {users.map((user) => (
+              {users?.map((user) => (
                 <div key={user.Id} className="flex items-center space-x-2">
                   <Checkbox
                     id={`user-${user.Id}`}

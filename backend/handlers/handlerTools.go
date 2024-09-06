@@ -12,6 +12,7 @@ var (
 	NotifService   *services.NotifService
 	SessionService *services.SessionService
 	CommentService *services.CommentService
-	GroupeService *services.GroupeService
-	MemberService *services.MemberService
+	GroupeService  *services.GroupeService
+	MemberService  *services.MemberService
+	EventService   *services.EventService
 )

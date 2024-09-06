@@ -37,6 +37,7 @@ func (u *UserService) CreateUser(user models.User) error {
 	if err != nil {
 		return fmt.Errorf("could not insert user: %w", err)
 	}
+	
 	query := `
 		INSERT INTO Users (id,email, password, firstname, lastname, dateOfBirth, avatar, username, bio, isPrivate) 
 		VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?)

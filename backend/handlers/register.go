@@ -20,22 +20,10 @@ type Response struct {
 
 func RegistrationHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
-		// if r.Method != http.MethodPost {
-		// 	w.Header().Set("Content-Type", "application/json")
-		// 	w.WriteHeader(http.StatusMethodNotAllowed)
-		// 	json.NewEncoder(w).Encode(Response{
-		// 		Status:  http.StatusMethodNotAllowed,
-		// 		Message: "Method Not Allowed",
-		// 	})
-		// 	return
-		// }
-
 		// Parse multipart form, with a maximum of 10MB for uploaded files
 		err := r.ParseMultipartForm(10 << 20) // 10MB
 		if err != nil {
 			fmt.Println("Could not parse form:", err)
-			// w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusBadRequest)
 			json.NewEncoder(w).Encode(Response{
 				Status:  http.StatusBadRequest,
@@ -61,7 +49,6 @@ func RegistrationHandler() http.HandlerFunc {
 			})
 			return
 		}
-		fmt.Println("image", imgPath)
 		newUser.Avatar = imgPath
 
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newUser.Password), bcrypt.DefaultCost)

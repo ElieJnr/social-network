@@ -1,1 +1,3 @@
-DROP TABLE Events;
+DROP TABLE IF EXISTS Events;
+DROP TABLE IF EXISTS EventOptions;
+DROP TABLE IF EXISTS EventResponses;

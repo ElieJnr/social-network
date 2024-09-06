@@ -29,9 +29,6 @@ export async function fetchAllPosts() {
       throw new Error('Network response was not ok');
     }
     const data = await response.json();
-    // setPosts(data);
-    // setPosts(data);
-    // console.log('Posts fetched:', data);
   } catch (error) {
     console.error('Error fetching posts:', error);
   }

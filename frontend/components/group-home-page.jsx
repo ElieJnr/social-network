@@ -1,5 +1,5 @@
-import { CardContent, Card, CardFooter , CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
+"use client"
+import { CardContent, Card, CardFooter , CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { fetchGroupCreatePost } from "@/app/actions/post";
 import { CreateEventCard } from './create-event-card';
@@ -9,7 +9,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button";
 const { ImageIcon } = require("lucide-react");
 import { Input } from "@/components/ui/input";
-import { EventsCards } from './events-cards';
 import { useParams } from "next/navigation";
 import { fetchLike } from '@/app/actions/post';
 import CommentCard from './CommentCard';
@@ -17,6 +16,8 @@ import useSWR, { mutate } from 'swr';
 import GroupChat from "./MessageComponent/MessageApp";
 const {HeartIcon, MessageCircleIcon} = require("lucide-react");
 const { useState } = require('react');
+// import PostCard from "@/components/PostCard";
+import EventList from './EventList';
 
 const fetcher = (url) => fetch(url, { credentials: 'include' }).then((res) => res.json());
 
@@ -64,7 +65,7 @@ function Sidebar({ setActiveComponent, socket }) {
   );
 }
 
-export function GroupHomePage() {
+export function GroupHomePage({id}) {
   const [activeComponent, setActiveComponent] = useState('post');
   const socket = useWebSocket('ws://localhost:8080/ws');
 
@@ -72,12 +73,14 @@ export function GroupHomePage() {
     <div className="flex flex-col h-screen">
       <div className="flex-1 grid grid-cols-[1fr_2fr_1.5fr] gap-6 p-6">
         <div className="space-y-6">
-          <EventsCards />
+          {/* <EventsCards /> */}
           <SuggestionsGroupCard />
+          <EventList id={id}/>
         </div>
         <div className="space-y-6">
-          {activeComponent === 'post' ? <CreatePostGroupCard /> : <CreateEventCard />}
+          {activeComponent === 'post' ? <CreatePostGroupCard /> : <CreateEventCard id={id} />}
           <PostGroupCard />
+          {/* <PostCard /> */}
         </div>
         <div className="space-y-6">
           <Sidebar setActiveComponent={setActiveComponent} />
@@ -256,28 +259,28 @@ function PostCard({ post }) {
       <CardContent className="space-y-4">
         <div className="flex items-center gap-4 mt-2">
           <Avatar className="w-10 h-10">
-            <AvatarImage src={post.Author.Avatar || "/placeholder-user.jpg"} alt={post.Author.Username} />
-            <AvatarFallback>{post.Author.Username ? post.Author.Username[0].toUpperCase() : 'U'}</AvatarFallback>
+            <AvatarImage src={post?.Author.Avatar || "/placeholder-user.jpg"} alt={post?.Author.Username} />
+            <AvatarFallback>{post?.Author.Username ? post?.Author.Username[0].toUpperCase() : 'U'}</AvatarFallback>
           </Avatar>
 
           <div className="flex items-center gap-2">
-            <span className="text-lg font-semibold">{post.Author.Firstname + " " + post.Author.Lastname || "Anonymous"}</span>
-            <span className="text-muted-foreground">@{post.Author.Username || ""}</span>
+            <span className="text-lg font-semibold">{post?.Author.Firstname + " " + post?.Author.Lastname || "Anonymous"}</span>
+            <span className="text-muted-foreground">@{post?.Author.Username || ""}</span>
             <span className="text-muted-foreground text-lg">•</span>
-            <span className="text-muted-foreground">{post.Formated_date || "just now"}</span>
+            <span className="text-muted-foreground">{post?.Formated_date || "just now"}</span>
           </div>
 
-          {post.IsFollower ? '' : <Button variant="outline" size="sm" className="ml-auto">
+          {post?.IsFollower ? '' : <Button variant="outline" size="sm" className="ml-auto">
             Follow
           </Button>}
         </div>
 
         <div className="text-lg grid gap-2 p-4">
-          {post.Content || "No content available."}
+          {post?.Content || "No content available."}
         </div>
-        {post.HasImage && (
+        {post?.HasImage && (
           <img
-            src={`/uploads/${post.Image_url}`}
+            src={`/uploads/${post?.Image_url}`}
             width={800}
             height={450}
             alt="Project preview"
@@ -290,20 +293,20 @@ function PostCard({ post }) {
             <div className="flex items-center gap-1">
               <Button variant="ghost" size="icon" onClick={handleLikeClick}>
                 <HeartIcon
-                  className={`h-5 w-5 ${post.Like_status ? 'text-red-500' : ''}`}
+                  className={`h-5 w-5 ${post?.Like_status ? 'text-red-500' : ''}`}
                 />
               </Button>
-              <span>{post.Like_nbr || 0}</span>
+              <span>{post?.Like_nbr || 0}</span>
             </div>
             <div className="flex items-center gap-1">
               <Button variant="ghost" size="icon" onClick={handleToggleComments}>
                 <MessageCircleIcon className="h-5 w-5" />
               </Button>
-              <span>{post.Comments_nbr || 0}</span>
+              <span>{post?.Comments_nbr || 0}</span>
             </div>
           </div>
         </CardFooter>
-        {showComments && <CommentCard postId={post.PostID} />}
+        {showComments && <CommentCard postId={post?.PostID} />}
       </CardContent>
     </Card>
   );

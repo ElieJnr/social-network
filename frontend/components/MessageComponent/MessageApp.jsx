@@ -73,13 +73,15 @@ function MessageBody({ message, id, currentUser }) {
     return (
         <div className="h-[50vh] flex-1 overflow-y-auto p-6">
             <div className="grid gap-4">
-                {message.map(msg => {
-                    if (msg.sender_id === currentUser) {
-                        return <ReceivedMessage key={msg.id} mess={msg.msg} />;
-                    } else {
-                        return <SendingMessage key={msg.id} mess={msg.msg} />;
-                    }
-                })}
+                {message && message.length > 0 &&
+                    message.map(msg => {
+                        if (msg.sender_id === currentUser) {
+                            return <ReceivedMessage key={msg.id} mess={msg.msg} />;
+                        } else {
+                            return <SendingMessage key={msg.id} mess={msg.msg} />;
+                        }
+                    })
+                }
             </div>
         </div>
     );

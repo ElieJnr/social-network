@@ -18,6 +18,7 @@ const {HeartIcon, MessageCircleIcon} = require("lucide-react");
 const { useState } = require('react');
 // import PostCard from "@/components/PostCard";
 import EventList from './EventList';
+import Image from "next/image";
 
 const fetcher = (url) => fetch(url, { credentials: 'include' }).then((res) => res.json());
 
@@ -279,7 +280,7 @@ function PostCard({ post }) {
           {post?.Content || "No content available."}
         </div>
         {post?.HasImage && (
-          <img
+          <Image
             src={`/uploads/${post?.Image_url}`}
             width={800}
             height={450}

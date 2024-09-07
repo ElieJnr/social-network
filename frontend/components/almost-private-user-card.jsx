@@ -20,7 +20,7 @@ export function AlmostPrivateUserCardModal({ isOpen, onClose, users, onSelectUse
   // Met à jour la sélection d'utilisateurs dans le parent
   useEffect(() => {
     onSelectUsers(selectedUserIds);
-  }, [selectedUserIds]);
+  }, [selectedUserIds, onSelectUsers]);
 
   return (
     <Dialog.Root open={isOpen} onOpenChange={onClose}>
@@ -31,7 +31,7 @@ export function AlmostPrivateUserCardModal({ isOpen, onClose, users, onSelectUse
           <Dialog.Description className="mb-4">Select users who can see the post.</Dialog.Description>
           <div className="bg-card p-4 rounded-lg shadow-lg mb-4">
             <div className="flex flex-wrap gap-2">
-              {selectedUserIds.map((userId) => {
+              {selectedUserIds?.map((userId) => {
                 const user = users.find(user => user.Id === userId);
                 return (
                   user && (

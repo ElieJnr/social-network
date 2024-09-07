@@ -4,6 +4,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { fetchLike } from '@/app/actions/post';
 import CommentCard from './CommentCard';
 import useSWR, { mutate } from 'swr';
+import Image from "next/image";
 const {HeartIcon, MessageCircleIcon} = require("lucide-react");
 const { AvatarFallback, AvatarImage, Avatar } = require("./ui/avatar");
 const { CardContent, Card, CardFooter } = require("./ui/card");
@@ -84,7 +85,7 @@ export function PostCard({ post }) {
           {post.Content || "No content available."}
         </div>
         {post.HasImage && (
-          <img
+          <Image
             src={`/uploads/${post.Image_url}`}
             width={800}
             height={450}

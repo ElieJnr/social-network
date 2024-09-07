@@ -4,17 +4,17 @@ export async function middleware(req) {
   const url = req.nextUrl.pathname;
   const cookie = req.cookies.get('session_token')?.value;
   const baseUrl = req.nextUrl.origin;
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
   console.log('Session Token:', cookie);
 
   // Check if the URL is accessing a specific group by ID
 
-
   // Existing session validation logic
-  if (url === '/auth' || url === '/auth/login' ) {
+  if (url === '/auth' || url === '/auth/login') {
     if (cookie) {
       try {
-        const res = await fetch('http://localhost:8080/validatecookie', {
+        const res = await fetch(`${apiUrl}/validatecookie`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -44,7 +44,7 @@ export async function middleware(req) {
     }
 
     try {
-      const res = await fetch('http://localhost:8080/validatecookie', {
+      const res = await fetch(`${apiUrl}/validatecookie`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -73,7 +73,7 @@ export async function middleware(req) {
     
         try {
           // Make a request to the backend to verify if the ID exists
-          const res = await fetch(`http://localhost:8080/group/getEvents?groupId=${id}`, {
+          const res = await fetch(`${apiUrl}/group/getEvents?groupId=${id}`, {
             method: 'GET',
             credentials: 'include'
           });
@@ -92,7 +92,6 @@ export async function middleware(req) {
           return NextResponse.redirect(`${baseUrl}/404`);
         }
       }
-
 
       const response = NextResponse.next();
       response.cookies.set('currentUserID', data.currentUserID, { httpOnly: true });

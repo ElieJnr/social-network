@@ -2,6 +2,7 @@
 
 install_docker() {
   echo "Installation de Docker..."
+
   sudo apt-get update
   sudo apt-get install -y \
     ca-certificates \
@@ -29,12 +30,9 @@ install_docker() {
 run_docker() {
   echo "Construction et démarrage des conteneurs Docker..."
   docker-compose up --build -d
-
   echo "Vérification de l'état des conteneurs..."
   docker ps -a
-
   echo "Les conteneurs backend et frontend sont en cours d'exécution."
-
   echo "Ouverture de l'application dans le navigateur..."
   xdg-open http://localhost:3000
 }

@@ -7,6 +7,7 @@ import { AvatarFallback, AvatarImage, Avatar } from "./ui/avatar";
 import { useToast } from "@/components/ui/use-toast";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
+import Image from 'next/image';
 
 export default function CommentCard({ postId }) {
     const { data: comments = [], mutate: mutateComments } = useSWR(
@@ -57,7 +58,7 @@ function Comment({ name, timeAgo, text, hasImage, imageUrl }) {
                 <div className="text-sm leading-loose text-muted-foreground">
                     <p>{text}</p>
                     {hasImage && (
-                        <img
+                        <Image
                             src={imageUrl}
                             width={800}
                             height={450}

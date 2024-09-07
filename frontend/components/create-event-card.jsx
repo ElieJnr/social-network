@@ -16,6 +16,8 @@ import { CreateEvent } from "@/app/actions/events";
 import { mutate } from "swr";
 import { domain } from "@/app";
 import { socketSend } from "@/app/actions/message";
+import { Popover, PopoverContent, PopoverTrigger } from "radix-ui";
+import { Calendar } from "lucide-react";
 
 export function CreateEventCard({ id, socket }) {
   const { toast } = useToast();
@@ -91,46 +93,63 @@ export function CreateEventCard({ id, socket }) {
   };
 
   return (
-    <Card className="w-full">
+    (<Card className="w-full">
       <CardHeader>
         <CardTitle>Créer un événement</CardTitle>
-        <CardDescription>
-          Remplissez les informations pour créer un nouvel événement.
-        </CardDescription>
+        <CardDescription>Remplissez les informations pour créer un nouvel événement.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="event-name">Nom de l'événement</Label>
-          <Input
-            id="event-name"
-            placeholder="Entrez le nom de l'événement"
-            value={eventName}
-            onChange={(e) => setEventName(e.target.value)}
-          />
+          <Label htmlFor="event-name">Nom de l&apos;événement</Label>
+          <Input id="event-name" placeholder="Entrez le nom de l&apos;événement" />
         </div>
         <div className="space-y-2">
           <Label htmlFor="event-description">Description</Label>
-          <Textarea
-            id="event-description"
-            placeholder="Décrivez l'événement"
-            value={eventDescription}
-            onChange={(e) => setEventDescription(e.target.value)}
-          />
+          <Textarea id="event-description" placeholder="Décrivez l&apos;événement" />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="event-date">Date</Label>
-          <Input
-            type="date"
-            id="event-date"
-            value={eventDate}
-            onChange={(e) => setEventDate(e.target.value)}
-            min={new Date().toISOString().split("T")[0]} // Disable past dates
-          />
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <Label htmlFor="event-date-time">Date et heure</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="flex items-center justify-between w-full">
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-muted-foreground">Vendredi 15 septembre, 19h00</p>
+                  </div>
+                  <CalendarIcon className="h-6 w-6 text-muted-foreground" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="p-0">
+                <Calendar />
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
       </CardContent>
       <CardFooter className="flex justify-end">
-        <Button onClick={handleCreateEvent}>Créer l'événement</Button>
+        <Button>Créer l&apos;événement</Button>
       </CardFooter>
-    </Card>
+    </Card>)
+  );
+}
+
+function CalendarIcon(props) {
+  return (
+    (<svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round">
+      <path d="M8 2v4" />
+      <path d="M16 2v4" />
+      <rect width="18" height="18" x="3" y="4" rx="2" />
+      <path d="M3 10h18" />
+    </svg>)
   );
 }

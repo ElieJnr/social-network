@@ -37,7 +37,7 @@ export function Profil() {
             </div>
           </div>
           <div className="text-sm leading-loose text-muted-foreground">
-            I'm a software engineer with a passion for building innovative products. In my free time, I enjoy exploring
+            I&apos;m a software engineer with a passion for building innovative products. In my free time, I enjoy exploring
             new technologies and reading about the latest industry trends.
           </div>
         </div>

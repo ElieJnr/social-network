@@ -21,7 +21,7 @@ export function EventsCards() {
         <Button variant="outline" className="mr-2">
           Se désinscrire
         </Button>
-        <Button>S'inscrire</Button>
+        <Button>S&apos;inscrire</Button>
       </CardFooter>
     </Card>)
   );
@@ -47,7 +47,6 @@ function CalendarIcon(props) {
     </svg>)
   );
 }
-
 
 function MapPinIcon(props) {
   return (

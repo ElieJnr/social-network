@@ -42,18 +42,16 @@ export function Notifications({ socket }) {
             SubType: "read"
         }
 
-       socketSend(socket,Message)
+        socketSend(socket, Message)
         fetchNotifs(setNotifications);
 
-        if (Type == "addGroupe"){
-            if (ok == true){
+        if (Type == "addGroupe") {
+            if (ok) {
                 fetchForAddingInAGroupe("member", GroupId, SenderID)
-            }else{
+            } else {
                 fetchForNotAddingInAGroupe(GroupId, SenderID)
             }
-            
         }
-
     }
 
 
@@ -82,15 +80,15 @@ export function Notifications({ socket }) {
                                     <p className="text-xs text-muted-foreground">{n.Formated_date}</p>
                                     {((n.Type == "follow" && (n.SenderInfo.IsPrivate)) || n.Type == "invitation" || n.Type == "addGroupe") && (<div className="flex gap-2 mt-2">
                                         <Button variant="outline" size="sm" onClick={() => markAsRead(n.Id, n.Type, n.GroupId, n.SenderID, ok)}>
-                                            Accept
+                                            {n.Type != "event" ? "Accept" : "Going"}
                                         </Button>
                                         <Button variant="outline" size="sm" onClick={() => markAsRead(n.Id, n.Type, n.GroupId, n.SenderID, !ok)}>
-                                            Decline
+                                            {n.Type != "event" ? "Decline" : "Not Going"}
                                         </Button>
                                     </div>)}
                                 </div>
                                 <div className="flex items-center space-x-2">
-                                    {((n.Type == "event") || ((n.Type == "follow" || n.Type == "invitation") && (!n.SenderInfo.IsPrivate))) && (
+                                    {(n.Type == "event" || ((n.Type == "follow") && (!n.SenderInfo.IsPrivate))) && (
                                         <Button size="icon" variant="ghost" onClick={() => markAsRead(n.Id)}>
                                             <Check className="h-4 w-4" />
                                             <span className="sr-only">Marquer comme lu</span>

@@ -21,7 +21,8 @@ func GetGroups() http.HandlerFunc {
 			return
 		}
 
-		groups, err := GroupeService.GetGroups(userInfo.UserId)		
+		groups, err := GroupeService.GetGroups(userInfo.UserId)	
+	
 		if err != nil {
 			fmt.Println("err", err)
 			http.Error(w, "impossible to get all the group", http.StatusInternalServerError)

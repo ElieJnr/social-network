@@ -12,7 +12,7 @@ export default function AllGroupsComponent({ socket }) {
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    fetchGroupes(setGroupes,setLoading,setError)
+    fetchGroupes(setGroupes, setLoading, setError)
   }, [])
 
   const rejoindreGroupe = (id, UserId, title) => {
@@ -23,7 +23,7 @@ export default function AllGroupsComponent({ socket }) {
       SubType: "addGroupe",
       Content: title,
     }
-    socketSend(socket,Message)
+    socketSend(socket, Message)
     window.location.reload()
   }
 

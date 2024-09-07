@@ -15,8 +15,9 @@ import { useToast } from "./ui/use-toast";
 import { CreateEvent } from "@/app/actions/events";
 import { mutate } from "swr";
 import { domain } from "@/app";
+import { socketSend } from "@/app/actions/message";
 
-export function CreateEventCard({ id }) {
+export function CreateEventCard({ id, socket }) {
   const { toast } = useToast();
   const [eventName, setEventName] = useState("");
   const [eventDescription, setEventDescription] = useState("");
@@ -79,6 +80,14 @@ export function CreateEventCard({ id }) {
         description: "Une erreur s'est produite. Veuillez réessayer.",
       });
     }
+
+    const Message = {
+      Type: "notifications",
+      SubType: "event",
+      GroupeId: id,
+      Content:eventData.title,
+    }
+    socketSend(socket, Message)
   };
 
   return (

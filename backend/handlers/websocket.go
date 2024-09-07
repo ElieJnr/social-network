@@ -73,6 +73,38 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error 
 				}
 
 			}
+			if msg.SubType == "event" {
+				members, e := MemberService.GetMembership(msg.GroupeId)
+				if e != nil {
+					return fmt.Errorf("error member: %w", err)
+				}
+
+				for _, m := range members {
+					if m.UserId != sender {
+						idNotif, er := utils.GenerateUuid()
+						if er != nil {
+							return fmt.Errorf("error read: %w", err)
+						}
+						notif := models.Notification{
+							Id:         idNotif,
+							ReceiverID: m.UserId,
+							SenderID:   sender,
+							Type:       "event",
+							Message:    "a créer un nouveau evenement intitulé sg : " + msg.Content,
+						}
+						e := NotifService.CreateNotification(&notif)
+
+						if e != nil {
+							return fmt.Errorf("error read: %w", err)
+						}
+
+						if receiverConn, ok := ClientWebSocketConnections[m.UserId]; ok {
+							receiverConn.WriteJSON(msg)
+						}
+					}
+				}
+			}
+
 			if msg.SubType == "sendFollow" {
 
 				idNotif, er := utils.GenerateUuid()

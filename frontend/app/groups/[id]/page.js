@@ -1,6 +1,6 @@
 "use client";
 
-import SeeGroup from "@/components/seegroup"
+import SeeGroup from "@/components/seegroup";
 import { useParams } from "next/navigation";
 
 export default function SeeGroupPage() {

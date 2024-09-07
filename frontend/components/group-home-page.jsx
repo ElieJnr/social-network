@@ -78,7 +78,7 @@ export function GroupHomePage({id}) {
           <EventList id={id}/>
         </div>
         <div className="space-y-6">
-          {activeComponent === 'post' ? <CreatePostGroupCard /> : <CreateEventCard id={id} />}
+          {activeComponent === 'post' ? <CreatePostGroupCard /> : <CreateEventCard id={id} socket={socket} />}
           <PostGroupCard />
           {/* <PostCard /> */}
         </div>

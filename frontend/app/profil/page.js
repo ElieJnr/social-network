@@ -100,7 +100,7 @@ export default function Profil() {
 
     return (
         <>
-            <NavBar />
+            <NavBar socket={socket} />
             <div className="flex justify-between">
 
                 <div className="bg-background text-foreground w-[100%] min-h-screen flex flex-col overflow-x-auto">

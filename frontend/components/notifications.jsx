@@ -10,8 +10,10 @@ import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { BellIcon, GetIcon } from "./IconNotif";
 import { socketSend } from "@/app/actions/message";
+import { fetchForAddingInAGroupe, fetchForNotAddingInAGroupe } from "@/app/actions/groupe";
 export let setNotifs
 export function Notifications({ socket }) {
+    const ok = true
     const router = useRouter()
     const [isOpen, setIsOpen] = useState(false)
     const [isMounted, setIsMounted] = useState(false);
@@ -33,7 +35,7 @@ export function Notifications({ socket }) {
         setIsOpen(true)
     }
 
-    const markAsRead = (id) => {
+    const markAsRead = (id, Type, GroupId, SenderID, ok) => {
         const Message = {
             Type: "notifications",
             ReceiverId: id,
@@ -42,6 +44,15 @@ export function Notifications({ socket }) {
 
        socketSend(socket,Message)
         fetchNotifs(setNotifications);
+
+        if (Type == "addGroupe"){
+            if (ok == true){
+                fetchForAddingInAGroupe("member", GroupId, SenderID)
+            }else{
+                fetchForNotAddingInAGroupe(GroupId, SenderID)
+            }
+            
+        }
 
     }
 
@@ -70,10 +81,10 @@ export function Notifications({ socket }) {
                                     <p className="text-sm text-muted-foreground">{n.SenderInfo.Email + " " + n.Message}.</p>
                                     <p className="text-xs text-muted-foreground">{n.Formated_date}</p>
                                     {((n.Type == "follow" && (n.SenderInfo.IsPrivate)) || n.Type == "invitation" || n.Type == "addGroupe") && (<div className="flex gap-2 mt-2">
-                                        <Button variant="outline" size="sm" onClick={() => markAsRead(n.Id)}>
+                                        <Button variant="outline" size="sm" onClick={() => markAsRead(n.Id, n.Type, n.GroupId, n.SenderID, ok)}>
                                             Accept
                                         </Button>
-                                        <Button variant="outline" size="sm" >
+                                        <Button variant="outline" size="sm" onClick={() => markAsRead(n.Id, n.Type, n.GroupId, n.SenderID, !ok)}>
                                             Decline
                                         </Button>
                                     </div>)}

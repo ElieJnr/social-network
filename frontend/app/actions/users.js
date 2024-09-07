@@ -1,4 +1,5 @@
 import { makeGetFetchUsers, makeGetFetch, fetchPost } from ".";
+import useStore from "../store/useStore";
 
 export async function userConnect() {
     const data = await makeGetFetch("http://localhost:8080/getUser?key=userConnect&id=null");
@@ -19,28 +20,28 @@ export async function allUsers() {
 
 
 export function search(users, follows) {
-    return users.filter(user => 
+    return users.filter(user =>
         !follows.some(follow => follow.followedUser === user.id)
     );
 }
 
-export async function editProfil(userId, isPrivate){
+export async function editProfil(userId, isPrivate) {
     let formData = {
         userId: userId,
         private: isPrivate,
-      };
-      
-      let url = "http://localhost:8080/update";
-      try {
-         await fetchPost(url, formData);
-      } catch (error) {
+    };
+
+    let url = "http://localhost:8080/update";
+    try {
+        await fetchPost(url, formData);
+    } catch (error) {
         console.error("Error update user:", error);
-      }
+    }
 }
 
 
 
-  
+
 export async function searchUsers(users, statut) {
     if (users) {
         const userPromises = users.map(async (user) => {
@@ -51,9 +52,9 @@ export async function searchUsers(users, statut) {
         });
 
         const tabResult = await Promise.all(userPromises);
-        
+
         return tabResult;
     }
-    return []; 
+    return [];
 }
 

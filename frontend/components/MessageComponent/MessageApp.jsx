@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import useStore from "@/app/store/useStore";
 import { useWebSocket } from "@/app/actions/message";
 import { useParams } from "next/navigation";
+import { userConnect } from "@/app/actions/users";
 
 
 
@@ -15,24 +16,22 @@ export default function GroupChat() {
     const resocket = useWebSocket('ws://localhost:8080/ws');
     const { id } = useParams();
     const { groupMessage } = useStore();
-    const { currentUser, setCurrentUser } = useStore()
+
+    const [userOnLine, setUserOnLine] = useState(null)
 
 
     useEffect(() => {
-        const currentUserID = document.cookie
-          .split('; ')
-          .find(row => row.startsWith('currentUserID='))
-          ?.split('=')[1];
-    
-        if (currentUserID) {
-          setCurrentUser(currentUserID);
-        }
-      }, [setCurrentUser]);
+        const fetchUser = async () => {
+            try {
+                const response = await userConnect();
+                setUserOnLine(response.user);
+            } catch (error) {
+                console.error("Error fetching user:", error);
+            }
+        };
+        fetchUser();
+    }, []);
 
-
-
-
-    console.log(groupMessage);
 
 
     const handleClick = () => {
@@ -55,7 +54,7 @@ export default function GroupChat() {
                     <Card>
                         <CardContent>
                             <MessageHeader onBackClick={handleBackClick} />
-                            <MessageBody message={groupMessage} id={id} currentUser={currentUser} />
+                            <MessageBody message={groupMessage} id={id} currentUser={userOnLine?.id} />
                             <MessageForm socket={resocket} id={id} />
                         </CardContent>
                     </Card>

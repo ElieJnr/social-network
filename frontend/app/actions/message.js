@@ -11,7 +11,7 @@ export const useWebSocket = (url) => {
     let { user, setUser } = useStore()
     let { getMessage, setgetMessage } = useStore()
     const { groupMessage, setGroupMessage } = useStore()
-    const { currentUser, setCurrenUser } = useStore()
+    // const { currentUser, setCurrenUser } = useStore()
 
 
 

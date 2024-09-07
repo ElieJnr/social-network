@@ -65,7 +65,7 @@ export function PostCard({ post }) {
       <CardContent className="space-y-4 ">
         <div className="flex items-center gap-4 mt-2">
           <Avatar className="w-10 h-10">
-            <AvatarImage src={post.Author.Avatar || "/placeholder-user.jpg"} alt={post.Author.Username} />
+            <AvatarImage src={`/uploads/${post.Author.Avatar}`|| "/placeholder-user.jpg"} alt={post.Author.Username} />
             <AvatarFallback>{post.Author.Username ? post.Author.Username[0].toUpperCase() : 'U'}</AvatarFallback>
           </Avatar>
 

@@ -2,15 +2,45 @@ import { NextResponse } from 'next/server';
 
 export async function middleware(req) {
   const url = req.nextUrl.pathname;
-  const cookie = req.cookies.get('session_token')?.value; // Utilisation de l'opérateur optionnel
+  const cookie = req.cookies.get('session_token')?.value;
+  const baseUrl = req.nextUrl.origin;
 
   console.log('Session Token:', cookie);
 
-  // Construisez l'URL absolue de redirection
-  const baseUrl = req.nextUrl.origin;
+  // Check if the URL is accessing a specific group by ID
+  if (url.startsWith('/groups/')) {
+    const id = url.split('/groups/')[1];
+    
+    // Validate the ID format (UUID) before making a request
+    const isValidUUID = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(id);
+    
+    if (!isValidUUID) {
+      // Redirect to Not Found page if the ID format is not valid
+      return NextResponse.redirect(`${baseUrl}/404`);
+    }
 
+    try {
+      // Make a request to the backend to verify if the ID exists
+      const res = await fetch(`http://localhost:8080/groups/${id}`, {
+        method: 'GET',
+      });
+
+      if (res.status === 404) {
+        // Redirect to Not Found page if the ID does not exist
+        return NextResponse.redirect(`${baseUrl}/404`);
+      }
+
+      // Continue to the group page if the ID is valid
+      return NextResponse.next();
+    } catch (error) {
+      console.error('Error verifying group ID:', error);
+      // Redirect to Not Found page in case of any errors during verification
+      return NextResponse.redirect(`${baseUrl}/404`);
+    }
+  }
+
+  // Existing session validation logic
   if (url === '/auth' || url === '/auth/login') {
-    // Pour /auth : empêcher l'accès si le cookie est valide
     if (cookie) {
       try {
         const res = await fetch('http://localhost:8080/validatecookie', {
@@ -18,23 +48,20 @@ export async function middleware(req) {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ cookie }), // Assurez-vous d'envoyer le bon format de données
+          body: JSON.stringify({ cookie }),
         });
 
         const data = await res.json();
 
         if (data.valid) {
-          // Redirigez vers la page d'accueil si le cookie est valide
           return NextResponse.redirect(`${baseUrl}/`);
         }
       } catch (error) {
-        console.error('Erreur lors de la validation du cookie:', error);
+        console.error('Error validating cookie:', error);
       }
     }
-    // Si le cookie n'existe pas ou est invalide, continuer vers /auth
     return NextResponse.next();
   } else {
-    // Pour les autres pages : vérifier la validité du cookie et rediriger si invalide
     if (!cookie) {
       return NextResponse.redirect(`${baseUrl}/auth/login`);
     }
@@ -45,19 +72,18 @@ export async function middleware(req) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ cookie }), // Assurez-vous d'envoyer le bon format de données
+        body: JSON.stringify({ cookie }),
       });
 
       const data = await res.json();
+
       if (!data.valid) {
         return NextResponse.redirect(`${baseUrl}/auth/login`);
       }
 
-      // Si le cookie est valide, continuer vers la page demandée
       return NextResponse.next();
     } catch (error) {
-      console.error('Erreur lors de la validation du cookie:', error);
-      // En cas d'erreur, rediriger vers la page de login
+      console.error('Error validating cookie:', error);
       return NextResponse.redirect(`${baseUrl}/auth/login`);
     }
   }
@@ -66,4 +92,3 @@ export async function middleware(req) {
 export const config = {
   matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 };
-

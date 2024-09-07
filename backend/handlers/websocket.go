@@ -196,14 +196,26 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error 
 			}
 		case "newGroupChat":
 			msg.SenderId = sender
+
+			member, e := ChatService.GetGroupMembership(msg.ReceiverId)
+			if e != nil {
+				fmt.Println("e: ", e)
+			}
+			fmt.Println("member: ", member)
+
 			err := ChatService.RegisterMsg(msg)
 			if err != nil {
 				fmt.Println("error: ", err)
 				return err
 			}
-			er := ChatService.SendStockedMessage(conn, msg.SenderId, msg.ReceiverId, false, true)
-			if er != nil {
-				return err
+
+			for _, m := range member {
+				if conn, ok := ClientWebSocketConnections[m]; ok {
+					er := ChatService.SendStockedMessage(conn, msg.SenderId, msg.ReceiverId, false, true)
+					if er != nil {
+						return er
+					}
+				}
 			}
 		}
 	}

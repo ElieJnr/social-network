@@ -39,10 +39,7 @@ func (c *ChatService) SendStockedMessage(conn *websocket.Conn, senderId, receive
 	if newMessage {
 		booleen = true
 	}
-	// if groupChat {
-	// 	fmt.Println("ceci est censee fetch les messages de groupe")
-	// 	return nil
-	// }
+
 	messages, err := c.GetStoredMessages(senderId, receiverId, booleen, groupChat)
 	if err != nil {
 		return err
@@ -101,7 +98,6 @@ func (c *ChatService) GetStoredMessages(sender, receiver string, newMessage bool
 	} else {
 		sendMessage.Type = "clickOnUser"
 	}
-	fmt.Println("senderrrr: ", sender)
 	sendMessage.CurrentUser = sender
 	sendMessage.Message = messages
 
@@ -239,4 +235,26 @@ func (c *ChatService) GetConnectedUserId(r *http.Request) (string, error) {
 	}
 
 	return userId, nil
+}
+
+func (c *ChatService) GetGroupMembership(groupID string) ([]string, error) {
+	var members []string
+	query := "SELECT userId FROM Membership WHERE groupId = ?"
+	rows, err := c.GetDB().Query(query, groupID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve group membership: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var memberID string
+		err := rows.Scan(&memberID)
+		if err != nil {
+			fmt.Println("Failed to scan group member:", err)
+			continue
+		}
+		members = append(members, memberID)
+	}
+
+	return members, nil
 }

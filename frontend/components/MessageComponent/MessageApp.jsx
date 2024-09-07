@@ -75,7 +75,10 @@ function MessageBody({ message, id, currentUser }) {
             <div className="grid gap-4">
                 {message && message.length > 0 &&
                     message.map(msg => {
-                        if (msg.sender_id === currentUser) {
+                        // console.log("current user: ", currentUser);
+                        // console.log("msg.sender_id ", msg.sender_id);
+                        // console.log("msg.receiver_id ", msg.receiver_id);
+                        if (msg.user_id === currentUser) {
                             return <ReceivedMessage key={msg.id} mess={msg.msg} />;
                         } else {
                             return <SendingMessage key={msg.id} mess={msg.msg} />;

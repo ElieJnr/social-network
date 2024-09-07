@@ -21,10 +21,12 @@ export async function middleware(req) {
 
     try {
       // Make a request to the backend to verify if the ID exists
-      const res = await fetch(`http://localhost:8080/groups/${id}`, {
+      const res = await fetch(`http://localhost:8080/group/getEvents?groupId=${id}`, {
         method: 'GET',
+        credentials: 'include'
       });
-
+      console.log("res status",res.status);
+      
       if (res.status === 404) {
         // Redirect to Not Found page if the ID does not exist
         return NextResponse.redirect(`${baseUrl}/404`);

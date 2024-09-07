@@ -228,9 +228,9 @@ export default function Profil() {
                             <div className="flex justify-center  min-h-screen">
                                 <div className="w-[60%] flex flex-col  ">
                                     {CanSee(user) || !user.isPrivate ?
-                                    <PostsProfil posts={user.posts} />
+                                        <PostsProfil posts={user.posts} />
 
-                                    :""}
+                                        : ""}
                                 </div>
                             </div>
                         </div>
@@ -261,51 +261,7 @@ function EyeIcon(props) {
     );
 }
 
-function Information({ user }) {
-    return (
-        <div className="flex w-[100%] justify-center pt-[2%]">
-            <div className="flex flex-col items-center  p-6 w-[80%] h-[300px] bg-[#fcfcfc] rounded-xl border border-[#333] " >
-                <Avatar className="w-20 h-20">
-                    <AvatarImage src="/placeholder-user.jpg" alt="@shadcn" />
-                    <AvatarFallback>CN</AvatarFallback>
-                </Avatar>
-                <div className="text-center space-y-1">
-                    <div className="font-semibold">{user ? user.firstname : "loading"} {user ? user.lastname : ""}</div>
-                    <div className="text-muted-foreground">{user ? user.email : ""}</div>
-                </div>
-                <div className="flex items-center gap-2">
-                    <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">{user ? user.dateOfBirth : ""}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                    {user && user.username ?
-                        <UserIcon className="h-4 w-4 text-muted-foreground" />
-                        : ""}
-                    <span className="text-muted-foreground">{user ? user.username : ""}</span>
-                </div>
-                <div className="flex items-start gap-2">
-                    {user && user.bio ?
-                        <InfoIcon className="h-4 w-4 text-muted-foreground" />
-                        : ""}
-                    <span className="text-muted-foreground">
-                        {user ? user.bio : ""}
-                    </span>
-                </div>
-                <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-1 text-muted-foreground">
-                        <UsersIcon className="h-4 w-4" />
-                        <span>100 following</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-muted-foreground">
-                        <UsersIcon className="h-4 w-4" />
-                        <span>100 followers</span>
-                    </div>
-                </div>
-            </div>
 
-        </div>
-    )
-}
 
 function LockIcon(props) {
     return (
@@ -355,7 +311,8 @@ function PostsProfil({ posts }) {
                 posts.map(post =>
                     post.Can_see ? <PostCard key={post.PostID} post={post} /> : null
                 )
-            ) : 'No Posts'}
+            ) : <div className="flex justify-center" >No Posts</div>
+            }
         </div>
     );
 }

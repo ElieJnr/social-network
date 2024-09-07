@@ -117,6 +117,7 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error 
 					SenderID:   sender,
 					Type:       "addGroupe",
 					Message:    mess,
+					GroupId: msg.GroupeId,
 				}
 				e := NotifService.CreateNotification(&notif)
 				if e != nil {
@@ -124,6 +125,8 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error 
 				}
 				if receiverConn, ok := ClientWebSocketConnections[msg.ReceiverId]; ok {
 					receiverConn.WriteJSON(msg)
+					fmt.Println("****************************************************je test", msg)
+					fmt.Println("-------------------------------------------------je cherche: ",msg.GroupeId)
 				}
 
 				newMember := models.NewMember{

@@ -12,6 +12,7 @@ type Notification struct {
 	CreateAt   time.Time
 	Formated_date string
 	SenderInfo Author
+	GroupId string
 }
 
 type MessageNotif struct {

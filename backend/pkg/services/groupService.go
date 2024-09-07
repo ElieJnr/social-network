@@ -123,31 +123,22 @@ func (g *GroupeService) GetUserRoleInGroup(userId, groupId string) (string, erro
 	return role, nil
 }
 
-// func (g *GroupeService) UpdateMemberRoleToWaiting(userId, groupId string) error {
-// 	// Vérifier si le groupe existe
-// 	exists, err := g.GroupExists(groupId)
-// 	if err != nil {
-// 		return fmt.Errorf("failed to check if group exists: %w", err)
-// 	}
-// 	if !exists {
-// 		return fmt.Errorf("group with ID %s does not exist", groupId)
-// 	}
+func (g *GroupeService) UpdateMemberRole(newMember models.NewMember) error {	
+	query := `UPDATE Membership SET role = ? WHERE userId = ? AND groupId = ?`
+	_, err := g.GetDB().Exec(query, newMember.Status, newMember.UserId, newMember.GroupId)
+	if err != nil {
+		return fmt.Errorf("failed to update member role : %w", err)
+	}
 
-// 	// Vérifier si le membre existe déjà dans le groupe
-// 	memberExists, err := g.IsUserInGroup(userId, groupId)
-// 	if err != nil {
-// 		return fmt.Errorf("failed to check if user is in group: %w", err)
-// 	}
-// 	if !memberExists {
-// 		return fmt.Errorf("user with ID %s is not a member of group with ID %s", userId, groupId)
-// 	}
+	return nil
+}
 
-// 	// Mettre à jour le rôle du membre à "waiting"
-// 	query := `UPDATE Membership SET role = ? WHERE userId = ? AND groupId = ?`
-// 	_, err = g.GetDB().Exec(query, "waiting", userId, groupId)
-// 	if err != nil {
-// 		return fmt.Errorf("failed to update member role to 'waiting': %w", err)
-// 	}
+func (g *GroupeService) RemoveMember(newMember models.NewMember) error {
+	query := `DELETE FROM Membership WHERE userId = ? AND groupId = ?`
+	_, err := g.GetDB().Exec(query, newMember.UserId, newMember.GroupId)
+	if err != nil {
+		return fmt.Errorf("failed to remove member from group: %w", err)
+	}
 
-// 	return nil
-// }
+	return nil
+}

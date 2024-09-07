@@ -30,10 +30,10 @@ func (n *NotifService) SetDB(db *sql.DB) {
 
 func (n *NotifService) CreateNotification(notif *models.Notification) error {
 
-	query := `INSERT INTO Notifications (id,user_receiver_id,user_id, type,message)
-		VALUES (?,?,?,?,?)`
+	query := `INSERT INTO Notifications (id,user_receiver_id,user_id, type,message,groupeId)
+		VALUES (?,?,?,?,?,?)`
 
-	_, err := n.GetDB().Exec(query, notif.Id, notif.ReceiverID, notif.SenderID, notif.Type, notif.Message)
+	_, err := n.GetDB().Exec(query, notif.Id, notif.ReceiverID, notif.SenderID, notif.Type, notif.Message,notif.GroupId)
 
 	if err != nil {
 		return fmt.Errorf("failed to create notification: %w", err)
@@ -70,7 +70,7 @@ func (n *NotifService) GetAllNotifications(ReceiverId string) ([]models.Notifica
 
 	for rows.Next() {
 		var notification models.Notification
-		if err = rows.Scan(&notification.Id, &notification.ReceiverID, &notification.SenderID, &notification.Type, &notification.Message, &notification.IsRead, &notification.CreateAt); err != nil {
+		if err = rows.Scan(&notification.Id, &notification.ReceiverID, &notification.SenderID, &notification.Type, &notification.Message, &notification.IsRead, &notification.CreateAt, &notification.GroupId); err != nil {
 			return nil, fmt.Errorf("failed to scan notification: %w", err)
 		}
 		senderInfo, err := utils.GetAuthor(n.db, notification.SenderID)

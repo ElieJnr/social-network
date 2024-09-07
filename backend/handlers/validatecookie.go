@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"socialNetwork/pkg/models"
 	"socialNetwork/pkg/services"
 )
 
@@ -27,18 +28,21 @@ func ValidateCookieHandler() http.HandlerFunc {
 		fmt.Println("thecookies", request.Cookie)
 
 		// Logique pour valider le cookie
-		valid := validateCookie(request.Cookie)
+		user,valid := validateCookie(request.Cookie)
 
 		if !valid{
 			services.DelCookie(w)
 		}
 
 		// Répondre avec le résultat de la validation
-		json.NewEncoder(w).Encode(map[string]bool{"valid": valid})
+		json.NewEncoder(w).Encode(map[string]any{"valid": valid,"currentUserID":user.UserId})
 	}
 }
 
-func validateCookie(token string) bool {
-	_, err := SessionService.CheckSession(token)
-	return err==nil
+func validateCookie(token string) (*models.Session, bool) {
+	user, err := SessionService.CheckSession(token)
+	if err != nil{
+		return user,false
+	}
+	return user,true
 }

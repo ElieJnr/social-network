@@ -35,7 +35,7 @@ export default function Posts() {
   );
 }
 
-function PostCard({ post }) {
+export function PostCard({ post }) {
   const [showComments, setShowComments] = useState(false);
   const { toast } = useToast();
 
@@ -60,8 +60,8 @@ function PostCard({ post }) {
 
 
   return (
-    <Card>
-      <CardContent className="space-y-4">
+    <Card >
+      <CardContent className="space-y-4 ">
         <div className="flex items-center gap-4 mt-2">
           <Avatar className="w-10 h-10">
             <AvatarImage src={post.Author.Avatar || "/placeholder-user.jpg"} alt={post.Author.Username} />
@@ -118,7 +118,7 @@ function PostCard({ post }) {
   );
 }
 
-function SkeletonPostCard() {
+export function SkeletonPostCard() {
   return (
     <Card className="animate-pulse">
       <CardContent className="space-y-4">

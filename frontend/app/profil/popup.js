@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 export default function UserListModal({ isOpen, onClose, title, users, statut }) {
     const [tabUsers, setTabUsers] = useState([]);
-    const [loading, setLoading] = useState(true); // Ajout de l'état de chargement
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         async function fetchUsers(users, statut) {
@@ -18,7 +18,7 @@ export default function UserListModal({ isOpen, onClose, title, users, statut })
                 } catch (error) {
                     console.error("Erreur lors du chargement des utilisateurs:", error);
                 } finally {
-                    setLoading(false); // Fin du chargement
+                    setLoading(false);
                 }
             }
         }
@@ -30,47 +30,44 @@ export default function UserListModal({ isOpen, onClose, title, users, statut })
     const handleUserClick = (userId) => {
         window.location.href = `/profil?userId=${userId}`;
     };
-    
+   
     return (
-        <Popover open={isOpen} onOpenChange={onClose}>
-            <PopoverTrigger asChild>
-                <Button variant="outline" className="w-full bg-[#e2e1e1] border-none">
-                    {title}
-                </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-[400px] p-6">
-                <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-medium">{title}</h3>
-                    <div>
-                        <Button variant="ghost" size="icon" className="rounded-full" onClick={onClose}>
-                            <XIcon className="w-4 h-4" />
-                        </Button>
+        <>
+            {isOpen && <div className="fixed inset-0 bg-gray-800 opacity-50 z-40"></div>}
+            <Popover open={isOpen} onOpenChange={onClose}>
+                <PopoverTrigger asChild>
+                    <Button variant="outline" className="w-full bg-[#e2e1e1] border-none">
+                        {title}
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[400px] p-6 z-50 relative">
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-medium">{title}</h3>
                     </div>
-                </div>
-                <div className="space-y-4">
-                    {loading ? (
-                        <div>Loading...</div>
-                    ) : (
-                        tabUsers.length === 0 ? (
-                            <div>No users found.</div>
+                    <div className="space-y-4">
+                        {loading ? (
+                            <div>Loading...</div>
                         ) : (
-                            tabUsers.map((user) => (
-                                <div key={user.id} className="flex items-center gap-4">
-                                    <Avatar className="cursor-pointer" onClick={() => handleUserClick(user.id)}>
-                                        <AvatarImage src={"/placeholder-user.jpg"} alt={user.firstname} />
-                                        <AvatarFallback>{user.firstname.charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                    <div className="flex-1">
-                                        <div className="font-medium">{user.firstname}</div>
-                                        <div className="text-sm text-muted-foreground"></div>
+                            tabUsers.length === 0 ? (
+                                <div>No users found.</div>
+                            ) : (
+                                tabUsers.map((user) => (
+                                    <div key={user.id} className="flex items-center gap-4">
+                                        <Avatar className="cursor-pointer" onClick={() => handleUserClick(user.id)}>
+                                            <AvatarImage src={"/placeholder-user.jpg"} alt={user.firstname} />
+                                            <AvatarFallback>{user.firstname.charAt(0)}</AvatarFallback>
+                                        </Avatar>
+                                        <div className="flex-1">
+                                            <div className="font-medium">{user.firstname}</div>
+                                        </div>
                                     </div>
-                                </div>
-                            ))
-                        )
-                    )}
-                </div>
-            </PopoverContent>
-        </Popover>
+                                ))
+                            )
+                        )}
+                    </div>
+                </PopoverContent>
+            </Popover>
+        </>
     );
 }
 

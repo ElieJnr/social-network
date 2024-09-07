@@ -16,6 +16,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { UsersIcon } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useWebSocket } from "../actions/message";
+import { PostGroupCard } from "@/components/group-home-page";
+import { PostCard, SkeletonPostCard } from "@/components/PostCard";
 
 export default function Profil() {
     const socket = useWebSocket('ws://localhost:8080/ws');
@@ -80,6 +82,7 @@ export default function Profil() {
     if (!user || !userOnLine) {
         return <div>Loading...</div>;
     } else {
+        console.log(userOnLine.posts == null ? "0" : userOnLine.posts.length);
         console.log(userOnLine);
         console.log(tabRequest);
     }
@@ -148,7 +151,7 @@ export default function Profil() {
                                     {!tabRequest.some(request => request.id === user.id) ? (
                                         userOnLine.id !== user.id && (
                                             <Button onClick={() => handleClick(user, !user.isPrivate)} variant="outline" size="sm">
-                                                {CanSee(user)  ? "UnFollow" : "Follow"}
+                                                {CanSee(user) ? "UnFollow" : "Follow"}
                                             </Button>
                                         )
                                     ) : (
@@ -184,8 +187,8 @@ export default function Profil() {
                         </div>
                         <div className="grid sm:grid-cols-3 gap-4 text-center">
                             <div className="bg-[#e2e1e1] rounded-lg p-4">
-                                <div className="font-medium">100</div>
-                                <div className="text-xs text-muted-foreground">Posts</div>
+                                <div className="font-medium">{user.posts == null ? "0" : user.posts.length}</div>
+                                <div className=" font-medium ">Posts</div>
                             </div>
                             <div onClick={() => setFollowersOpen(true)} className="bg-[#e2e1e1] rounded-lg p-4 cursor-pointer">
                                 <div className="font-medium">{user?.followers ? user.followers.length : "0"}</div>
@@ -222,34 +225,12 @@ export default function Profil() {
                                     </Button>
                                 </div>
                             </div>
-                            <div className="flex justify-center items-center min-h-screen">
-                                <div className="w-[50%] flex flex-col justify-center items-center">
-                                    <div className="bg-card rounded-lg overflow-hidden">
-                                        <Image
-                                            src="/placeholder.svg"
-                                            alt="Post Image"
-                                            width={600}
-                                            height={400}
-                                            className="w-full aspect-[3/2] object-cover"
-                                        />
-                                        <div className="p-4">
-                                            <div className="font-medium line-clamp-2">Introducing the new Vercel platform</div>
-                                            <div className="text-xs text-muted-foreground">2 days ago</div>
-                                        </div>
-                                    </div>
-                                    <div className="bg-card rounded-lg overflow-hidden">
-                                        <Image
-                                            src="/placeholder.svg"
-                                            alt="Post Image"
-                                            width={600}
-                                            height={400}
-                                            className="w-full aspect-[3/2] object-cover"
-                                        />
-                                        <div className="p-4">
-                                            <div className="font-medium line-clamp-2">Introducing the new Vercel platform</div>
-                                            <div className="text-xs text-muted-foreground">2 days ago</div>
-                                        </div>
-                                    </div>
+                            <div className="flex justify-center  min-h-screen">
+                                <div className="w-[60%] flex flex-col  ">
+                                    {CanSee(user) || !user.isPrivate ?
+                                    <PostsProfil posts={user.posts} />
+
+                                    :""}
                                 </div>
                             </div>
                         </div>
@@ -362,5 +343,19 @@ function MoveHorizontalIcon(props) {
             <polyline points="6 8 2 12 6 16" />
             <line x1="2" x2="22" y1="12" y2="12" />
         </svg>
+    );
+}
+
+
+function PostsProfil({ posts }) {
+
+    return (
+        <div className="space-y-4">
+            {posts && posts != null ? (
+                posts.map(post =>
+                    post.Can_see ? <PostCard key={post.PostID} post={post} /> : null
+                )
+            ) : 'No Posts'}
+        </div>
     );
 }

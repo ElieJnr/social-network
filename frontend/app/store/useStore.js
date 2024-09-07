@@ -13,7 +13,7 @@ const useStore = create((set) => ({
   // Actions
   setUser: (user) => set({ user }),
   setgetMessage: (getMessage) => set({ getMessage, messageArrive: true }),
-  setCurrenUser: (currentUser) => set({ currentUser }),
+  setCurrentUser: (currentUser) => set({ currentUser }),
   setGroupMessage: (groupMessage) => set({ groupMessage }),
   logout: () => set({ user: null, isAuthenticated: false }),
 

@@ -35,7 +35,7 @@ export const useWebSocket = (url) => {
             if (message.Type === "groupChat") {
                 console.log("in group message: ", message);
                 setGroupMessage(message.Message)
-                setCurrenUser(message.CurrentUser)
+                // setCurrenUser(message.CurrentUser)
                 // console.log(message.CurrentUser);
 
             }

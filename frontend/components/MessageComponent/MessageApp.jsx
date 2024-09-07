@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Emoji, ReceivedMessage, SendIcon, SendingMessage, ShowEmoji } from "../ui/message";
 import { Card, CardContent } from "../ui/card";
 import { Input } from "../ui/input";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import useStore from "@/app/store/useStore";
 import { useWebSocket } from "@/app/actions/message";
 import { useParams } from "next/navigation";
@@ -15,7 +15,21 @@ export default function GroupChat() {
     const resocket = useWebSocket('ws://localhost:8080/ws');
     const { id } = useParams();
     const { groupMessage } = useStore();
-    const { currentUser, setCurrenUser } = useStore()
+    const { currentUser, setCurrentUser } = useStore()
+
+
+    useEffect(() => {
+        const currentUserID = document.cookie
+          .split('; ')
+          .find(row => row.startsWith('currentUserID='))
+          ?.split('=')[1];
+    
+        if (currentUserID) {
+          setCurrentUser(currentUserID);
+        }
+      }, [setCurrentUser]);
+
+
 
 
     console.log(groupMessage);
@@ -70,6 +84,7 @@ function MessageHeader({ onBackClick }) {
 
 
 function MessageBody({ message, id, currentUser }) {
+
     return (
         <div className="h-[50vh] flex-1 overflow-y-auto p-6">
             <div className="grid gap-4">

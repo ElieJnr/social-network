@@ -23,6 +23,7 @@ export async function middleware(req) {
         });
 
         const data = await res.json();
+        console.log("--------------------------",data);
 
         if (data.valid) {
           const response = NextResponse.redirect(`${baseUrl}/`);
@@ -53,6 +54,8 @@ export async function middleware(req) {
       });
 
       const data = await res.json();
+      console.log("--------------------------",data);
+
 
       if (!data.valid) {
         const response = NextResponse.redirect(`${baseUrl}/auth/login`);

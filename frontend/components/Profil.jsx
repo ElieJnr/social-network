@@ -132,7 +132,6 @@ function EyeIcon(props) {
   );
 }
 
-
 function LockIcon(props) {
   return (
     (<svg
@@ -151,7 +150,6 @@ function LockIcon(props) {
     </svg>)
   );
 }
-
 
 function MoveHorizontalIcon(props) {
   return (

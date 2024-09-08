@@ -54,7 +54,7 @@ export default function UserListModal({ isOpen, onClose, title, users, statut })
                                 tabUsers.map((user) => (
                                     <div key={user.id} className="flex items-center gap-4">
                                         <Avatar className="cursor-pointer" onClick={() => handleUserClick(user.id)}>
-                                            <AvatarImage src={"/placeholder-user.jpg"} alt={user.firstname} />
+                                            <AvatarImage src={user?.avatar === "" ? "/placeholder-user.jpg": `/uploads/${user?.avatar}`} alt={user.firstname} />
                                             <AvatarFallback>{user.firstname.charAt(0)}</AvatarFallback>
                                         </Avatar>
                                         <div className="flex-1">

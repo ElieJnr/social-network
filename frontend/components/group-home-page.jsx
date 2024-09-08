@@ -68,6 +68,8 @@ function Sidebar({ setActiveComponent, socket }) {
 
 export function GroupHomePage({ id, socket }) {
   const [activeComponent, setActiveComponent] = useState('post');
+  const [activePostEventComponent, setactivePostEventComponent] = useState('post');
+  // const socket = useWebSocket('ws://localhost:8080/ws');
 
   return (
     <div className="flex flex-col h-screen">
@@ -75,11 +77,14 @@ export function GroupHomePage({ id, socket }) {
         <div className="space-y-6">
           {/* <EventsCards /> */}
           <SuggestionsGroupCard idgroupe={id} />
-          <EventList id={id} />
+          {/* <EventList id={id}/> */}
         </div>
         <div className="space-y-6">
           {activeComponent === 'post' ? <CreatePostGroupCard /> : <CreateEventCard id={id} socket={socket} />}
-          <PostGroupCard />
+          <Button className="mx-2" onClick={() => setactivePostEventComponent('post')}>Post</Button>
+          <Button  onClick={() => setactivePostEventComponent('Events')}>Events</Button>
+          {activePostEventComponent === 'post' ?  <PostGroupCard /> : <EventList id={id}/>}
+          {/* <PostGroupCard /> */}
           {/* <PostCard /> */}
         </div>
         <div className="space-y-6">
@@ -252,7 +257,7 @@ function PostCard({ post }) {
       <CardContent className="space-y-4">
         <div className="flex items-center gap-4 mt-2">
           <Avatar className="w-10 h-10">
-            <AvatarImage src={post?.Author.Avatar || "/placeholder-user.jpg"} alt={post?.Author.Username} />
+            <AvatarImage src={post?.Author.Avatar === "" ? "/placeholder-user.jpg": `/uploads/${post?.Author.Avatar}`} alt={post?.Author.Username} />
             <AvatarFallback>{post?.Author.Username ? post?.Author.Username[0].toUpperCase() : 'U'}</AvatarFallback>
           </Avatar>
 

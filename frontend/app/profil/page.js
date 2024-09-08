@@ -110,7 +110,7 @@ export default function Profil() {
                                 <div className="flex flex-col">
                                     <div className="flex ">
                                         <Avatar className="w-[8rem] h-[8rem]">
-                                            <AvatarImage src="/placeholder-user.jpg" alt="@shadcn" />
+                                            <AvatarImage src={user?.avatar === "" ? "/placeholder-user.jpg": `/uploads/${user?.avatar}`} alt="@shadcn" />
                                             <AvatarFallback>CN</AvatarFallback>
                                         </Avatar>
                                         <div className="flex flex-col">

@@ -64,7 +64,7 @@ export default function EventList({ id }) {
     }
   };
 
-  if (error) {
+  if (error) {remainingEvents
     return <p>Error loading events. Please try again.</p>;
   }
 

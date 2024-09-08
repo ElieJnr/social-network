@@ -65,13 +65,12 @@ export function PostCard({ post }) {
       <CardContent className="space-y-4 ">
         <div className="flex items-center gap-4 mt-2">
           <Avatar className="w-10 h-10">
-            <AvatarImage src={`/uploads/${post.Author.Avatar}`|| "/placeholder-user.jpg"} alt={post.Author.Username} />
+            <AvatarImage src={post?.Author.Avatar === "" ? "/placeholder-user.jpg": `/uploads/${post?.Author.Avatar}`} alt={post.Author.Username} />
             <AvatarFallback>{post.Author.Username ? post.Author.Username[0].toUpperCase() : 'U'}</AvatarFallback>
           </Avatar>
 
           <div className="flex items-center gap-2">
             <span className="text-lg font-semibold">{post.Author.Firstname + " " + post.Author.Lastname || "Anonymous"}</span>
-            <span className="text-muted-foreground">@{post.Author.Username || ""}</span>
             <span className="text-muted-foreground text-lg">•</span>
             <span className="text-muted-foreground">{post.Formated_date || "just now"}</span>
           </div>

@@ -27,7 +27,7 @@ export default function ProfileCard() {
     <Card>
       <CardContent className="flex flex-col items-center gap-4 p-6">
         <Avatar className="w-20 h-20">
-          <AvatarImage src="/placeholder-user.jpg" alt="@shadcn" />
+          <AvatarImage src={user?.avatar === "" ? "/placeholder-user.jpg": `/uploads/${user?.avatar}`} alt="@shadcn" />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
         <div className="text-center space-y-1">

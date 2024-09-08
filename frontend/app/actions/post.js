@@ -142,5 +142,5 @@ export async function fetchGroupPosts(groupId) {
 
 export function filterPost(posts) {
 
-  return posts.filter(post => post.Post_status != "group")
+  return posts? posts.filter(post => post.Post_status != "group"): null
 }

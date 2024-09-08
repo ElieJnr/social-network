@@ -133,25 +133,27 @@ func GetPostsById(db *sql.DB, userId string) ([]models.Posts, error) {
 }
 
 // verifie si l'utilisateur est un follower pour les posts
+
 func IsFollowing(db *sql.DB, userId string, currentUserId string) (bool, error) {
 	if currentUserId == userId {
 		return true, nil
 	}
 
-	// Vérifier si currentUserId est un follower de l'utilisateur
-	query := `SELECT COUNT(*) FROM Followers WHERE userId = ? AND followedId = ?`
+	// Vérifier si currentUserId est un ami de l'utilisateur
+	query := `SELECT COUNT(*) FROM Followers WHERE userId = ? AND followedId = ? AND statut = true`
 	var count int
 	err := db.QueryRow(query, userId, currentUserId).Scan(&count)
 	if err != nil {
-		fmt.Println("error checking follower status")
+		fmt.Println("error checking friend status")
 		return false, err
 	}
 
-	// Si currentUserId est un follower, retourner true
+	// Si currentUserId est un ami, retourner true
 	if count > 0 {
 		return true, nil
 	}
 
-	// Sinon, retourner false car l'utilisateur n'est ni l'auteur ni un follower
+	// Sinon, retourner false car l'utilisateur n'est ni l'auteur ni un ami
 	return false, nil
+
 }

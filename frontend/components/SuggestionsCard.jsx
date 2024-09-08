@@ -118,7 +118,9 @@ export default function SuggestionsCard({ socket }) {
       </Card>
 
     )
-  } 
+  }  else {
+    console.log(userOnLine);
+  }
 
   return (
     <Card>

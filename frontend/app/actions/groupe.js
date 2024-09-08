@@ -21,54 +21,59 @@ export const fetchGroupes = async (setGroupes, setLoading, setError) => {
   }
 }
 
-export async function fetchForAddingInAGroupe(status, groupId, userId){
-  try{
-    const response = await fetch('http://localhost:8080/group/addNewMemberToGroup',{
-      method:"POST",
-      credentials:"include",
-      body: JSON.stringify({status,groupId,userId})
+export async function fetchForAddingInAGroupe(status, groupId, userId) {
+  try {
+    const response = await fetch('http://localhost:8080/group/addNewMemberToGroup', {
+      method: "POST",
+      credentials: "include",
+
+      body: JSON.stringify({ status, groupId, userId })
     })
-    if (!response.ok){
-      throw new Error ("impossible d'ajouter un nouveau membre au groupe")
+    if (!response.ok) {
+      throw new Error("impossible d'ajouter un nouveau membre au groupe")
     }
   }
-  catch(error){
+  catch (error) {
     console.log(error);
   }
 }
 
-export async function fetchForNotAddingInAGroupe(groupId, userId){
-  try{
-    const response = await fetch('http://localhost:8080/group/notAddNewMemberToGroup',{
-      method:"POST",
-      credentials:"include",
-      body: JSON.stringify({groupId,userId})
+export async function fetchForNotAddingInAGroupe(groupId, userId) {
+  try {
+    const response = await fetch('http://localhost:8080/group/notAddNewMemberToGroup', {
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify({ groupId, userId })
     })
-    if (!response.ok){
-      throw new Error ("impossible d'ajouter un nouveau membre au groupe")
+    if (!response.ok) {
+      throw new Error("impossible d'ajouter un nouveau membre au groupe")
     }
   }
-  catch(error){
+  catch (error) {
     console.log(error);
   }
 }
 
-export async function fetchSuggGroup(groupId){
-  try{
-    const response = await fetch('http://localhost:8080/group/suggGroup',{
-      method:"POST",
-      credentials:"include",
-      body: JSON.stringify({groupId})
+export async function fetchSuggGroup(setsuggGroup,groupId) {
+  try {
+    const response = await fetch('http://localhost:8080/group/suggGroup', {
+      method: "POST",
+      credentials: "include",
+      cache: "no-store",
+      body: JSON.stringify(groupId),
     })
-    if (!response.ok){
-      throw new Error ("impossible d'ajouter un nouveau membre au groupe")
+    if (!response.ok) {
+      throw new Error("error groupSugg")
     }
 
     const data = await response.json()
+    console.log(data);
+    if (data) {
+      setsuggGroup(data)
+    }
 
-    return data
   }
-  catch(error){
+  catch (error) {
     console.log(error);
   }
 }

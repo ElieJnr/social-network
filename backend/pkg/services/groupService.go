@@ -120,7 +120,7 @@ func (g *GroupeService) GetUserRoleInGroup(userId, groupId string) (string, erro
 	return role, nil
 }
 func (g *GroupeService) GetSuggGroup(members []models.Member) ([]models.Author, error) {
-	query := `SELECT firstname, lastname, username, avatar,isPrivate,SUBSTR(email, 1, INSTR(email, '@') - 1) AS email_username FROM Users`
+	query := `SELECT id,firstname, lastname, username, avatar,isPrivate,SUBSTR(email, 1, INSTR(email, '@') - 1) AS email_username FROM Users`
 
 	rows, er := g.db.Query(query)
 	if er != nil {
@@ -175,3 +175,5 @@ func IsMember(members []models.Member, author models.Author) bool {
 	}
 	return false
 }
+
+

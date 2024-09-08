@@ -19,6 +19,7 @@ const { useState, useEffect } = require('react');
 // import PostCard from "@/components/PostCard";
 import EventList from './EventList';
 import Image from "next/image";
+import { fetchSuggGroup } from "@/app/actions/groupe";
 
 const fetcher = (url) => fetch(url, { credentials: 'include' }).then((res) => res.json());
 
@@ -76,14 +77,14 @@ export function GroupHomePage({ id, socket }) {
       <div className="flex-1 grid grid-cols-[1fr_2fr_1.5fr] gap-6 p-6">
         <div className="space-y-6">
           {/* <EventsCards /> */}
-          <SuggestionsGroupCard idgroupe={id} />
+          <SuggestionsGroupCard idgroupe={id} socket={socket} />
           {/* <EventList id={id}/> */}
         </div>
         <div className="space-y-6">
           {activeComponent === 'post' ? <CreatePostGroupCard /> : <CreateEventCard id={id} socket={socket} />}
           <Button className="mx-2" onClick={() => setactivePostEventComponent('post')}>Post</Button>
-          <Button  onClick={() => setactivePostEventComponent('Events')}>Events</Button>
-          {activePostEventComponent === 'post' ?  <PostGroupCard /> : <EventList id={id}/>}
+          <Button onClick={() => setactivePostEventComponent('Events')}>Events</Button>
+          {activePostEventComponent === 'post' ? <PostGroupCard /> : <EventList id={id} />}
           {/* <PostGroupCard /> */}
           {/* <PostCard /> */}
         </div>
@@ -95,20 +96,32 @@ export function GroupHomePage({ id, socket }) {
   );
 }
 
-export function SuggestionsGroupCard({ idgroupe }) {
+export function SuggestionsGroupCard({ idgroupe, socket }) {
 
   const [suggGroup, setsuggGroup] = useState([])
 
-  // useEffect(() => {
-  //   fetc
-  // }, [])
+  useEffect(() => {
+    fetchSuggGroup(setsuggGroup, idgroupe)
+  }, [])
+
+  function Invitation(userId) {
+    const Message = {
+      Type: "notifications",
+      ReceiverId: userId,
+      SubType: "invitation",
+      GroupeId: idgroupe
+    }
+
+    socketSend(socket, Message)
+  }
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Suggestions</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {suggGroup?.map((s) => (<div className="flex items-center gap-4">
+        {suggGroup?.map((s) => (<div className="flex items-center gap-4" key={s.Id}>
           <Avatar className="w-10 h-10">
             <AvatarImage src="/placeholder-user.jpg" alt="@shadcn" />
             <AvatarFallback>CN</AvatarFallback>
@@ -117,7 +130,7 @@ export function SuggestionsGroupCard({ idgroupe }) {
             <div className="font-semibold">{s.Firstname}</div>
             <div className="text-muted-foreground">{s.Lastname}</div>
           </div>
-          <Button variant="outline" size="sm" className="ml-auto">
+          <Button variant="outline" size="sm" className="ml-auto" onClick={() => Invitation(s.Id)}>
             Invite
           </Button>
         </div>))}
@@ -257,7 +270,7 @@ function PostCard({ post }) {
       <CardContent className="space-y-4">
         <div className="flex items-center gap-4 mt-2">
           <Avatar className="w-10 h-10">
-            <AvatarImage src={post?.Author.Avatar === "" ? "/placeholder-user.jpg": `/uploads/${post?.Author.Avatar}`} alt={post?.Author.Username} />
+            <AvatarImage src={post?.Author.Avatar === "" ? "/placeholder-user.jpg" : `/uploads/${post?.Author.Avatar}`} alt={post?.Author.Username} />
             <AvatarFallback>{post?.Author.Username ? post?.Author.Username[0].toUpperCase() : 'U'}</AvatarFallback>
           </Avatar>
 

@@ -72,6 +72,38 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error 
 				}
 
 			}
+			if msg.SubType == "invitation" {
+				idNotif, er := utils.GenerateUuid()
+				if er != nil {
+					return fmt.Errorf("error read: %w", err)
+				}
+				author, err := utils.GetAuthor(NotifService.GetDB(), sender)
+
+				if err != nil {
+					return fmt.Errorf("error read: %w", err)
+				}
+				var title string
+				errr := NotifService.GetDB().QueryRow("SELECT title FROM Groups WHERE id = ?", msg.GroupeId).Scan(&title)
+				if errr != nil {
+					return fmt.Errorf("error read: %w", errr)
+				}
+				notif := models.Notification{
+					Id:         idNotif,
+					ReceiverID: msg.ReceiverId,
+					SenderID:   sender,
+					Type:       "invitation",
+					Message:    author.Firstname + " " + author.Lastname + " vous invite a rejoindre le groupe:" + title,
+				}
+				e := NotifService.CreateNotification(&notif)
+
+				if e != nil {
+					return fmt.Errorf("error read: %w", err)
+				}
+
+				if receiverConn, ok := ClientWebSocketConnections[msg.ReceiverId]; ok {
+					receiverConn.WriteJSON(msg)
+				}
+			}
 			if msg.SubType == "event" {
 				members, e := MemberService.GetMembership(msg.GroupeId)
 				if e != nil {

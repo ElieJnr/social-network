@@ -32,6 +32,7 @@ function CommentList({ comments }) {
                 <Comment
                     key={index}
                     name={`${comment.Author.Firstname} ${comment.Author.Lastname}`}
+                    avatar={comment.Author.Avatar}
                     timeAgo={comment.Formated_date}
                     text={comment.Content}
                     hasImage={comment.HasImage}
@@ -42,11 +43,11 @@ function CommentList({ comments }) {
     );
 }
 
-function Comment({ name, timeAgo, text, hasImage, imageUrl }) {
+function Comment({ name, avatar, timeAgo, text, hasImage, imageUrl }) {
     return (
         <div className="flex items-start gap-4">
             <Avatar className="w-10 h-10 border">
-                <AvatarImage src="/placeholder-user.jpg" alt={name} />
+                <AvatarImage src={`/uploads/${avatar}`|| "/placeholder-user.jpg"}alt={name} />
                 <AvatarFallback>{name.charAt(0)}</AvatarFallback>
             </Avatar>
             <div className="grid gap-1.5">

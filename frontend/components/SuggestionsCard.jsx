@@ -134,7 +134,7 @@ export default function SuggestionsCard({ socket }) {
             <Link href={user ? `/profil?userId=${user.id}` : "#"}
               prefetch={false} className="flex items-center gap-2">
               <Avatar className="w-10 cursor-pointer h-10">
-                <AvatarImage src="/placeholder-user.jpg" alt="@shadcn" />
+                <AvatarImage src={`/uploads/${user?.avatar}`|| "/placeholder-user.jpg"} alt="@shadcn" />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
             </Link>
@@ -152,7 +152,7 @@ export default function SuggestionsCard({ socket }) {
             <Link href={user ? `/profil?userId=${user.id}` : "#"}
               prefetch={false} className="flex items-center gap-2">
               <Avatar className="w-10 cursor-pointer h-10">
-                <AvatarImage src="/placeholder-user.jpg" alt="@shadcn" />
+                <AvatarImage src={`/uploads/${user?.avatar}`|| "/placeholder-user.jpg"} alt="@shadcn" />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
             </Link>

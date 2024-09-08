@@ -76,9 +76,9 @@ export function PostCard({ post }) {
             <span className="text-muted-foreground">{post.Formated_date || "just now"}</span>
           </div>
 
-          {post.IsFollower ? '' : <Button variant="outline" size="sm" className="ml-auto">
+          {/* {post.IsFollower ? '' : <Button variant="outline" size="sm" className="ml-auto">
             Follow
-          </Button>}
+          </Button>} */}
         </div>
 
         <div className="text-lg grid gap-2 p-4">

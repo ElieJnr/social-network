@@ -28,7 +28,7 @@ func (g *GroupeService) CreateGroup(group models.Group) (string, error) {
 	id, er := utils.GenerateUuid()
 
 	if er != nil {
-		return "",er
+		return "", er
 	}
 
 	query := `INSERT INTO Groups (id,title,description, userId)
@@ -37,10 +37,10 @@ func (g *GroupeService) CreateGroup(group models.Group) (string, error) {
 	_, err := g.GetDB().Exec(query, id, group.Title, group.Description, group.UserId)
 
 	if err != nil {
-		return "",fmt.Errorf("failed to create group: %w", err)
+		return "", fmt.Errorf("failed to create group: %w", err)
 	}
 
-	return id,nil
+	return id, nil
 }
 
 func (g *GroupeService) GroupExists(groupId string) (bool, error) {
@@ -52,7 +52,6 @@ func (g *GroupeService) GroupExists(groupId string) (bool, error) {
 	}
 	return exists, nil
 }
-
 
 func (g *GroupeService) AddNewMember(newMember models.NewMember) error {
 	// Vérifier si le groupe existe
@@ -74,7 +73,6 @@ func (g *GroupeService) AddNewMember(newMember models.NewMember) error {
 	return nil
 }
 
-
 func (g *GroupeService) GetGroups(userID string) ([]models.Group, error) {
 	query := `SELECT * FROM Groups ORDER BY created_at DESC`
 	fmt.Println("ici")
@@ -91,20 +89,19 @@ func (g *GroupeService) GetGroups(userID string) ([]models.Group, error) {
 			return nil, fmt.Errorf("failed to scan group: %w", err)
 		}
 
-		isMember,err:= g.GetUserRoleInGroup(userID, group.Id)
+		isMember, err := g.GetUserRoleInGroup(userID, group.Id)
 
-		if err != nil{
+		if err != nil {
 			return nil, fmt.Errorf("impossible to found if the user is in the group: %w", err)
 		}
-		
-		group.IsMember=isMember
 
-		fmt.Println(group,"group")
+		group.IsMember = isMember
+
+		fmt.Println(group, "group")
 		groups = append(groups, group)
 	}
 	return groups, nil
 }
-
 
 func (g *GroupeService) GetUserRoleInGroup(userId, groupId string) (string, error) {
 	var role string
@@ -122,8 +119,35 @@ func (g *GroupeService) GetUserRoleInGroup(userId, groupId string) (string, erro
 
 	return role, nil
 }
+func (g *GroupeService) GetSuggGroup(members []models.Member) ([]models.Author, error) {
+	query := `SELECT firstname, lastname, username, avatar,isPrivate,SUBSTR(email, 1, INSTR(email, '@') - 1) AS email_username FROM Users`
 
-func (g *GroupeService) UpdateMemberRole(newMember models.NewMember) error {	
+	rows, er := g.db.Query(query)
+	if er != nil {
+		return nil, er
+	}
+	var authors []models.Author
+	for rows.Next() {
+		var author models.Author
+		err := rows.Scan(&author.Id,
+			&author.Firstname,
+			&author.Lastname,
+			&author.Username,
+			&author.Avatar,
+			&author.IsPrivate,
+			&author.Email,
+		)
+		if err != nil {
+			return nil, err
+		}
+		if !IsMember(members, author) {
+			authors = append(authors, author)
+		}
+
+	}
+	return authors, nil
+}
+func (g *GroupeService) UpdateMemberRole(newMember models.NewMember) error {
 	query := `UPDATE Membership SET role = ? WHERE userId = ? AND groupId = ?`
 	_, err := g.GetDB().Exec(query, newMember.Status, newMember.UserId, newMember.GroupId)
 	if err != nil {
@@ -141,4 +165,13 @@ func (g *GroupeService) RemoveMember(newMember models.NewMember) error {
 	}
 
 	return nil
+}
+
+func IsMember(members []models.Member, author models.Author) bool {
+	for _, m := range members {
+		if author.Id == m.UserId {
+			return true
+		}
+	}
+	return false
 }

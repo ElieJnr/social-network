@@ -5,6 +5,7 @@ import (
 )
 
 type Author struct {
+	Id        string
 	Firstname string
 	Lastname  string
 	Username  string

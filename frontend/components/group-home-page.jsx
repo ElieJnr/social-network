@@ -97,30 +97,33 @@ export function GroupHomePage({ id, socket }) {
 
 export function SuggestionsGroupCard({ idgroupe }) {
 
-  const [suggGroupe, setsuggGroup] = useState([])
+  const [suggGroup, setsuggGroup] = useState([])
 
   useEffect(() => {
-    fetc
+    setsuggGroup(fetchSuggGroup(idgroupe))
+    console.log(suggGroup);
+
   }, [])
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Suggestions</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex items-center gap-4">
+        {suggGroup?.map((s) => (<div className="flex items-center gap-4">
           <Avatar className="w-10 h-10">
             <AvatarImage src="/placeholder-user.jpg" alt="@shadcn" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <div className="space-y-1">
-            <div className="font-semibold">Joey Tribbiani</div>
-            <div className="text-muted-foreground">@joeyt</div>
+            <div className="font-semibold">{s.Firstname}</div>
+            <div className="text-muted-foreground">{s.Lastname}</div>
           </div>
           <Button variant="outline" size="sm" className="ml-auto">
             Invite
           </Button>
-        </div>
+        </div>))}
       </CardContent>
     </Card>
   );

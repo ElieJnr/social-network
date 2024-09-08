@@ -35,8 +35,8 @@ func WebsocketHandler(w http.ResponseWriter, r *http.Request) {
 	// ajout de l'utilisateur dans le tableau des connexions
 	conn, err := Upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		fmt.Errorf("probleme lors de l'initialisation: %w", err)
-		
+		fmt.Println("probleme lors de l'initialisation: %w", err)
+
 	}
 	ClientWebSocketConnections[sender] = conn
 	// fmt.Errorf("clients websocket:", ClientWebSocketConnections)
@@ -45,7 +45,7 @@ func WebsocketHandler(w http.ResponseWriter, r *http.Request) {
 	go Reader(conn, w, r)
 }
 
-func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request)error {
+func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error {
 	sender, _ := ChatService.GetConnectedUserId(r)
 
 	for {
@@ -54,7 +54,6 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request)error {
 		if err != nil {
 			return fmt.Errorf("json error %w", err)
 		}
-		fmt.Errorf("message", msg)
 		switch msg.Type { // les fonction qui utiliseront la base de donnee doivent etre des services
 
 		case "groupeChat":
@@ -62,13 +61,12 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request)error {
 		case "clickOnUser":
 			err := ChatService.SendStockedMessage(conn, sender, msg.ReceiverId, false, false)
 			if err != nil {
-				return fmt.Errorf("erreur :", err)
+				return fmt.Errorf("erreur: %w", err)
 
 			}
 		case "notifications":
 			if msg.SubType == "read" {
 				err := NotifService.MarkAsRead(msg.ReceiverId) //id of notif
-				fmt.Errorf("read------------")
 				if err != nil {
 					return fmt.Errorf("error read: %w", err)
 				}
@@ -157,7 +155,7 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request)error {
 				}
 				if receiverConn, ok := ClientWebSocketConnections[msg.ReceiverId]; ok {
 					receiverConn.WriteJSON(msg)
-					
+
 				}
 
 				newMember := models.NewMember{

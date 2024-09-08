@@ -74,12 +74,18 @@ func (n *NotifService) GetAllNotifications(ReceiverId string) ([]models.Notifica
 			return nil, fmt.Errorf("failed to scan notification: %w", err)
 		}
 		senderInfo, err := utils.GetAuthor(n.db, notification.SenderID)
+
 		if err != nil {
 			return nil, fmt.Errorf("failed to get senderInfo: %w", err)
 		}
+		receiverInfo,er := utils.GetAuthor(n.db,notification.ReceiverID)
+
+		if er != nil {
+			return nil, fmt.Errorf("failed to get receiverInfo: %w", er)
+		}
 		
 		notification.Formated_date = utils.FormatTimeAgo(notification.CreateAt)
-
+		notification.ReceiverInfo = receiverInfo
 		notification.SenderInfo = senderInfo
 		notifications = append(notifications, notification)
 	}

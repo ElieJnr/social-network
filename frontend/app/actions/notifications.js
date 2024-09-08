@@ -22,6 +22,6 @@ export async function fetchNotifs(setNotifications, type) {
     }
 }
 
-export function OnMessage(socket) {
+export function SendFollow(socket) {
 
 }

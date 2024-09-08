@@ -1,9 +1,9 @@
 "use client"
-import { CardContent, Card, CardFooter , CardHeader, CardTitle } from "@/components/ui/card"
+import { CardContent, Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { fetchGroupCreatePost } from "@/app/actions/post";
 import { CreateEventCard } from './create-event-card';
-import { useWebSocket } from '@/app/actions/message';
+import { socketSend, useWebSocket } from '@/app/actions/message';
 import { useToast } from "@/components/ui/use-toast";
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button";
@@ -14,8 +14,8 @@ import { fetchLike } from '@/app/actions/post';
 import CommentCard from './CommentCard';
 import useSWR, { mutate } from 'swr';
 import GroupChat from "./MessageComponent/MessageApp";
-const {HeartIcon, MessageCircleIcon} = require("lucide-react");
-const { useState } = require('react');
+const { HeartIcon, MessageCircleIcon } = require("lucide-react");
+const { useState, useEffect } = require('react');
 // import PostCard from "@/components/PostCard";
 import EventList from './EventList';
 import Image from "next/image";
@@ -66,17 +66,16 @@ function Sidebar({ setActiveComponent, socket }) {
   );
 }
 
-export function GroupHomePage({id}) {
+export function GroupHomePage({ id, socket }) {
   const [activeComponent, setActiveComponent] = useState('post');
-  const socket = useWebSocket('ws://localhost:8080/ws');
 
   return (
     <div className="flex flex-col h-screen">
       <div className="flex-1 grid grid-cols-[1fr_2fr_1.5fr] gap-6 p-6">
         <div className="space-y-6">
           {/* <EventsCards /> */}
-          <SuggestionsGroupCard />
-          <EventList id={id}/>
+          <SuggestionsGroupCard idgroupe={id} />
+          <EventList id={id} />
         </div>
         <div className="space-y-6">
           {activeComponent === 'post' ? <CreatePostGroupCard /> : <CreateEventCard id={id} socket={socket} />}
@@ -91,7 +90,13 @@ export function GroupHomePage({id}) {
   );
 }
 
-export function SuggestionsGroupCard() {
+export function SuggestionsGroupCard({ idgroupe }) {
+
+  const [suggGroupe, setsuggGroup] = useState([])
+
+  useEffect(() => {
+    fetc
+  }, [])
   return (
     <Card>
       <CardHeader>
@@ -106,19 +111,6 @@ export function SuggestionsGroupCard() {
           <div className="space-y-1">
             <div className="font-semibold">Joey Tribbiani</div>
             <div className="text-muted-foreground">@joeyt</div>
-          </div>
-          <Button variant="outline" size="sm" className="ml-auto">
-            Invite
-          </Button>
-        </div>
-        <div className="flex items-center gap-4">
-          <Avatar className="w-10 h-10">
-            <AvatarImage src="/placeholder-user.jpg" alt="@shadcn" />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
-          <div className="space-y-1">
-            <div className="font-semibold">Phoebe Buffay</div>
-            <div className="text-muted-foreground">@phoebeb</div>
           </div>
           <Button variant="outline" size="sm" className="ml-auto">
             Invite

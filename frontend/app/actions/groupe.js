@@ -52,3 +52,7 @@ export async function fetchForNotAddingInAGroupe(groupId, userId){
     console.log(error);
   }
 }
+
+function fetchSuggGroup(){
+  
+}

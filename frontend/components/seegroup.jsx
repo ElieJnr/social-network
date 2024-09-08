@@ -8,7 +8,7 @@ export default function SeeGroup({id}) {
         <div className="flex flex-col h-screen">
             <NavBar socket={socket} />
             <div className="flex-1 ">
-                <GroupHomePage id={id}/>
+                <GroupHomePage id={id} socket={socket}/>
             </div>
         </div>
     );

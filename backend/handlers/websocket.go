@@ -35,26 +35,26 @@ func WebsocketHandler(w http.ResponseWriter, r *http.Request) {
 	// ajout de l'utilisateur dans le tableau des connexions
 	conn, err := Upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		fmt.Println("probleme lors de l'initialisation: ", err)
-		return
+		fmt.Errorf("probleme lors de l'initialisation: %w", err)
+		
 	}
 	ClientWebSocketConnections[sender] = conn
-	// fmt.Println("clients websocket:", ClientWebSocketConnections)
+	// fmt.Errorf("clients websocket:", ClientWebSocketConnections)
 
 	// ------------------------------------------
 	go Reader(conn, w, r)
 }
 
-func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) {
+func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request)error {
 	sender, _ := ChatService.GetConnectedUserId(r)
 
 	for {
 		var msg models.Message
 		err := conn.ReadJSON(&msg)
 		if err != nil {
-			fmt.Println("json error %w", err)
+			return fmt.Errorf("json error %w", err)
 		}
-		fmt.Println("message", msg)
+		fmt.Errorf("message", msg)
 		switch msg.Type { // les fonction qui utiliseront la base de donnee doivent etre des services
 
 		case "groupeChat":
@@ -62,29 +62,29 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) {
 		case "clickOnUser":
 			err := ChatService.SendStockedMessage(conn, sender, msg.ReceiverId, false, false)
 			if err != nil {
-				fmt.Println("erreur :", err)
+				return fmt.Errorf("erreur :", err)
 
 			}
 		case "notifications":
 			if msg.SubType == "read" {
 				err := NotifService.MarkAsRead(msg.ReceiverId) //id of notif
-				fmt.Println("read------------")
+				fmt.Errorf("read------------")
 				if err != nil {
-					fmt.Println("error read: %w", err)
+					return fmt.Errorf("error read: %w", err)
 				}
 
 			}
 			if msg.SubType == "event" {
 				members, e := MemberService.GetMembership(msg.GroupeId)
 				if e != nil {
-					fmt.Println("error member: %w", err)
+					return fmt.Errorf("error member: %w", err)
 				}
 
 				for _, m := range members {
 					if m.UserId != sender {
 						idNotif, er := utils.GenerateUuid()
 						if er != nil {
-							fmt.Println("error read: %w", err)
+							return fmt.Errorf("error read: %w", err)
 						}
 						notif := models.Notification{
 							Id:         idNotif,
@@ -96,7 +96,7 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) {
 						e := NotifService.CreateNotification(&notif)
 
 						if e != nil {
-							fmt.Println("error read: %w", err)
+							return fmt.Errorf("error read: %w", err)
 						}
 
 						if receiverConn, ok := ClientWebSocketConnections[m.UserId]; ok {
@@ -110,7 +110,7 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) {
 
 				idNotif, er := utils.GenerateUuid()
 				if er != nil {
-					fmt.Println("error read: %w", err)
+					return fmt.Errorf("error read: %w", err)
 				}
 
 				notif := models.Notification{
@@ -123,9 +123,8 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) {
 				e := NotifService.CreateNotification(&notif)
 
 				if e != nil {
-					fmt.Println("error read: %w", err)
+					return fmt.Errorf("error read: %w", err)
 				}
-				fmt.Println(msg.ReceiverId)
 				if receiverConn, ok := ClientWebSocketConnections[msg.ReceiverId]; ok {
 					receiverConn.WriteJSON(msg)
 				}
@@ -134,14 +133,14 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) {
 			if msg.SubType == "addGroupe" {
 				idNotif, er := utils.GenerateUuid()
 				if er != nil {
-					fmt.Println("error read: %w", err)
+					return fmt.Errorf("error read: %w", err)
 				}
 
 				author, err := utils.GetAuthor(NotifService.GetDB(), sender)
 
 				mess := author.Firstname + " " + author.Lastname + " veut rejoindre le groupe " + msg.Content
 				if err != nil {
-					fmt.Println("error read: %w", err)
+					return fmt.Errorf("error read: %w", err)
 				}
 
 				notif := models.Notification{
@@ -154,12 +153,11 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) {
 				}
 				e := NotifService.CreateNotification(&notif)
 				if e != nil {
-					fmt.Println("error read: %w", err)
+					return fmt.Errorf("error read: %w", err)
 				}
 				if receiverConn, ok := ClientWebSocketConnections[msg.ReceiverId]; ok {
 					receiverConn.WriteJSON(msg)
-					fmt.Println("****************************************************je test", msg)
-					fmt.Println("-------------------------------------------------je cherche: ", msg.GroupeId)
+					
 				}
 
 				newMember := models.NewMember{
@@ -170,7 +168,7 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) {
 
 				e = GroupeService.AddNewMember(newMember)
 				if e != nil {
-					fmt.Println("error on the status waiting in ws: %w", err)
+					return fmt.Errorf("error on the status waiting in ws: %w", err)
 				}
 
 			}
@@ -180,7 +178,7 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) {
 
 			idNotif, er := utils.GenerateUuid()
 			if er != nil {
-				fmt.Println("error read: %w", err)
+				return fmt.Errorf("error read: %w", err)
 			}
 			notif := models.Notification{
 				Id:         idNotif,
@@ -192,59 +190,58 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) {
 			e := NotifService.CreateNotification(&notif)
 
 			if e != nil {
-				fmt.Println("error read: %w", err)
+				return fmt.Errorf("error read: %w", err)
 			}
 
 			err := ChatService.RegisterMsg(msg)
 			if err != nil {
-				fmt.Println("error: ", err)
+				return fmt.Errorf("error: %w ", err)
 			}
 
 			errToSender := ChatService.SendStockedMessage(conn, sender, msg.ReceiverId, true, false)
 			if errToSender != nil {
-				fmt.Println("error: %w", errToSender)
+				return fmt.Errorf("error: %w", errToSender)
 			}
 
 			if receiverConn, ok := ClientWebSocketConnections[msg.ReceiverId]; ok {
 				errtoreceiver := ChatService.SendStockedMessage(receiverConn, sender, msg.ReceiverId, true, false)
 				if errtoreceiver != nil {
-					fmt.Println("error: %w", errtoreceiver)
+					return fmt.Errorf("error: %w", errtoreceiver)
 				}
 			}
 
 		case "userSender":
-			// fmt.Println("senderId :", msg.SenderId, "sender: ", sender, "receiver: ", msg.ReceiverId)
+			// fmt.Errorf("senderId :", msg.SenderId, "sender: ", sender, "receiver: ", msg.ReceiverId)
 			user, err := ChatService.FetchUser(ClientWebSocketConnections, sender)
 			if err != nil {
-				fmt.Println("err: ", err)
-				fmt.Println("error : %w", err)
+				return fmt.Errorf("err: %w ", err)
 			}
 			conn.WriteMessage(websocket.TextMessage, []byte(user))
 
 		case "enterGroupMessage":
 			err := ChatService.SendStockedMessage(conn, sender, msg.ReceiverId, false, true)
 			if err != nil {
-				fmt.Println("error: %w", err)
+				return fmt.Errorf("error: %w", err)
 			}
 		case "newGroupChat":
 			msg.SenderId = sender
 
 			member, e := ChatService.GetGroupMembership(msg.ReceiverId)
 			if e != nil {
-				fmt.Println("e: ", e)
+				return fmt.Errorf("error: %w", e)
 			}
-			// fmt.Println("member: ", member)
+			// fmt.Errorf("member: ", member)
 
 			err := ChatService.RegisterMsg(msg)
 			if err != nil {
-				fmt.Println("error: ", err)
+				return fmt.Errorf("error: %w", err)
 			}
 
 			for _, m := range member {
 				if conn, ok := ClientWebSocketConnections[m]; ok {
 					er := ChatService.SendStockedMessage(conn, msg.SenderId, msg.ReceiverId, false, true)
 					if er != nil {
-						fmt.Println("er: ", er)
+						return fmt.Errorf("error: %w", er)
 					}
 				}
 			}

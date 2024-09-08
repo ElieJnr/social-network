@@ -41,7 +41,7 @@ func InitializeRoutes() *mux.Router {
 	router.Handle("/group/getEvents", middlewares.AuthMiddleware(handlers.GetEventsByGroupHandler())).Methods("GET")
 	router.Handle("/group/respondEvent", middlewares.AuthMiddleware(handlers.RespondToEventHandler())).Methods("POST")
 	router.Handle("/group/respondEvent", middlewares.AuthMiddleware(handlers.GetResponsesByGroupAndMemberHandler())).Methods("GET")
-	router.Handle("/group/respondEvent", middlewares.AuthMiddleware(handlers.GetResponsesByGroupAndMemberHandler())).Methods("GET")
+	router.Handle("/group/suggGroup", middlewares.AuthMiddleware(handlers.SuggGroup())).Methods("POST")
 
 	// Reactions
 	router.Handle("/like", middlewares.AuthMiddleware(handlers.LikeHandler())).Methods("POST")

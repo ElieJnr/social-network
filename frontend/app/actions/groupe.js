@@ -53,6 +53,22 @@ export async function fetchForNotAddingInAGroupe(groupId, userId){
   }
 }
 
-function fetchSuggGroup(){
-  
+export async function fetchSuggGroup(groupId){
+  try{
+    const response = await fetch('http://localhost:8080/group/suggGroup',{
+      method:"POST",
+      credentials:"include",
+      body: JSON.stringify({groupId})
+    })
+    if (!response.ok){
+      throw new Error ("impossible d'ajouter un nouveau membre au groupe")
+    }
+
+    const data = await response.json()
+
+    return data
+  }
+  catch(error){
+    console.log(error);
+  }
 }

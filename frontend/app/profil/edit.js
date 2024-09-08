@@ -2,11 +2,19 @@ import { Button } from "@/components/ui/button";
 import { LockIcon } from "lucide-react";
 import { EyeIcon } from "lucide-react";
 import { editProfil } from "../actions/users";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Edit({ onClose, user }) {
-    
+    const {toast} = useToast()
      const handlePrivate = (isPrivate) => {
          editProfil(user.id, isPrivate)
+         isPrivate ? toast({
+            title: "Edit",
+            description: `Your profil is private.`,
+          }) : toast({
+            title: "Edit",
+            description: "You profil is public.",
+          });
          onClose()
      };
 

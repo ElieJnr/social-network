@@ -5,6 +5,7 @@ import { allUsers, search, searchUsers, userConnect } from "@/app/actions/users"
 import { useState, useEffect } from "react";
 import Link from "next/link"
 import { socketSend } from "@/app/actions/message";
+import { useToast } from "./ui/use-toast";
 
 const { Card, CardHeader, CardTitle, CardContent } = require("./ui/card");
 const { Avatar, AvatarImage, AvatarFallback } = require("./ui/avatar");
@@ -16,6 +17,7 @@ export default function SuggestionsCard({ socket }) {
   const [hiddenUsers, setHiddenUsers] = useState([]);
   const [tabFilter, setTabFilter] = useState([])
   const [tabRequest, setTabRequest] = useState([])
+  const {toast} = useToast()
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -65,6 +67,13 @@ export default function SuggestionsCard({ socket }) {
     console.log(user.id);
     setHiddenUsers(prev => [...prev, user]);
     follow(userOnLine.id, user.id, statut, true)
+    statut ? toast({
+      title: "Follow Successful",
+      description: `You follow now ${user.firstname} .`,
+    }) : toast({
+      title: "Request",
+      description: "Your request has been send.",
+    });
     const Message = {
       Type: "notifications",
       ReceiverId: user.id,
@@ -72,7 +81,9 @@ export default function SuggestionsCard({ socket }) {
       Content: "wants to follow you",
       IsPrivate: user.IsPrivate
     }
-
+    if (!statut) {
+      setTabRequest(prevTabRequest => [...prevTabRequest, user]);
+    }
     socketSend(socket, Message)
   }
   if (!users || !userOnLine) {

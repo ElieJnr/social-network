@@ -19,6 +19,7 @@ import { useWebSocket } from "../actions/message";
 import { PostGroupCard } from "@/components/group-home-page";
 import { PostCard, SkeletonPostCard } from "@/components/PostCard";
 import { filterPost } from "../actions/post";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Profil() {
     const socket = useWebSocket('ws://localhost:8080/ws');
@@ -31,6 +32,7 @@ export default function Profil() {
     const [isFollowingOpen, setFollowingOpen] = useState(false);
     const [edit, setEdit] = useState(false)
     const [tabRequest, setTabRequest] = useState([])
+    const {toast} = useToast()
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
         const userIdFromQuery = urlParams.get('userId');
@@ -91,7 +93,14 @@ export default function Profil() {
         console.log(statut);
         follow(userOnLine.id, user.id, statut, false);
         setRefreshTrigger(prev => !prev);
-
+        statut ? toast({
+            title: "Follow Successful",
+            description: `You follow now ${user.firstname} .`,
+          }) : toast({
+            title: "Request",
+            description: "Your request has been send.",
+          });
+       
     };
     const CanSee = (user) => {
         return (search([user], userOnLine?.follows || [])).length === 0
@@ -118,7 +127,7 @@ export default function Profil() {
                                             <div className="font-medium text-2xl">
                                                 {user ? user.firstname : "loading"} {user ? user.lastname : ""}
                                             </div>
-                                            {CanSee(user) || !user.isPrivate ?
+                                            {CanSee(user) || !user.isPrivate ||userOnLine.id == user.id ?
                                                 <>
                                                     <div className="flex items-center gap-2">
                                                         <MailIcon className="h-4 w-4 text-muted-foreground" />
@@ -216,11 +225,11 @@ export default function Profil() {
                             <div className="flex items-center justify-between">
                                 <div className="font-medium">Posts</div>
                                 <div className="flex items-center gap-2">
-                                    <Button variant="outline" size="sm">
+                                    <Button   variant={ user.isPrivate ? "outline" : ""}  size="sm">
                                         <EyeIcon className="w-4 h-4 mr-2" />
                                         Public
                                     </Button>
-                                    <Button variant="outline" size="sm">
+                                    <Button variant={ !user.isPrivate ? "outline" : ""} size="sm">
                                         <LockIcon className="w-4 h-4 mr-2" />
                                         Private
                                     </Button>
@@ -228,7 +237,7 @@ export default function Profil() {
                             </div>
                             <div className="flex justify-center  min-h-screen">
                                 <div className="w-[60%] flex flex-col  ">
-                                    {CanSee(user) || !user.isPrivate ?
+                                    {CanSee(user) || !user.isPrivate || userOnLine.id == user.id ?
                                         <PostsProfil posts={ filterPost(user.posts) } />
 
                                         : ""}

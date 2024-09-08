@@ -37,7 +37,7 @@ run_docker() {
   xdg-open http://localhost:3000
 }
 
-if [ "$1" == "-install" ]; then
+if [ "$1" = "-install" ]; then
   install_docker
 fi
 

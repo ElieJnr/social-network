@@ -33,7 +33,7 @@ export default function NavBar({ socket }) {
       className="flex items-center justify-between bg-card px-4 py-3 shadow-sm sm:px-6">
       <div className="flex items-center gap-4">
         <Link href="/" className="flex items-center gap-2" prefetch={false}>
-          <span className="text-lg font-semibold">Social d'OZ</span>
+          <span className="text-lg font-semibold">Social d&apos;OZ</span>
         </Link>
         <nav className="hidden gap-4 text-sm font-medium sm:flex">
           <Link href="/" className="hover:underline " prefetch={false}>
@@ -69,12 +69,6 @@ export default function NavBar({ socket }) {
                 Profile
               </button>
 
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Link href="#" className="flex items-center gap-2" prefetch={false}>
-                <SettingsIcon className="h-4 w-4" />
-                Settings
-              </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>

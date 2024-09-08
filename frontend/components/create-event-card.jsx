@@ -25,21 +25,21 @@ export function CreateEventCard({ id, socket }) {
     if (!eventName.trim()) {
       toast({
         title: "Champ manquant",
-        description: "Veuillez entrer un nom pour l'événement.",
+        description: "Veuillez entrer un nom pour l&apos;événement.",
       });
       return;
     }
     if (!eventDescription.trim()) {
       toast({
         title: "Champ manquant",
-        description: "Veuillez entrer une description pour l'événement.",
+        description: "Veuillez entrer une description pour l&apos;événement.",
       });
       return;
     }
     if (!eventDate) {
       toast({
         title: "Champ manquant",
-        description: "Veuillez sélectionner une date pour l'événement.",
+        description: "Veuillez sélectionner une date pour l&apos;événement.",
       });
       return;
     }
@@ -54,7 +54,7 @@ export function CreateEventCard({ id, socket }) {
       if (!response.ok) {
         toast({
           title: "Erreur",
-          description: "Erreur lors de la création de l'événement.",
+          description: "Erreur lors de la création de l&apos;événement.",
         });
         return;
       }
@@ -71,7 +71,7 @@ export function CreateEventCard({ id, socket }) {
     } catch (error) {
       toast({
         title: "Erreur",
-        description: "Une erreur s'est produite. Veuillez réessayer.",
+        description: "Une erreur s&apos;est produite. Veuillez réessayer.",
       });
     }
     const Message = {
@@ -92,10 +92,10 @@ export function CreateEventCard({ id, socket }) {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="event-name">Nom de l'événement</Label>
+          <Label htmlFor="event-name">Nom de l&apos;événement</Label>
           <Input
             id="event-name"
-            placeholder="Entrez le nom de l'événement"
+            placeholder="Entrez le nom de l&apos;événement"
             value={eventName}
             onChange={(e) => setEventName(e.target.value)}
           />
@@ -104,7 +104,7 @@ export function CreateEventCard({ id, socket }) {
           <Label htmlFor="event-description">Description</Label>
           <Textarea
             id="event-description"
-            placeholder="Décrivez l'événement"
+            placeholder="Décrivez l&apos;événement"
             value={eventDescription}
             onChange={(e) => setEventDescription(e.target.value)}
           />
@@ -121,7 +121,7 @@ export function CreateEventCard({ id, socket }) {
         </div>
       </CardContent>
       <CardFooter className="flex justify-end">
-        <Button onClick={handleCreateEvent}>Créer l'événement</Button>
+        <Button onClick={handleCreateEvent}>Créer l&apos;événement</Button>
       </CardFooter>
     </Card>
   );

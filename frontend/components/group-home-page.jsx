@@ -102,7 +102,7 @@ export function SuggestionsGroupCard({ idgroupe, socket }) {
 
   useEffect(() => {
     fetchSuggGroup(setsuggGroup, idgroupe)
-  }, [])
+  }, [idgroupe])
 
   function Invitation(userId) {
     const Message = {

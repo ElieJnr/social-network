@@ -13,7 +13,7 @@ type FollowRequest struct {
 	UserId     string `json:"userId"`
 	FollowedId string `json:"followedId"`
 	Statut     bool   `json:"statut"`
-	followU    bool   `json:"followU"`
+	FollowU    bool   `json:"followU"`
 }
 
 func Follow() http.HandlerFunc {
@@ -44,14 +44,15 @@ func Follow() http.HandlerFunc {
 		}
 
 		followService := services.NewFollowerService()
-		if req.followU {
+		fmt.Println("requet----------------",req.FollowU)
+		if req.FollowU {
 			err = followService.FollowUserOrUpdateStatus(userId, followedId, req.Statut)
 			if err != nil {
 				http.Error(w, "Cannot follow", http.StatusInternalServerError)
 				return
 			}
 		} else {
-			fmt.Println(req.Statut)
+		
 			err = followService.UnfollowUser(userId, followedId, req.Statut)
 			if err != nil {
 				http.Error(w, "Cannot follow", http.StatusInternalServerError)

@@ -47,7 +47,8 @@ export function Notifications({ socket }) {
         socketSend(socket, Message)
         fetchNotifs(setNotifications);
         if (Type == "follow") {
-            ok ? follow(SenderID, userId, true, true) : follow(SenderID, userId, false, false)
+            console.log(ok, SenderID, userId, true, true);
+            ok ? follow(SenderID, userId, true, ok) : follow(SenderID, userId, false, ok)
         }
         if (Type == "addGroupe") {
             if (ok) {

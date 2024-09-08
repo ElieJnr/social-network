@@ -134,6 +134,7 @@ func (f *FollowerService) GetUserFollow(userId string, ok bool) ([]models.Follow
 }
 
 func (f *FollowerService) UnfollowUser(userId uuid.UUID, followedUser uuid.UUID, statut bool) error {
+	
 	var existingId string
 	queryCheck := `
 		SELECT id 
@@ -161,6 +162,7 @@ func (f *FollowerService) UnfollowUser(userId uuid.UUID, followedUser uuid.UUID,
 			return fmt.Errorf("error checking existing follower: %w", err)
 		}
 	} else {
+
 		queryDelete := `
 			DELETE FROM Followers 
 			WHERE id = ?

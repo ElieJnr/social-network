@@ -7,7 +7,7 @@ export async function follow(userId, followedId, statut, followU) {
 	  statut: statut,
 	  followU : followU
 	};
-	
+	console.log("les donnees recu", formData);
 	let url = "http://localhost:8080/follow";
 	try {
 	   await fetchPost(url, formData);

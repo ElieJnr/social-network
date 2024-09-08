@@ -99,12 +99,9 @@ export function SuggestionsGroupCard({ idgroupe }) {
 
   const [suggGroup, setsuggGroup] = useState([])
 
-  useEffect(() => {
-    setsuggGroup(fetchSuggGroup(idgroupe))
-    console.log(suggGroup);
-
-  }, [])
-
+  // useEffect(() => {
+  //   fetc
+  // }, [])
   return (
     <Card>
       <CardHeader>

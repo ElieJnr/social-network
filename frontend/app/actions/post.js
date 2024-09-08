@@ -138,3 +138,9 @@ export async function fetchGroupPosts(groupId) {
     throw error;
   }
 }
+
+
+export function filterPost(posts) {
+
+  return posts.filter(post => post.Post_status != "group")
+}

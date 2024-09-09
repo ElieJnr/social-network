@@ -83,7 +83,7 @@
     Essayez d'ouvrir deux navigateurs (ex: Chrome et Firefox), connectez-vous avec différents utilisateurs dans chacun d'eux. Ensuite, avec un des utilisateurs, essayez d'envoyer un message privé à l'autre utilisateur:
         ✔ L'autre utilisateur a-t-il reçu le message en temps réel? @done(24-09-07 21:30)
     Essayez d'ouvrir deux navigateurs (ex: Chrome et Firefox), connectez-vous avec différents utilisateurs qui ne se suivent pas du tout. Ensuite, avec un des utilisateurs, essayez d'envoyer un message privé à l'autre utilisateur:
-        ✘ Pouvez-vous confirmer qu'il n'a pas été possible de créer un chat entre ces deux utilisateurs? @cancelled(24-09-07 21:35)
+        ✔ Pouvez-vous confirmer qu'il n'a pas été possible de créer un chat entre ces deux utilisateurs? @done(24-09-09 12:19)
     En utilisant les deux navigateurs avec les utilisateurs, commencez une conversation entre les deux:
         ✔ Le chat entre les utilisateurs s'est-il bien passé? (ne pas planter le serveur) @done(24-09-07 21:35)
     Essayez d'ouvrir trois navigateurs (ex: Chrome et Firefox ou un navigateur privé), connectez-vous avec différents utilisateurs dans chacun d'eux. Ensuite, avec un des utilisateurs, essayez d'envoyer un message privé à l'un des autres utilisateurs:

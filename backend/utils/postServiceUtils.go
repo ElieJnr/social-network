@@ -142,7 +142,7 @@ func IsFollowing(db *sql.DB, userId string, currentUserId string) (bool, error) 
 	// Vérifier si currentUserId est un ami de l'utilisateur
 	query := `SELECT COUNT(*) FROM Followers WHERE userId = ? AND followedId = ? AND statut = true`
 	var count int
-	err := db.QueryRow(query, userId, currentUserId).Scan(&count)
+	err := db.QueryRow(query, currentUserId, userId).Scan(&count)
 	if err != nil {
 		fmt.Println("error checking friend status")
 		return false, err

@@ -64,3 +64,19 @@ func (m *MemberService) GetMembership(groupId string) ([]models.Member, error) {
 
 	return membership, nil
 }
+
+
+func (m *MemberService) GetGroupOwnerID(groupId string) (string, error) {
+	query := `SELECT userId FROM Membership WHERE groupId = ? AND role = ?`
+	var groupOwnerID string
+
+	err := m.GetDB().QueryRow(query, groupId, "admin").Scan(&groupOwnerID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return "", fmt.Errorf("no group owner found for groupId %s", groupId)
+		}
+		return "", fmt.Errorf("failed to get group owner id: %w", err)
+	}
+
+	return groupOwnerID, nil
+}

@@ -93,6 +93,7 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error 
 					SenderID:   sender,
 					Type:       "invitation",
 					Message:    author.Firstname + " " + author.Lastname + " vous invite a rejoindre le groupe:" + title,
+					GroupId: msg.GroupeId,
 				}
 				e := NotifService.CreateNotification(&notif)
 
@@ -173,9 +174,11 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error 
 					return fmt.Errorf("error read: %w", err)
 				}
 
+				groupOwnerID, err:= MemberService.GetGroupOwnerID(msg.GroupeId)
+
 				notif := models.Notification{
 					Id:         idNotif,
-					ReceiverID: msg.ReceiverId,
+					ReceiverID: groupOwnerID,
 					SenderID:   sender,
 					Type:       "addGroupe",
 					Message:    mess,
@@ -185,7 +188,7 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error 
 				if e != nil {
 					return fmt.Errorf("error read: %w", err)
 				}
-				if receiverConn, ok := ClientWebSocketConnections[msg.ReceiverId]; ok {
+				if receiverConn, ok := ClientWebSocketConnections[groupOwnerID]; ok {
 					receiverConn.WriteJSON(msg)
 
 				}

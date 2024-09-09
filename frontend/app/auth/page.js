@@ -37,7 +37,6 @@ export default function RegisterForm() {
       toast({
         title: "Validation Error",
         description: message,
-        status: "error",
       });
       return false;
     }
@@ -48,24 +47,30 @@ export default function RegisterForm() {
     setLoading(true);
 
     if (!validateField("firstname", formData.firstname)) {
-      setLoading(false);
+    setLoading(false);
+
       return;
     }
 
     if (!validateField("lastname", formData.lastname)) {
-      setLoading(false);
+    setLoading(false);
+
       return;
     }
 
     if (!validateField("email", formData.email)) {
-      setLoading(false);
+    setLoading(false);
+
       return;
     }
 
     if (!validateField("password", formData.password)) {
-      setLoading(false);
+    setLoading(false);
+
       return;
     }
+
+    
 
     const data = new FormData();
 
@@ -77,18 +82,21 @@ export default function RegisterForm() {
     data.append("bio", formData.bio || ""); // Optionnel
     data.append("dateOfBirth", formData.dateOfBirth);
     data.append("password", formData.password);
+ // Ajout du fichier d'avatar s'il existe
+ if (formData.avatar && formData.avatar.length > 0) {
+  data.append("avatar", formData.avatar[0]);
+setLoading(false);
 
-    // Ajout du fichier d'avatar s'il existe
-    if (formData.avatar && formData.avatar.length > 0) {
-      data.append("avatar", formData.avatar[0]);
-    }
+}
 
-    if (formData.password.length < 8){
-      toast({
-        title: "Password must be at least 8 caracteres"
-      })
-      return
-    }
+if (formData.password.length < 8){
+  toast({
+    title: "Password must be at least 8 caracteres"
+  })
+setLoading(false);
+
+  return
+}
 
     try {
       const response = await authentification(data);
@@ -112,7 +120,7 @@ export default function RegisterForm() {
         description: "An error occurred during registration. Please try again.",
       });
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   };
 

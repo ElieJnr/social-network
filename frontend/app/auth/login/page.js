@@ -28,7 +28,6 @@ const LoginForm = () => {
       toast({
         title: "Validation Error",
         description: message,
-        status: "error",
       });
       return false;
     }
@@ -64,15 +63,13 @@ const LoginForm = () => {
 
       toast({
         title: "Login Successful",
-        description: "You have been logged in successfully.",
-        status: "success",
+        description: "You have been logged in successfully."
       });
       router.push("/");
     } catch (error) {
       toast({
         title: "Login Failed",
         description: "An error occurred during login. Please try again.",
-        status: "error",
       });
       console.error(error);
     } finally {

@@ -48,9 +48,6 @@ export function CreateGroupCard() {
       const response = await fetch("http://localhost:8080/group/createGroup", {
         method: "POST",
         credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(newGroup),
       });
 

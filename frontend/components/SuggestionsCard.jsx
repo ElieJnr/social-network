@@ -79,7 +79,7 @@ export default function SuggestionsCard({ socket }) {
       ok = await reponse.user.isPrivate;
       console.log(ok);
     } catch (error) {}
-    follow(userOnLine.id, user.id, !ok.isPrivate, true);
+    follow(userOnLine.id, user.id, !ok, true);
     statut
       ? toast({
           title: "Follow Successful",

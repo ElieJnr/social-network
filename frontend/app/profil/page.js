@@ -99,16 +99,17 @@ export default function Profil() {
     console.log(tabRequest);
   }
   const handleClick = async (user, statut) => {
-    console.log(statut);
+   // console.log(statut);
     let ok = statut;
     try {
       const reponse = GetAllInfoForUserById(user.id);
       ok = await reponse.user.isPrivate;
       console.log(ok);
     } catch (error) {}
-    follow(userOnLine.id, user.id, statut, false);
+    console.log(ok);
+    follow(userOnLine.id, user.id, ok, false);
     setRefreshTrigger((prev) => !prev);
-    statut
+    ok
       ? toast({
           title: "Follow Successful",
           description: `You follow now ${user.firstname} .`,
@@ -248,7 +249,7 @@ export default function Profil() {
                   {user?.followers ? user.followers.length : "0"}
                 </div>
                 <UserListModal
-                  isOpen={isFollowersOpen}
+                  isOpen={isFollowersOpen }
                   onClose={() => setFollowersOpen(false)}
                   title="Followers"
                   users={user?.followers || []}
@@ -263,7 +264,7 @@ export default function Profil() {
                   {user && user.follows ? user.follows.length : "0"}
                 </div>
                 <UserListModal
-                  isOpen={isFollowingOpen}
+                  isOpen={isFollowingOpen }
                   onClose={() => setFollowingOpen(false)}
                   title="Following"
                   users={user?.follows || []}

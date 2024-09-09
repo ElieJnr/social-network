@@ -16,50 +16,59 @@ import { CreateEvent } from "@/app/actions/events";
 import { mutate } from "swr";
 import { domain } from "@/app";
 import { socketSend } from "@/app/actions/message";
+import { ValidateInput } from "@/app/actions/input"; // Assume ValidateInput exists
+
 export function CreateEventCard({ id, socket }) {
   const { toast } = useToast();
   const [eventName, setEventName] = useState("");
   const [eventDescription, setEventDescription] = useState("");
   const [eventDate, setEventDate] = useState("");
+
+  // Function to validate individual fields
+  const validateField = (field, value) => {
+    const { isValid, message } = ValidateInput(value);
+    if (!isValid) {
+      toast({
+        title: "Validation Error",
+        description: message,
+      });
+      return false;
+    }
+    return true;
+  };
+
   const handleCreateEvent = async () => {
-    if (!eventName.trim()) {
-      toast({
-        title: "Champ manquant",
-        description: "Veuillez entrer un nom pour l&apos;événement.",
-      });
-      return;
-    }
-    if (!eventDescription.trim()) {
-      toast({
-        title: "Champ manquant",
-        description: "Veuillez entrer une description pour l&apos;événement.",
-      });
-      return;
-    }
+    // Validate each field before proceeding
+    if (!validateField("eventName", eventName)) return;
+    if (!validateField("eventDescription", eventDescription)) return;
     if (!eventDate) {
       toast({
         title: "Champ manquant",
-        description: "Veuillez sélectionner une date pour l&apos;événement.",
+        description: "Veuillez sélectionner une date pour l'événement.",
       });
       return;
     }
+
     const eventData = {
       groupid: id,
       title: eventName,
       description: eventDescription,
       date: new Date(eventDate).toISOString(),
     };
+
     try {
       const response = await CreateEvent(eventData);
       if (!response.ok) {
         toast({
           title: "Erreur",
-          description: "Erreur lors de la création de l&apos;événement.",
+          description: "Erreur lors de la création de l'événement.",
         });
         return;
       }
+
       // Mutate the correct SWR key after the event is created
       mutate(`${domain}/group/getEvents?groupId=${id}`);
+
       // Clear the form after successful creation
       setEventName("");
       setEventDescription("");
@@ -71,17 +80,19 @@ export function CreateEventCard({ id, socket }) {
     } catch (error) {
       toast({
         title: "Erreur",
-        description: "Une erreur s&apos;est produite. Veuillez réessayer.",
+        description: "Une erreur s'est produite. Veuillez réessayer.",
       });
     }
-    const Message = {
+
+    const message = {
       Type: "notifications",
       SubType: "event",
       GroupeId: id,
-      Content:eventData.title,
-    }
-    socketSend(socket, Message)
+      Content: eventData.title,
+    };
+    socketSend(socket, message);
   };
+
   return (
     <Card className="w-full">
       <CardHeader>
@@ -95,7 +106,7 @@ export function CreateEventCard({ id, socket }) {
           <Label htmlFor="event-name">Nom de l&apos;événement</Label>
           <Input
             id="event-name"
-            placeholder="Entrez le nom de l&apos;événement"
+            placeholder="Entrez le nom de l'événement"
             value={eventName}
             onChange={(e) => setEventName(e.target.value)}
           />
@@ -104,7 +115,7 @@ export function CreateEventCard({ id, socket }) {
           <Label htmlFor="event-description">Description</Label>
           <Textarea
             id="event-description"
-            placeholder="Décrivez l&apos;événement"
+            placeholder="Décrivez l'événement"
             value={eventDescription}
             onChange={(e) => setEventDescription(e.target.value)}
           />

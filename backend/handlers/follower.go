@@ -44,15 +44,22 @@ func Follow() http.HandlerFunc {
 		}
 
 		followService := services.NewFollowerService()
-		fmt.Println("requet----------------",req.FollowU)
+		fmt.Println("requet----------------", req.FollowU)
 		if req.FollowU {
-			err = followService.FollowUserOrUpdateStatus(userId, followedId, req.Statut)
+			userService := services.NewUserService()
+			user, err := userService.GetUserById(w, r, followedId)
+			if err != nil {
+				fmt.Println("Error", err)
+				http.Error(w, "Cannot convert to uuid", http.StatusBadRequest)
+				return
+			}
+			err = followService.FollowUserOrUpdateStatus(userId, followedId, !user.IsPrivate)
 			if err != nil {
 				http.Error(w, "Cannot follow", http.StatusInternalServerError)
 				return
 			}
 		} else {
-		
+
 			err = followService.UnfollowUser(userId, followedId, req.Statut)
 			if err != nil {
 				http.Error(w, "Cannot follow", http.StatusInternalServerError)

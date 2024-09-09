@@ -78,17 +78,17 @@ export default function SuggestionsCard({ socket }) {
       const reponse = GetAllInfoForUserById(user.id);
       ok = await reponse.user.isPrivate;
       console.log(ok);
-    } catch (error) {}
+    } catch (error) { }
     follow(userOnLine.id, user.id, !ok, true);
     statut
       ? toast({
-          title: "Follow Successful",
-          description: `You follow now ${user.firstname} .`,
-        })
+        title: "Follow Successful",
+        description: `You follow now ${user.firstname} .`,
+      })
       : toast({
-          title: "Request",
-          description: "Your request has been send.",
-        });
+        title: "Request",
+        description: "Your request has been send.",
+      });
     const Message = {
       Type: "notifications",
       ReceiverId: user.id,

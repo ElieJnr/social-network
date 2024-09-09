@@ -47,6 +47,13 @@ export default function RegisterForm() {
       data.append("avatar", formData.avatar[0]);
     }
 
+    if (formData.password.length < 8){
+      toast({
+        title: "Password must be at least 8 caracteres"
+      })
+      return
+    }
+
     try {
       const response = await authentification(data);
       

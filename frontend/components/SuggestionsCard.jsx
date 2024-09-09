@@ -1,9 +1,15 @@
 "use client";
 
 import { follow } from "@/app/actions/follow";
-import { allUsers, search, searchUsers, userConnect } from "@/app/actions/users";
+import {
+  allUsers,
+  GetAllInfoForUserById,
+  search,
+  searchUsers,
+  userConnect,
+} from "@/app/actions/users";
 import { useState, useEffect } from "react";
-import Link from "next/link"
+import Link from "next/link";
 import { socketSend } from "@/app/actions/message";
 import { useToast } from "./ui/use-toast";
 
@@ -12,12 +18,12 @@ const { Avatar, AvatarImage, AvatarFallback } = require("./ui/avatar");
 const { Button } = require("./ui/button");
 
 export default function SuggestionsCard({ socket }) {
-  const [users, setUsers] = useState(null)
-  const [userOnLine, setUserOnLine] = useState(null)
+  const [users, setUsers] = useState(null);
+  const [userOnLine, setUserOnLine] = useState(null);
   const [hiddenUsers, setHiddenUsers] = useState([]);
-  const [tabFilter, setTabFilter] = useState([])
-  const [tabRequest, setTabRequest] = useState([])
-  const { toast } = useToast()
+  const [tabFilter, setTabFilter] = useState([]);
+  const [tabRequest, setTabRequest] = useState([]);
+  const { toast } = useToast();
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -33,9 +39,11 @@ export default function SuggestionsCard({ socket }) {
     if (userOnLine && userOnLine.requestF) {
       const fetchRequests = async () => {
         try {
-          const response = await searchUsers(userOnLine.requestF, "followedUser");
-          setTabRequest(response.map(item => item.user));
-
+          const response = await searchUsers(
+            userOnLine.requestF,
+            "followedUser"
+          );
+          setTabRequest(response.map((item) => item.user));
         } catch (error) {
           console.error("Error fetching requests:", error);
         }
@@ -43,7 +51,6 @@ export default function SuggestionsCard({ socket }) {
       fetchRequests();
     }
   }, [userOnLine]);
-
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -63,31 +70,39 @@ export default function SuggestionsCard({ socket }) {
       console.log("Something went wrong! users is null");
     }
   }, [users, userOnLine]);
-  const handleClick = (user, statut) => {
+  const handleClick = async (user, statut) => {
     console.log(user.id);
-    setHiddenUsers(prev => [...prev, user]);
-    follow(userOnLine.id, user.id, statut, true)
-    statut ? toast({
-      title: "Follow Successful",
-      description: `You follow now ${user.firstname} .`,
-    }) : toast({
-      title: "Request",
-      description: "Your request has been send.",
-    });
+    let ok = statut;
+    setHiddenUsers((prev) => [...prev, user]);
+    try {
+      const reponse = GetAllInfoForUserById(user.id);
+      ok = await reponse.user.isPrivate;
+      console.log(ok);
+    } catch (error) {}
+    follow(userOnLine.id, user.id, !ok.isPrivate, true);
+    statut
+      ? toast({
+          title: "Follow Successful",
+          description: `You follow now ${user.firstname} .`,
+        })
+      : toast({
+          title: "Request",
+          description: "Your request has been send.",
+        });
     const Message = {
       Type: "notifications",
       ReceiverId: user.id,
       SubType: "sendFollow",
       Content: "wants to follow you",
-      IsPrivate: user.IsPrivate
-    }
+      IsPrivate: user.IsPrivate,
+    };
     if (!statut) {
-      setTabRequest(prevTabRequest => [...prevTabRequest, user]);
+      setTabRequest((prevTabRequest) => [...prevTabRequest, user]);
     }
     setTimeout(() => {
-      socketSend(socket, Message)
-    }, 350)
-  }
+      socketSend(socket, Message);
+    }, 350);
+  };
   if (!users || !userOnLine) {
     return (
       <Card>
@@ -129,8 +144,7 @@ export default function SuggestionsCard({ socket }) {
           </div>
         </CardContent>
       </Card>
-
-    )
+    );
   } else {
     console.log(userOnLine);
   }
@@ -141,47 +155,79 @@ export default function SuggestionsCard({ socket }) {
         <CardTitle>Suggestions</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {tabFilter?.filter(user =>
-          (user.id !== userOnLine.id && !hiddenUsers.includes(user)) &&
-          !tabRequest.some(request => request.id === user.id)
-        ).map(user => (
-          <div key={user.id} className="flex items-center gap-4">
-            <Link href={user ? `/profil?userId=${user.id}` : "#"}
-              prefetch={false} className="flex items-center gap-2">
-              <Avatar className="w-10 cursor-pointer h-10">
-                <AvatarImage src={user?.avatar === "" ? "/placeholder-user.jpg" : `/uploads/${user?.avatar}`} alt="@shadcn" />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
-            </Link>
-            <div className="space-y-1">
-              <div className="font-semibold">{user ? user.firstname : "loading"} {user ? user.lastname : ""}</div>
-              <div className="text-muted-foreground">{""}</div>
+        {tabFilter
+          ?.filter(
+            (user) =>
+              user.id !== userOnLine.id &&
+              !hiddenUsers.includes(user) &&
+              !tabRequest.some((request) => request.id === user.id)
+          )
+          .map((user) => (
+            <div key={user.id} className="flex items-center gap-4">
+              <Link
+                href={user ? `/profil?userId=${user.id}` : "#"}
+                prefetch={false}
+                className="flex items-center gap-2"
+              >
+                <Avatar className="w-10 cursor-pointer h-10">
+                  <AvatarImage
+                    src={
+                      user?.avatar === ""
+                        ? "/placeholder-user.jpg"
+                        : `/uploads/${user?.avatar}`
+                    }
+                    alt="@shadcn"
+                  />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+              </Link>
+              <div className="space-y-1">
+                <div className="font-semibold">
+                  {user ? user.firstname : "loading"}{" "}
+                  {user ? user.lastname : ""}
+                </div>
+                <div className="text-muted-foreground">{""}</div>
+              </div>
+              <Button
+                onClick={() => handleClick(user, !user.isPrivate)}
+                variant="outline"
+                size="sm"
+                className="ml-auto"
+              >
+                Follow
+              </Button>
             </div>
-            <Button onClick={() => handleClick(user, !user.isPrivate)} variant="outline" size="sm" className="ml-auto">
-              Follow
-            </Button>
-          </div>
-        ))}
-        {tabRequest.map((user) =>
+          ))}
+        {tabRequest.map((user) => (
           <div key={user.id} className="flex items-center gap-4">
-            <Link href={user ? `/profil?userId=${user.id}` : "#"}
-              prefetch={false} className="flex items-center gap-2">
+            <Link
+              href={user ? `/profil?userId=${user.id}` : "#"}
+              prefetch={false}
+              className="flex items-center gap-2"
+            >
               <Avatar className="w-10 cursor-pointer h-10">
-                <AvatarImage src={user?.avatar === "" ? "/placeholder-user.jpg" : `/uploads/${user?.avatar}`} alt="@shadcn" />
+                <AvatarImage
+                  src={
+                    user?.avatar === ""
+                      ? "/placeholder-user.jpg"
+                      : `/uploads/${user?.avatar}`
+                  }
+                  alt="@shadcn"
+                />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
             </Link>
             <div className="space-y-1">
-              <div className="font-semibold">{user ? user.firstname : "loading"} {user ? user.lastname : ""}</div>
+              <div className="font-semibold">
+                {user ? user.firstname : "loading"} {user ? user.lastname : ""}
+              </div>
               <div className="text-muted-foreground">{""}</div>
             </div>
             <Button variant="outline" size="sm" className="ml-auto">
               Demande
             </Button>
           </div>
-
-        )}
-
+        ))}
       </CardContent>
     </Card>
   );

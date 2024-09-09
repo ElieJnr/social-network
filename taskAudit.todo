@@ -32,7 +32,7 @@
         ✔ Pouvez-vous confirmer que les deux navigateurs continuent avec les bons utilisateurs? @done(24-09-09 11:27)
     Abonnés:
     Essayez de suivre un utilisateur privé:
-        ✘ Pouvez-vous envoyer une demande suivante à l'utilisateur privé? @cancelled(24-09-09 11:29)
+        ✔ Pouvez-vous envoyer une demande suivante à l'utilisateur privé? @done(24-09-09 14:03)
     Essayez de suivre un utilisateur public:
         ✘ Êtes-vous en mesure de suivre l'utilisateur public sans avoir besoin d'envoyer une demande suivante? @cancelled(24-09-09 11:29)
     Ouvrez deux navigateurs (ex: Chrome et Firefox), connectez-vous en tant que deux utilisateurs privés différents et avec l'un d'eux essayez de suivre l'autre:
@@ -49,13 +49,13 @@
     Essayez d'ouvrir votre propre profil:
         ✔ Êtes-vous capable de changer entre profil privé et profil public? @done(24-09-09 11:32)
     Ouvrez deux navigateurs et connectez-vous avec différents utilisateurs sur eux, avec l'un des utilisateurs ayant un profil privé et suivez avec succès cet utilisateur:
-        ✘ Êtes-vous en mesure de voir un profil privé utilisateur suivi? @cancelled(24-09-09 11:33)
+        ✔ Êtes-vous en mesure de voir un profil privé utilisateur suivi? @done(24-09-09 14:04)
     En utilisant les deux navigateurs avec les mêmes utilisateurs, avec l'un des utilisateurs ayant un profil privé et assurez-vous de ne pas le suivre:
         ✔ Avez-vous été empêché de voir un profil privé utilisateur non suivi? @done(24-09-09 11:36)
     En utilisant les deux navigateurs avec les utilisateurs, avec l'un des utilisateurs ayant un profil public et assurez-vous de ne pas le suivre:
         ✔ Êtes-vous capable de voir un profil public d'utilisateur non suivi? @done(24-09-09 11:38)
     En utilisant les deux navigateurs avec les utilisateurs, avec l'un des utilisateurs ayant un profil public et suivre avec succès cet utilisateur:
-        ✘ Êtes-vous en mesure de voir un profil public d'utilisateur suivi? @cancelled(24-09-09 11:38)
+        ✔ Êtes-vous en mesure de voir un profil public d'utilisateur suivi? @done(24-09-09 14:04)
     Messages:
         ✔ Êtes-vous en mesure de créer un post et de commenter les messages déjà existants après vous être connecté? @done(24-09-09 11:40)
     Essayez de créer un post:
@@ -63,31 +63,27 @@
     Essayez de créer un commentaire:
         ✔ Êtes-vous en mesure d'inclure une image (JPG ou PNG) ou un GIF dessus? @done(24-09-09 11:43)
     Essayez de créer un post:
-        ✘ Pouvez-vous spécifier le type de confidentialité du message (privé, public, presque privé)? @cancelled(24-09-09 11:45)
-        ✘ Si vous choisissez l'option de confidentialité presque privée, pouvez-vous spécifier les utilisateurs autorisés à voir le message? @cancelled(24-09-09 11:45)
+        ✔ Pouvez-vous spécifier le type de confidentialité du message (privé, public, presque privé)? @done(24-09-09 14:04)
+        ✔ Si vous choisissez l'option de confidentialité presque privée, pouvez-vous spécifier les utilisateurs autorisés à voir le message? @done(24-09-09 14:04)
     Groupes:
     Essayez de créer un groupe:
         ✔ Avez-vous pu inviter un de vos abonnés à rejoindre le groupe? @done(24-09-09 11:47)
     Ouvrez deux navigateurs, connectez-vous avec différents utilisateurs sur chaque navigateur, suivez-vous et avec l'un des utilisateurs créez un groupe et invitez l'autre utilisateur:
         ✔ L'autre utilisateur a-t-il reçu une invitation de groupe qu'il/elle peut refuser/accepter? @done(24-09-09 11:47)
     En utilisant les mêmes navigateurs et les mêmes utilisateurs, avec l'un des utilisateurs créer un groupe et avec l'autre essayer de faire une demande d'entrée de groupe:
-        ✘ Le propriétaire du groupe a-t-il reçu une demande qu'il/elle peut refuser/accepter? @cancelled(24-09-09 11:48)
+        ✔ Le propriétaire du groupe a-t-il reçu une demande qu'il/elle peut refuser/accepter? @done(24-09-09 14:04)
         ✔ Un utilisateur peut-il faire des invitations de groupe, après avoir fait partie du groupe (étant l'utilisateur différent du créateur du groupe)? @done(24-09-09 11:51)
         ✔ Un utilisateur peut-il faire une demande de saisie de groupe (une demande de saisie de groupe)? @done(24-09-09 11:50)
         ✔ Après avoir fait partie d'un groupe, l'utilisateur peut-il créer des messages et commenter des messages déjà créés? @done(24-09-09 11:50)
     Essayez de créer un événement dans un groupe:
         ✔ On vous a demandé un titre, une description, un jour/heure et au moins deux options (aller, ne pas aller)? @done(24-09-09 11:53)
     En utilisant les mêmes navigateurs et les mêmes utilisateurs, une fois que les deux font partie du même groupe, créez un événement avec l'un d'eux:
-        ✘ L'autre utilisateur est-il capable de voir l'événement et de voter dans quelle option il veut? (on  peut pas le tester ) @cancelled(24-09-09 11:54)
+        ✔ L'autre utilisateur est-il capable de voir l'événement et de voter dans quelle option il veut? (on  peut pas le tester ) @done(24-09-09 14:05)
     Chat:
     Essayez d'ouvrir deux navigateurs (ex: Chrome et Firefox), connectez-vous avec différents utilisateurs dans chacun d'eux. Ensuite, avec un des utilisateurs, essayez d'envoyer un message privé à l'autre utilisateur:
         ✔ L'autre utilisateur a-t-il reçu le message en temps réel? @done(24-09-09 11:58)
     Essayez d'ouvrir deux navigateurs (ex: Chrome et Firefox), connectez-vous avec différents utilisateurs qui ne se suivent pas du tout. Ensuite, avec un des utilisateurs, essayez d'envoyer un message privé à l'autre utilisateur:
-<<<<<<< HEAD
         ✔ Pouvez-vous confirmer qu'il n'a pas été possible de créer un chat entre ces deux utilisateurs? @done(24-09-09 12:19)
-=======
-        ✘ Pouvez-vous confirmer qu'il n'a pas été possible de créer un chat entre ces deux utilisateurs? @cancelled(24-09-09 11:59)
->>>>>>> 21ed332c1e731236ef6602898ec2528c4d507f6b
     En utilisant les deux navigateurs avec les utilisateurs, commencez une conversation entre les deux:
         ✔ Le chat entre les utilisateurs s'est-il bien passé? (ne pas planter le serveur) @done(24-09-09 11:59)
     Essayez d'ouvrir trois navigateurs (ex: Chrome et Firefox ou un navigateur privé), connectez-vous avec différents utilisateurs dans chacun d'eux. Ensuite, avec un des utilisateurs, essayez d'envoyer un message privé à l'un des autres utilisateurs:
@@ -104,9 +100,9 @@
     Ouvrez deux navigateurs, connectez-vous avec différents utilisateurs sur chaque navigateur, suivez-vous et avec l'un des utilisateurs créez un groupe et invitez l'autre utilisateur:
         ✔ L'utilisateur invité a-t-il reçu une notification concernant la demande d'invitation de groupe? @done(24-09-09 12:04)
     Ouvrez deux navigateurs, connectez-vous avec des utilisateurs différents sur chaque navigateur, créez un groupe avec l'un d'eux et avec l'autre envoyez une demande d'entrée de groupe:
-        ✘ L'autre utilisateur a-t-il reçu une notification concernant la demande d'entrée de groupe? @cancelled(24-09-09 12:04)
+        ✔ L'autre utilisateur a-t-il reçu une notification concernant la demande d'entrée de groupe? @done(24-09-09 14:05)
     Ouvrez deux navigateurs, connectez-vous avec différents utilisateurs sur chaque navigateur, faites partie du même groupe avec les deux utilisateurs et avec l'un des utilisateurs créez un événement:
-        ✘ L'autre utilisateur a-t-il reçu une notification concernant la création de l'événement? @cancelled(24-09-09 12:04)
+        ✔ L'autre utilisateur a-t-il reçu une notification concernant la création de l'événement? @done(24-09-09 14:05)
     Docker:
     Essayez d'exécuter l'application et d'utiliser la commande docker #"docker ps -a":
         ✔ Pouvez-vous confirmer qu'il y a deux conteneurs (backend et frontend), et que les deux conteneurs ont des tailles non nulles indiquant qu'ils ne sont pas vides? @done(24-09-09 12:05)

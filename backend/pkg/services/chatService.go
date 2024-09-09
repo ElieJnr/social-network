@@ -122,12 +122,15 @@ func (c *ChatService) RegisterMsg(msg models.Message) error {
 
 func (c *ChatService) FetchUser(connTab map[string]*websocket.Conn, actualuser string) ([]byte, error) {
 	query := `
-		SELECT DISTINCT u.id, u.firstname, u.lastname 
-		FROM Users u
-		JOIN Followers f 
-		ON (u.id = f.followedId OR u.id = f.userId)
-		WHERE (f.userId = ? OR f.followedId = ?) AND u.id != ?
-	`
+    SELECT DISTINCT u.id, u.firstname, u.lastname 
+    FROM Users u
+    JOIN Followers f 
+    ON (u.id = f.followedId OR u.id = f.userId)
+    WHERE (f.userId = ? OR f.followedId = ?) 
+    AND u.id != ? 
+    AND f.statut = 1
+`
+
 	rows, err := c.GetDB().Query(query, actualuser, actualuser, actualuser)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch users: %w", err)

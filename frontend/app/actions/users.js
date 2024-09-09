@@ -20,6 +20,7 @@ export async function allUsers() {
 
 
 export function search(users, follows) {
+    
     return users.filter(user =>
         !follows.some(follow => follow.followedUser === user.id)
     );

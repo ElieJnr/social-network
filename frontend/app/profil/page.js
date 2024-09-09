@@ -240,81 +240,87 @@ export default function Profil() {
                                         </>
                                     )}
 
-                                    <Button variant="ghost" size="icon" className="rounded-full">
-                                        <MoveHorizontalIcon className="w-5 h-5" />
-                                    </Button>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="grid sm:grid-cols-3 gap-4 text-center">
-                            <div className="bg-[#e2e1e1] rounded-lg p-4">
-                                <div className="font-medium">
-                                    {user.posts == null ? "0" : filterPost(user.posts).length}
-                                </div>
-                                <div className=" font-medium ">Posts</div>
-                            </div>
-                            <div
-                                onClick={() => setFollowersOpen(true)}
-                                className="bg-[#e2e1e1] rounded-lg p-4 cursor-pointer"
-                            >
-                                <div className="font-medium">
-                                    {user?.followers ? user.followers.length : "0"}
-                                </div>
-                                <UserListModal
-                                    isOpen={isFollowersOpen}
-                                    onClose={() => setFollowersOpen(false)}
-                                    title="Followers"
-                                    users={user?.followers || []}
-                                    statut="userId"
-                                />
-                            </div>
-                            <div
-                                className="bg-[#e2e1e1] rounded-lg p-4 cursor-pointer"
-                                onClick={() => setFollowingOpen(true)}
-                            >
-                                <div className="font-medium">
-                                    {user && user.follows ? user.follows.length : "0"}
-                                </div>
-                                <UserListModal
-                                    isOpen={isFollowingOpen}
-                                    onClose={() => setFollowingOpen(false)}
-                                    title="Following"
-                                    users={user?.follows || []}
-                                    statut="followedUser"
-                                />
-                            </div>
-                        </div>
-                        <div className="grid gap-6">
-                            <div className="flex items-center justify-between">
-                                <div className="font-medium">Posts</div>
-                                <div className="flex items-center gap-2">
-                                    <Button variant={user.isPrivate ? "outline" : ""} size="sm">
-                                        <EyeIcon className="w-4 h-4 mr-2" />
-                                        Public
-                                    </Button>
-                                    <Button variant={!user.isPrivate ? "outline" : ""} size="sm">
-                                        <LockIcon className="w-4 h-4 mr-2" />
-                                        Private
-                                    </Button>
-                                </div>
-                            </div>
-                            <div className="flex justify-center  min-h-screen">
-                                <div className="w-[60%] flex flex-col  ">
-                                    {CanSee(user) ||
-                                        !user.isPrivate ||
-                                        userOnLine.id == user.id ? (
-                                        <PostsProfil posts={filterPost(user.posts)} />
-                                    ) : (
-                                        ""
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                  <Button variant="ghost" size="icon" className="rounded-full">
+                    <MoveHorizontalIcon className="w-5 h-5" />
+                  </Button>
                 </div>
+              </div>
             </div>
-        </>
-    );
+            <div className="grid sm:grid-cols-3 gap-4 text-center">
+              <div className="bg-[#e2e1e1] rounded-lg p-4">
+                <div className="font-medium">
+                  {user.posts == null ? "0" : filterPost(user.posts).length}
+                </div>
+                <div className=" font-medium ">Posts</div>
+              </div>
+              <div
+                onClick={() => setFollowersOpen(true && (CanSee(user) ||!user.isPrivate ||userOnLine.id == user.id )
+                
+                
+                
+                
+                
+                 )}
+                className="bg-[#e2e1e1] rounded-lg p-4 cursor-pointer"
+              >
+                <div className="font-medium">
+                  {user?.followers ? user.followers.length : "0"}
+                </div>
+                <UserListModal
+                  isOpen={isFollowersOpen   }
+                  onClose={() => setFollowersOpen(false)}
+                  title="Followers"
+                  users={user?.followers || []}
+                  statut="userId"
+                />
+              </div>
+              <div
+                className="bg-[#e2e1e1] rounded-lg p-4 cursor-pointer"
+                onClick={() => setFollowingOpen(true && (CanSee(user) ||!user.isPrivate ||userOnLine.id == user.id ) )}
+              >
+                <div className="font-medium">
+                  {user && user.follows ? user.follows.length : "0"}
+                </div>
+                <UserListModal
+                  isOpen={isFollowingOpen  }
+                  onClose={() => setFollowingOpen(false)}
+                  title="Following"
+                  users={user?.follows || []}
+                  statut="followedUser"
+                />
+              </div>
+            </div>
+            <div className="grid gap-6">
+              <div className="flex items-center justify-between">
+                <div className="font-medium">Posts</div>
+                <div className="flex items-center gap-2">
+                  <Button variant={user.isPrivate ? "outline" : ""} size="sm">
+                    <EyeIcon className="w-4 h-4 mr-2" />
+                    Public
+                  </Button>
+                  <Button variant={!user.isPrivate ? "outline" : ""} size="sm">
+                    <LockIcon className="w-4 h-4 mr-2" />
+                    Private
+                  </Button>
+                </div>
+              </div>
+              <div className="flex justify-center  min-h-screen">
+                <div className="w-[60%] flex flex-col  ">
+                  {CanSee(user) ||
+                  !user.isPrivate ||
+                  userOnLine.id == user.id ? (
+                    <PostsProfil posts={filterPost(user.posts)} />
+                  ) : (
+                    ""
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
 }
 
 function EyeIcon(props) {

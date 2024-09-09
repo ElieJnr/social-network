@@ -141,15 +141,23 @@ func Reader(conn *websocket.Conn, w http.ResponseWriter, r *http.Request) error 
 
 				idNotif, er := utils.GenerateUuid()
 				if er != nil {
-					return fmt.Errorf("error read: %w", err)
+					return fmt.Errorf("error read: %w", er)
 				}
 
+				author, err := utils.GetAuthor(NotifService.GetDB(), msg.ReceiverId)
+				if err != nil{
+					return fmt.Errorf("error read: %w", err)
+				}
+				content := "follow you"
+				if author.IsPrivate{
+					content = msg.Content
+				}
 				notif := models.Notification{
 					Id:         idNotif,
 					ReceiverID: msg.ReceiverId,
 					SenderID:   sender,
 					Type:       "follow",
-					Message:    msg.Content,
+					Message:    content,
 				}
 				e := NotifService.CreateNotification(&notif)
 

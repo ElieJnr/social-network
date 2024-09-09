@@ -61,8 +61,10 @@ export function Notifications({ socket }) {
         fetchNotifs(setNotifications);
 
         if (Type == "follow") {
-            console.log(ok, SenderID, userId, true, true);
-            ok ? follow(SenderID, userId, true, ok) : follow(SenderID, userId, false, ok)
+            setTimeout(() => {
+                console.log(ok, SenderID, userId, true, true);
+                ok ? follow(SenderID, userId, true, ok) : follow(SenderID, userId, false, ok)
+            }, 350)
         }
 
         if (Type == "addGroupe") {
@@ -75,7 +77,7 @@ export function Notifications({ socket }) {
 
         if (Type == 'invitation') {
             if (ok) {
-                rejoindreGroupeWithInvitation(GroupId,SenderID)
+                rejoindreGroupeWithInvitation(GroupId, SenderID)
             }
         }
 

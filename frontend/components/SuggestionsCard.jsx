@@ -17,7 +17,7 @@ export default function SuggestionsCard({ socket }) {
   const [hiddenUsers, setHiddenUsers] = useState([]);
   const [tabFilter, setTabFilter] = useState([])
   const [tabRequest, setTabRequest] = useState([])
-  const {toast} = useToast()
+  const { toast } = useToast()
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -84,7 +84,9 @@ export default function SuggestionsCard({ socket }) {
     if (!statut) {
       setTabRequest(prevTabRequest => [...prevTabRequest, user]);
     }
-    socketSend(socket, Message)
+    setTimeout(() => {
+      socketSend(socket, Message)
+    }, 350)
   }
   if (!users || !userOnLine) {
     return (
@@ -129,7 +131,7 @@ export default function SuggestionsCard({ socket }) {
       </Card>
 
     )
-  }  else {
+  } else {
     console.log(userOnLine);
   }
 
@@ -147,7 +149,7 @@ export default function SuggestionsCard({ socket }) {
             <Link href={user ? `/profil?userId=${user.id}` : "#"}
               prefetch={false} className="flex items-center gap-2">
               <Avatar className="w-10 cursor-pointer h-10">
-                <AvatarImage src={user?.avatar === "" ? "/placeholder-user.jpg": `/uploads/${user?.avatar}`} alt="@shadcn" />
+                <AvatarImage src={user?.avatar === "" ? "/placeholder-user.jpg" : `/uploads/${user?.avatar}`} alt="@shadcn" />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
             </Link>
@@ -165,7 +167,7 @@ export default function SuggestionsCard({ socket }) {
             <Link href={user ? `/profil?userId=${user.id}` : "#"}
               prefetch={false} className="flex items-center gap-2">
               <Avatar className="w-10 cursor-pointer h-10">
-                <AvatarImage src={user?.avatar === "" ? "/placeholder-user.jpg": `/uploads/${user?.avatar}`} alt="@shadcn" />
+                <AvatarImage src={user?.avatar === "" ? "/placeholder-user.jpg" : `/uploads/${user?.avatar}`} alt="@shadcn" />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
             </Link>

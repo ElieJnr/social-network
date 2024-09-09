@@ -36,7 +36,20 @@ export function Notifications({ socket }) {
         setIsOpen(true)
     }
 
+    const rejoindreGroupeWithInvitation = (GroupeId, UserId) => {
+        const Message = {
+            Type: "notifications",
+            ReceiverId: UserId,
+            GroupeId: GroupeId,
+            SubType: "addGroupe",
+        }
+
+        socketSend(socket, Message)
+        window.location.reload()
+    }
+
     const markAsRead = (id, userId, Type, GroupId, SenderID, ok) => {
+
         const Message = {
             Type: "notifications",
             ReceiverId: id,
@@ -46,10 +59,12 @@ export function Notifications({ socket }) {
 
         socketSend(socket, Message)
         fetchNotifs(setNotifications);
+
         if (Type == "follow") {
             console.log(ok, SenderID, userId, true, true);
             ok ? follow(SenderID, userId, true, ok) : follow(SenderID, userId, false, ok)
         }
+
         if (Type == "addGroupe") {
             if (ok) {
                 fetchForAddingInAGroupe("member", GroupId, SenderID)
@@ -57,6 +72,13 @@ export function Notifications({ socket }) {
                 fetchForNotAddingInAGroupe(GroupId, SenderID)
             }
         }
+
+        if (Type == 'invitation') {
+            if (ok) {
+                rejoindreGroupeWithInvitation(GroupId,SenderID)
+            }
+        }
+
     }
 
 

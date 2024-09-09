@@ -10,6 +10,7 @@ export async function userConnect() {
 export async function GetAllInfoForUserById(userId) {
     const infoUser = await makeGetFetch(`http://localhost:8080/getUser?key=user&id=${userId}`);
     //fetch des posts de l'utilisateur
+    console.log(infoUser)
     return infoUser;
 }
 

@@ -102,12 +102,13 @@ export default function Profil() {
         // console.log(statut);
         let ok = statut;
         try {
-            const reponse = GetAllInfoForUserById(user.id);
+            const reponse = await GetAllInfoForUserById(user.id);
             ok = await reponse.user.isPrivate;
+            console.log("la reponse",ok);
             console.log(ok);
-        } catch (error) { }
-        console.log(ok);
-        follow(userOnLine.id, user.id, ok, false);
+        } catch (error) {  console.log("la reponse",error);}
+        // console.log(userOnLine.id, user.id, ok, false);
+        follow(userOnLine.id, user.id, !ok, false);
         setRefreshTrigger((prev) => !prev);
         ok
             ? toast({

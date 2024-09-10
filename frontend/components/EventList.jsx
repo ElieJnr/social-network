@@ -29,7 +29,7 @@ export default function EventList({ id }) {
   } = useSWR(`${domain}/group/getEvents?groupId=${id}`, () => fetchEvents(id));
 
   const { data: responses, mutate: mutateResponses } = useSWR(
-    `${domain}/group/respondEvent?groupId=${id}`,
+    `${domain}/group/GetrespondEvent?groupId=${id}`,
     fetcher
   );
 

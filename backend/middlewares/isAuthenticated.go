@@ -8,7 +8,7 @@ import (
 )
 
 // AuthMiddleware est un middleware qui vérifie la validité du token et récupère l'utilisateur associé
-func AuthMiddleware(next http.Handler) http.Handler {
+func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var sessService = services.NewSessionService()
 		c, user, err := sessService.Authenticated(w, r)

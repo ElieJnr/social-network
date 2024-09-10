@@ -28,13 +28,13 @@ func main() {
 	// Initialiser les services
 	config.InitServices()
 	// Initialiser les routes
-	router := routes.InitializeRoutes()
+	routes.InitializeRoutes()
 
 	// Log avant le démarrage du serveur
 	log.Printf("Starting server on http://localhost%s", serverPort)
 
 	// Démarrer le serveur HTTP
-	err = http.ListenAndServe(serverPort, router)
+	err = http.ListenAndServe(serverPort, nil)
 	if err != nil {
 		log.Fatalf("Error starting server: %v", err)
 	}

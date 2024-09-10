@@ -1,61 +1,57 @@
 package routes
 
 import (
+	"net/http"
 	"socialNetwork/handlers"
 	"socialNetwork/middlewares"
-
-	"github.com/gorilla/mux"
 )
 
-func InitializeRoutes() *mux.Router {
-	router := mux.NewRouter()
+func InitializeRoutes() {
+	// Auth middleware
+	authMiddleware := middlewares.AuthMiddleware
 
-	// users
-	router.Handle("/", middlewares.AuthMiddleware(handlers.HomeHandler())).Methods("GET")
-	router.Handle("/users", middlewares.AuthMiddleware(handlers.UsersHandler())).Methods("GET")
-	router.Handle("/getUser", middlewares.AuthMiddleware(handlers.GetUsertHandler())).Methods("GET")
-	router.Handle("/update", middlewares.AuthMiddleware(handlers.Edit())).Methods("POST")
+	// Users routes
+	http.HandleFunc("/users", middlewares.CORSMiddleware((authMiddleware(handlers.UsersHandler()))))
+	http.HandleFunc("/getUser", middlewares.CORSMiddleware(authMiddleware(handlers.GetUsertHandler())))
+	http.HandleFunc("/update", middlewares.CORSMiddleware(authMiddleware(handlers.Edit())))
 
-	//follower
-	router.Handle("/follow", middlewares.AuthMiddleware(handlers.Follow())).Methods("POST")
+	// Follower routes
+	http.HandleFunc("/follow", middlewares.CORSMiddleware(authMiddleware(handlers.Follow())))
 
-	// Authentification
-	router.Handle("/login", handlers.LoginHandler()).Methods("POST")
-	router.Handle("/validatecookie", handlers.ValidateCookieHandler())
-	router.Handle("/signin", handlers.RegistrationHandler()).Methods("POST")
-	router.Handle("/logout", middlewares.AuthMiddleware(handlers.Logout())).Methods("POST")
+	// Authentication routes
+	http.HandleFunc("/login", middlewares.CORSMiddleware(handlers.LoginHandler()))
+	http.HandleFunc("/validatecookie", middlewares.CORSMiddleware(handlers.ValidateCookieHandler()))
+	http.HandleFunc("/signin", middlewares.CORSMiddleware(handlers.RegistrationHandler()))
+	http.HandleFunc("/logout", middlewares.CORSMiddleware(authMiddleware(handlers.Logout())))
 
-	// posts
-	router.Handle("/posts", middlewares.AuthMiddleware(handlers.PostHandler("allPost"))).Methods("GET")
-	router.Handle("/postUser", middlewares.AuthMiddleware(handlers.PostHandler("userPost"))).Methods("GET")
-	router.Handle("/post/create", middlewares.AuthMiddleware(handlers.CreatePostHandler())).Methods("POST")
+	// Posts routes
+	http.HandleFunc("/posts", middlewares.CORSMiddleware(authMiddleware(handlers.PostHandler("allPost"))))
+	http.HandleFunc("/postUser", middlewares.CORSMiddleware(authMiddleware(handlers.PostHandler("userPost"))))
+	http.HandleFunc("/post/create", middlewares.CORSMiddleware(authMiddleware(handlers.CreatePostHandler())))
 
-	// groups
-	router.Handle("/group/addNewMemberToGroup", handlers.AddNewMember()).Methods("POST")
-	router.Handle("/group/notAddNewMemberToGroup", handlers.NotAddNewMember()).Methods("POST")
-	router.Handle("/group/getGroups", middlewares.AuthMiddleware(handlers.GetGroups())).Methods("GET")
-	router.Handle("/group/posts", middlewares.AuthMiddleware(handlers.GroupPostHandler())).Methods("GET")
-	router.Handle("/group/createGroup", middlewares.AuthMiddleware(handlers.CreateGroups())).Methods("POST")
-	router.Handle("/group/post/create", middlewares.AuthMiddleware(handlers.GroupCreatePostHandler())).Methods("POST")
-	router.Handle("/group/createEvent", middlewares.AuthMiddleware(handlers.CreateEventHandler())).Methods("POST")
-	router.Handle("/group/getEvents", middlewares.AuthMiddleware(handlers.GetEventsByGroupHandler())).Methods("GET")
-	router.Handle("/group/respondEvent", middlewares.AuthMiddleware(handlers.RespondToEventHandler())).Methods("POST")
-	router.Handle("/group/respondEvent", middlewares.AuthMiddleware(handlers.GetResponsesByGroupAndMemberHandler())).Methods("GET")
-	router.Handle("/group/suggGroup", middlewares.AuthMiddleware(handlers.SuggGroup())).Methods("POST")
+	// Group routes
+	http.HandleFunc("/group/addNewMemberToGroup", middlewares.CORSMiddleware(handlers.AddNewMember()))
+	http.HandleFunc("/group/notAddNewMemberToGroup", middlewares.CORSMiddleware(handlers.NotAddNewMember()))
+	http.HandleFunc("/group/getGroups", middlewares.CORSMiddleware(authMiddleware(handlers.GetGroups())))
+	http.HandleFunc("/group/posts", middlewares.CORSMiddleware(authMiddleware(handlers.GroupPostHandler())))
+	http.HandleFunc("/group/createGroup", middlewares.CORSMiddleware(authMiddleware(handlers.CreateGroups())))
+	http.HandleFunc("/group/post/create", middlewares.CORSMiddleware(authMiddleware(handlers.GroupCreatePostHandler())))
+	http.HandleFunc("/group/createEvent", middlewares.CORSMiddleware(authMiddleware(handlers.CreateEventHandler())))
+	http.HandleFunc("/group/getEvents", middlewares.CORSMiddleware(authMiddleware(handlers.GetEventsByGroupHandler())))
+	http.HandleFunc("/group/respondEvent", middlewares.CORSMiddleware(authMiddleware(handlers.RespondToEventHandler())))
+	http.HandleFunc("/group/GetrespondEvent", middlewares.CORSMiddleware(authMiddleware(handlers.GetResponsesByGroupAndMemberHandler())))
+	http.HandleFunc("/group/suggGroup", middlewares.CORSMiddleware(authMiddleware(handlers.SuggGroup())))
 
-	// Reactions
-	router.Handle("/like", middlewares.AuthMiddleware(handlers.LikeHandler())).Methods("POST")
+	// Reactions routes
+	http.HandleFunc("/like", middlewares.CORSMiddleware(authMiddleware(handlers.LikeHandler())))
 
-	// comments
-	router.Handle("/comments", middlewares.AuthMiddleware(handlers.CommentHandler())).Methods("GET")
-	router.Handle("/comment/create", middlewares.AuthMiddleware(handlers.CreateCommentHandler())).Methods("POST")
+	// Comments routes
+	http.HandleFunc("/comments", middlewares.CORSMiddleware(authMiddleware(handlers.CommentHandler())))
+	http.HandleFunc("/comment/create", middlewares.CORSMiddleware(authMiddleware(handlers.CreateCommentHandler())))
 
-	// chat
-	router.HandleFunc("/ws", handlers.WebsocketHandler)
+	// Notifications
+	http.HandleFunc("/notifications", middlewares.CORSMiddleware(authMiddleware(handlers.NotifHandler())))
 
-	//notifications
-	router.Handle("/notifications", middlewares.AuthMiddleware(handlers.NotifHandler())).Methods("GET")
-
-	router.Use(middlewares.CORSMiddleware)
-	return router
+	// WebSocket for chat (this might need special handling for CORS)
+	http.HandleFunc("/ws", handlers.WebsocketHandler)
 }

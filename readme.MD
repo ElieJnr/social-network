@@ -371,12 +371,6 @@ Les contributions sont les bienvenues! Pour contribuer:
 
 ---
 
-## 📄 Licence
-
-Ce projet est sous licence [À spécifier].
-
----
-
 ## 📞 Support
 
 Pour toute question ou problème, veuillez ouvrir une issue sur le repository.

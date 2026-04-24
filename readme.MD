@@ -369,11 +369,6 @@ Les contributions sont les bienvenues! Pour contribuer:
 4. Push vers la branche (`git push origin feature/amazing-feature`)
 5. Ouvrir une Pull Request
 
----
-
-## 📄 Licence
-
-Ce projet est sous licence [À spécifier].
 
 ---
 

@@ -9,6 +9,8 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 )
+
+// creation d'une base de donnee de type DB pour l'ensemble de l'ecosysteme. Ce dernier sera intancier dés l'ouverture du server dans main()
 var GlobalDB *DB
 
 type DB struct {
@@ -20,18 +22,14 @@ func (db *DB) Prepare(query string) (*sql.Stmt, error) {
 }
 
 func NewDatabase() (*DB, error) {
-	
 
 	db, err := sql.Open("sqlite3", "./pkg/db/sqlite/repository/donnees.db")
+
 	if err != nil {
-		fmt.Println("ok")
+		fmt.Println("Error Open sqlite", err)
 		return nil, err
 	}
-	err = db.Ping()
-	if err != nil {
-		db.Close() // Ensure the database connection is closed if Ping fails
-		return nil, err
-	}
+
 	err = upDatabase(db)
 	if err != nil {
 		fmt.Println("Migration error:", err)
@@ -64,9 +62,9 @@ func upDatabase(db *sql.DB) error {
 				return err
 			}
 		}
-		
+
 		return nil
-		
+
 	})
 	return err
 }

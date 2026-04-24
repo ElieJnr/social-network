@@ -1,21 +1,20 @@
 package models
 
-import "github.com/google/uuid"
-
 type User struct {
-	Id           uuid.UUID
-	Username     string
-	Age          int
-	Firstname    string
-	Lastname     string
-	Email        string
-	Password     string
-	Genre        string
-	DateOfBirth string
-	Bio          string
-	Avatar       string
-	IsPrivate	 bool
-	Session string
-	Followers	 []Follower
+	Id           string         `json:"id"`
+	Username     string         `json:"username"`
+	Firstname    string         `json:"firstname"`
+	Lastname     string         `json:"lastname"`
+	Email        string         `json:"email"`
+	Password     string         `json:"password"`
+	Genre        string         `json:"genre"`
+	DateOfBirth  string         `json:"dateOfBirth"`
+	Bio          string         `json:"bio"`
+	Avatar       string         `json:"avatar"`
+	RequestF     []Follower     `json:"requestF"`
+	IsPrivate    bool           `json:"isPrivate"`
+	Followers    []Follower     `json:"followers"`
+	Follows      []Follower     `json:"follows"`
 	Notification []Notification `json:"notifications"`
+	Posts        []Posts        `json:"posts"`
 }

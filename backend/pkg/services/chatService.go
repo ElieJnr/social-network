@@ -2,11 +2,14 @@ package services
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
+	"net/http"
 	"socialNetwork/pkg/db/sqlite"
 	"socialNetwork/pkg/models"
+	"socialNetwork/utils"
+	"time"
 
-	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
 
@@ -30,25 +33,14 @@ func (c *ChatService) SetDB(db *sql.DB) {
 	c.db = db
 }
 
-func (c *ChatService) SendMessage(msg models.Message, websocket map[string]*websocket.Conn) error {
-	receiverConn, ok := websocket[msg.ReceiverId]
-	if ok {
-		if err := receiverConn.WriteJSON(msg); err != nil {
-			return fmt.Errorf("writing error: %w", err)
-		}
-	}
-	RegisterError := c.RegisterMsg(msg)
-
-	if RegisterError != nil {
-		return RegisterError
+// les messages une fois recupere sont envoyes a l'utilisateur via sa connection websocket
+func (c *ChatService) SendStockedMessage(conn *websocket.Conn, senderId, receiverId string, newMessage bool, groupChat bool) error {
+	booleen := false
+	if newMessage {
+		booleen = true
 	}
 
-	return nil
-}
-
-func (c *ChatService) SendStockedMessage(conn *websocket.Conn, senderId, receiverId string) error {
-	messages, err := c.GetStoredMessages(senderId, receiverId)
-	fmt.Println("entree")
+	messages, err := c.GetStoredMessages(senderId, receiverId, booleen, groupChat)
 	if err != nil {
 		return err
 	}
@@ -59,13 +51,30 @@ func (c *ChatService) SendStockedMessage(conn *websocket.Conn, senderId, receive
 	return nil
 }
 
-func (c *ChatService) GetStoredMessages(sender, receiver string) ([]models.Chat, error) {
+// fonction de recuperation des messages enregistre dans la base de donnee
+type sendMessage struct {
+	Type        string
+	CurrentUser string
+	Message     []models.Chat
+}
 
-	query := "SELECT * FROM Chats WHERE (senderId = ? AND receverId = ?) OR (receverId = ? AND senderId = ?)"
-	rows, err := c.GetDB().Query(query, sender, receiver, sender, receiver)
+func (c *ChatService) GetStoredMessages(sender, receiver string, newMessage bool, groupChat bool) (sendMessage, error) {
+	var sendMessage sendMessage
+
+	var query string
+	var rows *sql.Rows
+	var err error
+
+	if groupChat {
+		query = "SELECT id, senderId, receverId, content, sendAt FROM chats WHERE (receverId = ?)"
+		rows, err = c.GetDB().Query(query, receiver)
+	} else {
+		query = "SELECT id, senderId, receverId, content, sendAt FROM Chats WHERE (senderId = ? AND receverId = ?) OR (receverId = ? AND senderId = ?)"
+		rows, err = c.GetDB().Query(query, sender, receiver, sender, receiver)
+	}
+
 	if err != nil {
-
-		return nil, fmt.Errorf("failed to retrieve stored messages: %w", err)
+		return sendMessage, fmt.Errorf("failed to retrieve stored messages: %w", err)
 	}
 	defer rows.Close()
 
@@ -80,20 +89,175 @@ func (c *ChatService) GetStoredMessages(sender, receiver string) ([]models.Chat,
 		messages = append(messages, message)
 	}
 
-	fmt.Println("messages: ", messages)
-	return messages, nil
+	// fmt.Println("messages: ", messages)
+	// if newMessage {
+	// 	sendMessage.Type = "sendMessage"
+	// } else
+	if groupChat {
+		sendMessage.Type = "groupChat"
+	} else {
+		sendMessage.Type = "clickOnUser"
+	}
+	sendMessage.CurrentUser = sender
+	sendMessage.Message = messages
+
+	return sendMessage, nil
 }
 
-// enregistrement des messages dans la base de
+// fonction d'enregistrement des messages dans la base de donnees
 func (c *ChatService) RegisterMsg(msg models.Message) error {
 
-	idMsg := uuid.NewString()
+	idMsg, er := utils.GenerateUuid()
+	if er != nil {
+		return er
+	}
+	query := "INSERT INTO Chats (id,senderId,receverId, content,type) VALUES (?, ?, ?, ?,?)"
 
-	query := "INSERT INTO Chats (id,senderId,receverId, content) VALUES (?, ?, ?, ?)"
-
-	_, err := c.GetDB().Exec(query, idMsg, msg.SenderId, msg.ReceiverId, msg.Content)
+	_, err := c.GetDB().Exec(query, idMsg, msg.SenderId, msg.ReceiverId, msg.Content, "userText")
 	if err != nil {
 		return fmt.Errorf("failed to register data: %w", err)
 	}
 	return nil
+}
+
+func (c *ChatService) FetchUser(connTab map[string]*websocket.Conn, actualuser string) ([]byte, error) {
+	query := `
+    SELECT DISTINCT u.id, u.firstname, u.lastname 
+    FROM Users u
+    JOIN Followers f 
+    ON (u.id = f.followedId OR u.id = f.userId)
+    WHERE (f.userId = ? OR f.followedId = ?) 
+    AND u.id != ? 
+    AND f.statut = 1
+`
+
+	rows, err := c.GetDB().Query(query, actualuser, actualuser, actualuser)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch users: %w", err)
+	}
+	defer rows.Close()
+
+	type User struct {
+		Id                string
+		Firstname         string
+		Lastname          string
+		Lastmessage       string
+		LastmessageHour   string
+		Online            string
+		FollowCurrentUser string
+	}
+	type sendUser struct {
+		Type  string
+		Users []User
+	}
+
+	var users []User
+	for rows.Next() {
+		var id, firstname, lastname string
+		err := rows.Scan(&id, &firstname, &lastname)
+		if err != nil {
+			fmt.Println("Failed to scan user:", err)
+			continue
+		}
+
+		onlineStatus := "no"
+		if _, ok := connTab[id]; ok {
+			onlineStatus = "yes"
+		}
+
+		var followCurrentUser string
+		followQuery := "SELECT COUNT(*) FROM Followers WHERE userId = ? AND followedId = ?"
+		var count int
+		err = c.GetDB().QueryRow(followQuery, id, actualuser).Scan(&count)
+		if err != nil {
+			fmt.Println("Failed to check follow status:", err)
+			followCurrentUser = "no"
+		} else if count > 0 {
+			followCurrentUser = "yes"
+		} else {
+			followCurrentUser = "no"
+		}
+
+		query := "SELECT content, sendAt FROM Chats WHERE (senderId = ? AND receverId = ?) OR (receverId = ? AND senderId = ?) ORDER BY sendAt DESC LIMIT 1"
+		lastMessageRow := c.GetDB().QueryRow(query, actualuser, id, actualuser, id)
+
+		var lastMessage string
+		var lastMessageHour time.Time
+		err = lastMessageRow.Scan(&lastMessage, &lastMessageHour)
+		if err != nil {
+			if err == sql.ErrNoRows {
+			} else {
+				fmt.Println("Failed to retrieve last message:", err)
+			}
+		}
+
+		user := User{
+			Id:                id,
+			Firstname:         firstname,
+			Lastname:          lastname,
+			Lastmessage:       lastMessage,
+			LastmessageHour:   utils.FormatTimeAgo(lastMessageHour),
+			Online:            onlineStatus,
+			FollowCurrentUser: followCurrentUser,
+		}
+		users = append(users, user)
+	}
+
+	sendUsers := sendUser{
+		Type:  "sendUser",
+		Users: users,
+	}
+
+	jsonUsers, err := json.Marshal(sendUsers)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal users: %w", err)
+	}
+
+	return jsonUsers, nil
+}
+
+func GetCookie(r *http.Request) string {
+	cookie, err := r.Cookie("session_token")
+	if err != nil {
+		return ""
+	}
+	return cookie.Value
+}
+
+func (c *ChatService) GetConnectedUserId(r *http.Request) (string, error) {
+	var userId string
+	cookie := GetCookie(r)
+	query := `SELECT userId FROM sessions WHERE sessionId = ? AND expired_at > ?`
+
+	err := c.GetDB().QueryRow(query, cookie, time.Now()).Scan(&userId)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return "", nil
+		}
+		return "", err
+	}
+
+	return userId, nil
+}
+
+func (c *ChatService) GetGroupMembership(groupID string) ([]string, error) {
+	var members []string
+	query := "SELECT userId FROM Membership WHERE groupId = ?"
+	rows, err := c.GetDB().Query(query, groupID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve group membership: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var memberID string
+		err := rows.Scan(&memberID)
+		if err != nil {
+			fmt.Println("Failed to scan group member:", err)
+			continue
+		}
+		members = append(members, memberID)
+	}
+
+	return members, nil
 }

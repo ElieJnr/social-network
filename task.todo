@@ -2,103 +2,105 @@
 Social Network App:
     Serveur et Base de données :
         Backend :
-            ☐ Mettre en place le serveur
-            ☐ Implémenter la gestion des requêtes et le routage
-            ☐ Configurer la base de données SQLite
-            ☐ Concevoir le schéma de la base de données
-            ☐ Implémenter le système de migration
-            ☐ Créer et organiser les fichiers de migration
+            ✔ Mettre en place le serveur @done(24-08-26 21:21)
+            ✔ Implémenter la gestion des requêtes et le routage @done(24-08-26 21:21)
+            ✔ Configurer la base de données SQLite @done(24-08-26 21:21)
+            ✔ Concevoir le schéma de la base de données @done(24-08-26 21:21)
+            ✔ Implémenter le système de migration @done(24-08-26 21:21)
+            ✔ Créer et organiser les fichiers de migration @done(24-08-26 21:21)
         Frontend :
-            ☐ Mettre en place l'infrastructure frontend pour communiquer avec le backend
+            ✔ Mettre en place l'infrastructure frontend pour communiquer avec le backend @done(24-08-28 13:33)
     Authentification et Profil Utilisateur :
         Backend :
-            ☐ Créer le middleware d'authentification
-            ☐ Implémenter l'inscription
-            ☐ Implémenter la connexion
-            ☐ Implémenter la déconnexion
-            ☐ Gérer les sessions et les cookies
-            ☐ Développer la logique des profils utilisateurs
-            ☐ Implémenter l'option profil public/privé
-            ☐ Implémenter le système de followers
-            ☐ Gérer les demandes de suivi pour les profils privés
+            ✔ Créer le middleware d'authentification @done(24-08-26 21:21)
+            ✔ Implémenter l'inscription @done(24-08-26 21:21)
+            ✔ Implémenter la connexion @done(24-08-26 21:21)
+            ✔ Implémenter la déconnexion @done(24-08-26 21:23)
+            ✔ Gérer les sessions et les cookies @done(24-08-26 21:22)
+            ✔ Développer la logique des profils utilisateurs @started(24-08-28 13:42)  @fakeita @done(24-09-07 18:28) @lasted(1w3d4h46m9s)
+            ✔ Implémenter l'option profil public/privé @done(24-08-26 21:22)
+            ✔ Implémenter le système de followers @done(24-08-28 13:35)
+            ✔ Gérer les demandes de suivi pour les profils privés @started(24-08-28 13:42) @done(24-09-04 16:33) @lasted(1w2h51m22s)
         Frontend :
-            ☐ Créer le formulaire d'inscription
-            ☐ Créer le formulaire de connexion
-            ☐ Développer l'interface du profil utilisateur
-            ☐ Implémenter l'affichage des followers et des utilisateurs suivis
+            ✔ Créer le formulaire d'inscription @done(24-08-26 21:22)
+            ✔ Créer le formulaire de connexion @done(24-08-26 21:22)
+            ✔ Développer l'interface du profil utilisateur @started(24-08-28 13:41) @done(24-09-04 16:33) @lasted(1w2h52m43s)
+            ✔ Implémenter l'affichage des followers et des utilisateurs suivis @started(24-08-28 13:42) @done(24-09-04 16:33) @lasted(1w2h51m49s)
     Posts et Commentaires :
         Backend :
-            ☐ Développer la logique de création de posts
-            ☐ Gérer les posts 
-            ☐ Gérer les posts image
-            ☐ Implémenter le système de commentaires
-            ☐ Gérer les likes pour les posts et commentaires
-            ☐ Gérer les options de confidentialité des posts
-            ☐ Implémenter l'option public
-            ☐ Implémenter l'option privé
-            ☐ Implémenter l'option presque privé (almost private)
+            ✔ Développer la logique de création de posts @done(24-08-19 14:50)
+            ✔ Gérer les posts @done(24-08-19 14:50)
+            ✔ Gérer les posts image @done(24-08-19 14:50)
+            ✔ Implémenter le système de commentaires @done(24-08-26 21:23)
+            ✔ Gérer les likes pour les posts et commentaires @done(24-08-28 13:49)
+            ✔ Gérer les options de confidentialité des posts @done(24-08-19 14:50)
+            ✔ Implémenter l'option public @done(24-08-19 14:50)
+            ✔ Implémenter l'option privé @done(24-08-19 14:50)
+            ✔ Implémenter l'option presque privé (almost private) @done(24-08-19 14:50)
         Frontend :
-            ☐ Créer l'interface de création de posts
-            ☐ Développer l'affichage des posts
-            ☐ Créer l'interface pour les commentaires
-            ☐ Implémenter l'affichage des likes et la possibilité de liker
-    ✘ Groupes et Événements :
+            ✔ Créer l'interface de création de posts @done(24-08-28 17:41) @done(24-08-28 17:41)
+            ✔ Développer l'affichage des posts @done(24-08-28 17:41)
+            ✔ Créer l'interface pour les commentaires @done(24-08-29 19:58)
+            ✔ Implémenter l'affichage des likes et la possibilité de liker @done(24-08-30 16:29)
+            ✔ suggest to follow @done(24-08-31 00:37)
+    ☐ Groupes et Événements :
         Backend :
-            ☐ Implémenter la création de groupes
-            ☐ Développer la gestion des groupes
+            ✔ Implémenter la création de groupes @done(24-09-04 16:33)
+            ✔ Développer la gestion des groupes @done(24-09-07 18:28)
             ☐ Créer le système d'invitations pour les groupes
-            ☐ Gérer les requêtes pour rejoindre un groupe
-            ☐ Développer la logique des posts spécifiques aux groupes
-            ☐ Implémenter les commentaires spécifiques aux groupes
-            ☐ Créer la fonctionnalité de création d'événements
-            ☐ Gérer le système de RSVP pour les événements
+            ✔ Gérer les requêtes pour rejoindre un groupe @done(24-09-07 18:28)
+            ✔ Développer la logique des posts spécifiques aux groupes @done(24-09-05 20:03)
+            ✔ Implémenter les commentaires spécifiques aux groupes @done(24-09-05 20:03)
+            ✔ Créer la fonctionnalité de création d'événements @done(24-09-07 18:29)
+            ✔ Gérer le système de RSVP pour les événements @done(24-09-07 18:29)
         Frontend :
-            ☐ Créer l'interface utilisateur pour les groupes
-            ☐ Développer l'affichage des événements
-            ☐ Implémenter l'interface de gestion des événements
+            ✔ Créer l'interface utilisateur pour les groupes @done(24-09-07 18:29)
+            ✔ Développer l'affichage des événements @done(24-09-07 18:29)
+            ✔ Implémenter l'interface de gestion des événements @done(24-09-07 18:29)
     Chat et Notifications :
         Backend :
-            ☐ Développer le middleware WebSocket pour les connexions en temps réel
-            ☐ Implémenter le système de messagerie privée
-            ☐ Créer les salons de discussion pour les groupes
-            ☐ Développer le système de notifications
-            ☐ Notifications pour les demandes de suivi
-            ☐ Notifications pour les invitations de groupe
-            ☐ Notifications pour les demandes de rejoindre un groupe
-            ☐ Notifications pour la création d'événements
+            ✔ Développer le middleware WebSocket pour les connexions en temps réel @done(24-08-28 13:45)
+            ✔ Implémenter le système de messagerie privée @done(24-08-28 13:45)
+            ✔ Créer les salons de discussion pour les groupes @done(24-09-07 18:29)
+            ✔ Développer le système de notifications @started(24-08-16 19:58) @done(24-08-28 13:46) @lasted(1w4d17h48m10s)
+            ✔ Notifications pour les demandes de suivi @done(24-08-18 15:54)
+            ✔ Notifications pour les invitations de groupe @done(24-08-18 15:54)
+            ✔ Notifications pour les demandes de rejoindre un groupe @done(24-08-18 15:54)
+            ✔ Notifications pour la création d'événements @done(24-08-18 15:54)
         Frontend :
-            ☐ Créer l'interface de chat en temps réel
-            ☐ Implémenter l'affichage des notifications
-    ✘ Docker et Tests :
+            ✔ Créer l'interface de chat en temps réel @done(24-08-28 13:46)
+            ✔ Implémenter l'affichage des notifications @done(24-09-07 18:33)
+
+     Docker et Tests :
         Backend :
-            ☐ Créer l'image Docker pour le backend
-            ☐ Assurer la communication appropriée entre les conteneurs
-            ☐ Tester le processus d'inscription et de connexion
-            ☐ Vérifier la fonctionnalité du système de followers
-            ☐ Tester la création de posts et les paramètres de confidentialité
-            ☐ Vérifier la création et la gestion des groupes
-            ☐ Tester la fonctionnalité de chat en temps réel
-            ☐ Vérifier le système de notifications
+            ✔ Créer l'image Docker pour le backend @done(24-09-07 18:33)
+            ✔ Assurer la communication appropriée entre les conteneurs @done(24-09-07 18:33)
+            ✔ Tester le processus d'inscription et de connexion @done(24-09-07 18:41)
+            ✔ Vérifier la fonctionnalité du système de followers @done(24-09-07 18:41)
+            ✔ Tester la création de posts et les paramètres de confidentialité @done(24-09-07 18:41)
+            ✔ Vérifier la création et la gestion des groupes @done(24-09-07 18:42)
+            ✔ Tester la fonctionnalité de chat en temps réel @done(24-09-07 18:43)
+            ✔ Vérifier le système de notifications @done(24-09-07 18:43)
         Frontend :
-            ☐ Créer l'image Docker pour le frontend
-            ☐ Tester l'ensemble de l'interface utilisateur
-            ☐ Vérifier l'interaction entre le frontend et le backend   
+            ✔ Créer l'image Docker pour le frontend @done(24-09-07 18:34)
+            ✔ Tester l'ensemble de l'interface utilisateur @done(24-09-07 18:43)
+            ✔ Vérifier l'interaction entre le frontend et le backend @done(24-09-07 18:34)
 
     ✘ Testing:
-            ☐ Test user registration and login process
-            ☐ Verify follower system functionality
-            ☐ Test post creation and privacy settings
-            ☐ Check group creation and management
-            ☐ Ensure real-time chat functionality
-            ☐ Verify notification system
+            ✔ Test user registration and login process @done(24-09-07 18:45)
+            ✔ Verify follower system functionality @done(24-09-07 18:45)
+            ✔ Test post creation and privacy settings @done(24-09-07 18:45)
+            ✔ Check group creation and management @done(24-09-07 18:46)
+            ✔ Ensure real-time chat functionality @done(24-09-07 18:46)
+            ✔ Verify notification system @done(24-09-07 18:46)
 
-    ✘ Bonus: 
-        ☐ Implement external OAuth (e.g., GitHub)
-        ☐ Create database seeding migration
-        ☐ Add confirmation popups for unfollowing and profile privacy changes
-        ☐ Develop additional notification types
-        ☐ Create a script to build Docker images and containers
-        ☐ Optimize overall project performance and user experience
+     Bonus: 
+        ✘ Implement external OAuth (e.g., GitHub) @cancelled(24-09-07 18:44)
+        ✔ Create database seeding migration @done(24-09-07 18:35)
+        ✘ Add confirmation popups for unfollowing and profile privacy changes @cancelled(24-09-07 18:44)
+        ✘ Develop additional notification types @cancelled(24-09-07 18:44)
+        ✔ Create a script to build Docker images and containers @done(24-09-07 18:37)
+        ✘ Optimize overall project performance and user experience @cancelled(24-09-07 18:44)
 
 ------------------------------------------------------------------------------------------
 

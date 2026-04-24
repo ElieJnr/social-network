@@ -1,11 +1,16 @@
 package models
 
-import "github.com/google/uuid"
-
 type Group struct {
-	Id          uint
-	Title       uuid.UUID
-	Description uuid.UUID
+	Id          string `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	UserId      string `json:"userId"`
+	CreateAt    string `json:"createAt"`
+	IsMember string `json:"isMember"`
 }
 
-
+type NewMember struct {
+	UserId  string `json:"userId"`
+	GroupId string `json:"groupID"`
+	Status  string `json:"status"`
+}

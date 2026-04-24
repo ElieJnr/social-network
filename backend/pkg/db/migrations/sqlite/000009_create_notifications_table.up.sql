@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS Notifications (
     message TEXT,              -- Message de notification ou détails
     is_read BOOLEAN DEFAULT FALSE, -- Indique si la notification a été lue
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Date et heure de la création
-    FOREIGN KEY (user_receiver_id) REFERENCES users(id),
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    groupeId TEXT DEFAULT '',
+    FOREIGN KEY (user_receiver_id) REFERENCES Users(id),
+    FOREIGN KEY (user_id) REFERENCES Users(id)
 );

@@ -2,14 +2,15 @@ package models
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type Comment struct {
-	Id        uint
-	PostId    uint
-	UserId    uuid.UUID
-	Content   string
-	CreatedAt time.Time
+	CommentID     string
+	UserID        string
+	Content       string
+	HasImage       bool
+	Image_url     string
+	Creation_date time.Time
+	Formated_date string
+	Author        Author
 }

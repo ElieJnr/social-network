@@ -1,0 +1,27 @@
+import { create } from "zustand";
+
+const useStore = create((set) => ({
+
+  // State variables
+  user: [],
+  getMessage: [],
+  isAuthenticated: false,
+  loading: false,
+  messageArrive: false,
+  currentUser: "",
+  groupMessage: [],
+  // Actions
+  setUser: (user) => set({ user }),
+  setgetMessage: (getMessage) => set({ getMessage, messageArrive: true }),
+  setCurrentUser: (currentUser) => set({ currentUser }),
+  setGroupMessage: (groupMessage) => set({ groupMessage }),
+  logout: () => set({ user: null, isAuthenticated: false }),
+
+  setLoading: (loading) => set({ loading }),
+}));
+
+// const response = await fetch('https://api.example.com/data', {
+//     next: { revalidate: 10 }, // Revalidate every 10 seconds
+//   });
+
+export default useStore;

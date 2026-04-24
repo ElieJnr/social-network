@@ -21,6 +21,9 @@ type ChatMessage struct {
 type Message struct {
 	Type       string
 	Content    string
-	SenderId   string
 	ReceiverId string
+	SenderId   string
+	GroupeId   string
+	SubType    string
+	IsPrivate  bool
 }
